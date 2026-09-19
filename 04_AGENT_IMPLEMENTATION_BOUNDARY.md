@@ -67,3 +67,12 @@ The following are now fixed for the foundation:
 - Cerebri Lab is initially internal/research tooling.
 
 If implementation pressure reveals a contradiction with these rules, stop at the boundary, document the issue, and request an ADR rather than silently choosing a new architecture.
+
+
+## Foundation lifecycle types are mandatory
+
+The first foundation implementation should create distinct Rust structs/newtypes (or equivalently strong types) for:
+
+`ProposedPlan -> ValidatedPlan -> ActionPlan -> AuthorizedActionPlan -> ExecutionResult`
+
+They may initially contain minimal fields, but must be separate types with controlled conversion/validation boundaries. Do not model them as one `Plan { status: ... }` object and do not let the executor accept an unvalidated/unauthorized plan.

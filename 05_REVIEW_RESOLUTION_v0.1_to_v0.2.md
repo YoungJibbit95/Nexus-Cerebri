@@ -1,7 +1,10 @@
-# Nexus Cerebri — Review Resolution: v0.1 -> v0.2
+# Historical Review Resolution: Specification 0.1 -> 0.2
+
+> **NON-NORMATIVE HISTORY.** All accepted architectural decisions from this review must exist in the Master Specification or relevant normative standard. If this file conflicts with current normative documentation, this file loses.
+
 
 **Date:** 2026-09-19  
-**Status:** Accepted planning corrections
+**Status:** Historical audit record — non-normative after consolidation
 
 This document records how the independent v0.1 review was resolved.
 
@@ -11,7 +14,7 @@ This document records how the independent v0.1 review was resolved.
 **Accepted.** v0.2 defines parity for canonical public docs and explicitly allows internal logs/research notes/ADR records to remain canonical-language-only. The actual implementation repository must create the DE/EN structure during foundation bootstrap.
 
 ### CRITICAL-02 — Required governance files absent
-**Accepted as bootstrap gap.** The planning ZIP is not itself the implementation repository. The foundation milestone must create README, CHANGELOG, ROADMAP, CONTRIBUTING, SECURITY, ADR and progress structures before claiming v0.1.0 software readiness.
+**Accepted as bootstrap gap.** The planning baseline/package is not itself the implementation repository. The foundation milestone must create README, CHANGELOG, ROADMAP, CONTRIBUTING, SECURITY, ADR and progress structures before claiming v0.1.0 software readiness.
 
 ### CRITICAL-03 — Version source of truth
 **Accepted.** v0.2 defines separate canonical authorities for software, API, CPIR, model, dataset and specification revision.
