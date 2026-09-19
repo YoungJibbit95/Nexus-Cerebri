@@ -13,7 +13,7 @@
 
 -   `ValidatedPlan => HardConstraintViolations == 0`
 -   `ExecutableAction => PermissionGranted`
--   `Execution => ValidatedActionPlan`
+-   `Execution => AuthorizedActionPlan`
 -   `Inference cannot replace Fact`
 -   `LearnedPreference cannot override ExplicitConstraint`
 -   `StalePlan => Revalidation`
@@ -96,3 +96,9 @@ Prefer deterministic candidate/expansion/depth budgets in tests and research. Us
 ## Validator testing
 
 Zero violations in validated plans is necessary but not sufficient. Include intentionally invalid plans and mutation/adversarial tests to verify the validator detects violations rather than merely withholding validation.
+
+## Foundation lifecycle tests
+
+Verify that executor APIs cannot accept ProposedPlan, ValidatedPlan, or ActionPlan. Cover stale AuthorizedActionPlan, changed authorization, replay/idempotency, `max_mutations = 0`, scope None-vs-empty semantics, and multi-action partial failure.
+
+`COMPLETE` requires full traversal of the declared search space without an optimization proof; `PROVEN_OPTIMAL` additionally requires proof under the declared objective/tie-break rules.

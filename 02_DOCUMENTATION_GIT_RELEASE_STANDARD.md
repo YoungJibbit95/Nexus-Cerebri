@@ -122,3 +122,7 @@ Canonical public architecture/reference/learning docs require DE and EN counterp
 ## Visualization applicability
 
 “Code + tests + visualization + documentation = feature” means visualization **when it materially improves understanding of behavior, trends, distributions or decisions**. Infrastructure changes do not require artificial graphs.
+
+## Master Specification archive rule
+
+Only the current normative Master Specification remains in the repository root. Superseded revisions move to `docs/archive/specifications/`.

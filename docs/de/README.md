@@ -1,3 +1,3 @@
 # Deutsche Dokumentation
 
-Die kanonischen DE-Seiten werden mit der Implementierungsbasis aufgebaut. Diese Struktur ist Teil der v0.2-Governance.
+Bootstrap-Struktur. Vollständige DE/EN-Parität ist noch nicht erreicht; sie wird im Foundation-Milestone aufgebaut.

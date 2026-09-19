@@ -1,7 +1,7 @@
-# Nexus Cerebri Planning Package — Specification Revision 0.3
+# Nexus Cerebri Architecture & Foundation Package — Specification Revision 0.4 — Foundation Architecture Baseline
 
 **Status:** architecture/planning baseline; implementation not yet represented by this package.  
-**Specification revision:** 0.3  
+**Specification revision:** 0.4  
 **Planned first software milestone:** 0.1.0
 
 Nexus Cerebri is a planned Rust-based temporal planning and scheduling intelligence system built around **neural intuition + symbolic verification**.
@@ -12,7 +12,7 @@ This package contains architecture, roadmap, governance, testing/research and co
 
 ## Documents
 
-- `00_MASTER_SPECIFICATION_v0.3.md`
+- `00_MASTER_SPECIFICATION_v0.4.md`
 - `01_DEVELOPMENT_LEARNING_ROADMAP.md`
 - `02_DOCUMENTATION_GIT_RELEASE_STANDARD.md`
 - `03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md`
@@ -26,7 +26,7 @@ This package contains architecture, roadmap, governance, testing/research and co
 
 ## Important version distinction
 
-Specification revision `0.3` is a documentation/review revision. The planned software release `v0.1.0` is a separate version namespace.
+Specification revision `0.4` is a documentation/review revision. The planned software release `v0.1.0` is a separate version namespace.
 
 ## Next step
 
@@ -36,3 +36,7 @@ Independent logic review of specification revision 0.3, followed by foundation i
 ## Normative document precedence
 
 Accepted ADRs that explicitly amend a Master rule (with the Master updated), then Master Specification, domain standards, Coding Agent Boundary, Roadmap, and finally historical review/progress records.
+
+## Normative baseline
+
+`00_MASTER_SPECIFICATION_v0.4.md` is the current Foundation Architecture Baseline. Archived specifications and review-resolution documents are historical/non-normative.

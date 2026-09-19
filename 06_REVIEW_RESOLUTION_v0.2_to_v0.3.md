@@ -9,7 +9,7 @@
 - Consolidated canonical lifecycle into Master Specification: `ProposedPlan -> ValidatedPlan -> ActionPlan -> AuthorizedActionPlan -> ExecutionResult`.
 - Replaced stale mixed planner status semantics with `PlanningOutcome` + `SearchAssessment`.
 - Moved concrete `PlanningScope` dimensions into the central Operations section.
-- Moved explicit `PRESENT_KNOWN/MISSING/UNKNOWN/UNCERTAIN/AMBIGUOUS/UNRESOLVED` semantics into the central CPIR section.
+- Moved explicit `KNOWN/MISSING/UNKNOWN/UNCERTAIN/AMBIGUOUS/UNRESOLVED` semantics into the central CPIR section.
 - Rebuilt Master Specification chapter numbering in sequential order.
 - Declared review-resolution files historical/non-normative after consolidation.
 - Added explicit normative-document precedence.
