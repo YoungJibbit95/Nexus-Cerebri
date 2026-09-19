@@ -1,7 +1,7 @@
-# Nexus Cerebri --- Master Specification v0.1
+# Nexus Cerebri --- Master Specification v0.2
 
 **Status:** Planning baseline\
-**Specification version:** 0.1\
+**Specification version:** 0.2\
 **Baseline date:** 2026-09-19\
 **Repository:** `github.com/YoungJibbit95/Nexus-Cerebri`\
 **Primary implementation language:** Rust\
@@ -51,6 +51,14 @@ explains the result and returns proposed actions.
 Precedence:
 
 `Permissions > Policy > Hard Constraints > Explicit Current Preference > Session Context > Personal Learned Preference > Global Learned Prior > Default`
+
+### 2.1 Policy is a formal layer
+
+`Policy` is a typed, deterministic rule layer distinct from constraints and preferences. Policies govern what the system is allowed to propose or execute (for example mutation limits, confirmation requirements, or deployment-mode restrictions). A soft preference becomes a policy only through explicit configuration or user/application action; learning cannot silently promote it.
+
+### 2.2 Documentation governance
+
+The statement “GitHub represents the current documented state” applies to the **default branch and releases**, not every intermediate feature-branch commit. Pull requests may temporarily contain partial work, but merge gates require affected code, tests and documentation to be coherent.
 
 ## 3. End-to-end architecture
 
@@ -233,6 +241,12 @@ Initial vocabulary:
 
 **Inference can rank possibilities, but cannot rewrite facts.**
 
+Permissions are deliberately **not** ordinary hard constraints. They form a higher security/capability layer:
+
+- **Planning Capability:** constrains which executable mutations the planner may include in an executable proposal.
+- **Execution Authorization:** is checked again immediately before execution.
+- ANALYZE/simulation may optionally show hypothetical `NON_EXECUTABLE` solutions outside current write capabilities when policy permits, but these can never become executable ActionPlans without authorization.
+
 FACT, CONSTRAINT, INFERENCE and PREFERENCE must remain separate
 concepts/types.
 
@@ -370,6 +384,8 @@ acceptance and hard-constraint violations.
 
 Validated hard-constraint violation target: **0**.
 
+This is a safety invariant, not sufficient evidence that the validator is correct. Validator correctness is measured separately through mutation/negative tests, property tests, adversarial fixtures and independently constructed scenario expectations. Invalid inputs/plans must be tested to ensure the validator actually rejects violations.
+
 ## 16. Personal preference learning
 
 Start interpretable: feature vectors and weights/pairwise ranking.
@@ -419,6 +435,8 @@ Separate external state, configuration, learned state and
 operational/audit state.
 
 Ports: PreferenceStore, FeedbackStore, ModelRegistry, ActionLedger.
+
+`ActionLedger` belongs to the execution/application layer, not the pure planner. The executor/service layer owns atomic action-state transitions, idempotency checks, retry/recovery policy and reconciliation after process failure. The planner only emits immutable planning results.
 
 Concrete stores may be PostgreSQL, SQLite or in-memory.
 
@@ -523,7 +541,26 @@ Important concepts offer intuitive, technical and scientific
 explanations. Central formulas define variables and intuition. Research
 docs distinguish established methods from Cerebri-specific changes.
 
-## 25. Version/Git
+## 25. Version authorities and terminology
+
+The documentation baseline/specification revision is **not** the software release version.
+
+Canonical authorities:
+
+- **Software version:** root Cargo workspace package metadata / designated workspace package version; release tags use `vMAJOR.MINOR.PATCH`.
+- **API version:** route/protocol declaration (initially `v1` only when the public API is intentionally declared).
+- **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation starts at `0.1`, not “v1”.
+- **Model version:** immutable ModelRegistry metadata/artifact ID.
+- **Dataset version:** dataset manifest metadata/checksum.
+- **Specification revision:** document front matter/header, e.g. `0.2`; no software compatibility guarantee is implied.
+
+README surfaces the software version/status and links the current specification revision.
+
+The labels `ML-v0`, `ML-v1`, etc. are **architecture-learning milestones**, not model artifact versions.
+
+All machine-readable dates use ISO 8601 (`YYYY-MM-DD`; timestamps RFC 3339 where appropriate).
+
+## 31. Version/Git
 
 Semantic Versioning; research phase uses 0.x.y.
 
@@ -598,3 +635,36 @@ personal embeddings, ML-guided search, advanced optimization.
 
 A scaffolding agent must not silently implement these learning
 milestones.
+
+
+## 32. Additional definitions resolved in v0.2
+
+### External lock
+
+`external_lock` means a deterministic immutability restriction originating outside the planner, such as provider immutability, organizer/ownership rules, explicit user lock, or integration policy. Its provenance and reason must be recorded.
+
+### External participant availability
+
+Unknown external participant availability is represented as UNKNOWN rather than silently free or busy. Whether it blocks planning depends on the operation/policy: a meeting requiring all participants' verified availability must block or request clarification; exploratory suggestions may be marked uncertain/non-executable.
+
+### Personal data terminology
+
+`PERSONAL_LOCAL` means logically scoped to one user/profile and excluded from global/shared training by default. It does **not** necessarily mean physically stored only on the local device. Physical storage location is a deployment/privacy policy decision.
+
+`personal_pattern` should preferentially store derived/aggregated evidence needed for ranking rather than unnecessary raw event text. Retention, export and deletion policies apply to both raw feedback and derived profiles.
+
+### Cerebri Lab
+
+Cerebri Lab is initially an internal developer/research/learning interface, not a stable end-user product API. Accessibility and usability remain quality goals, but its UI/API compatibility is not guaranteed during 0.x.
+
+### Documentation parity
+
+DE/EN parity is required for canonical public architecture/reference/learning pages. CI can verify counterpart existence and structural metadata; semantic equivalence remains a human review responsibility. Internal progress logs, raw experiment notes and ADR source records may have one canonical language unless a later policy requires translation.
+
+### ADR triggers
+
+An ADR is mandatory for changes to public API contracts, CPIR/schema semantics, dependency direction/module boundaries, persistence ownership, planner/executor boundary, security/permission model, versioning authority, interval/time semantics, solver/search semantics, or replacement of an accepted architectural strategy.
+
+### Progress logs
+
+Meaningful implementation or architecture-design sessions should be logged. Pure reading/research sessions need a progress entry only when they produce a decision, experiment, finding, or materially change the plan.

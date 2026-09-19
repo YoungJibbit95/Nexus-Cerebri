@@ -77,3 +77,22 @@ metrics, plots, result, interpretation, limitations and next step.
 Rules -\> Mean Pooling -\> MLP -\> Sequence Encoder -\> Attention -\>
 Transformer should remain comparable. Complexity must earn its place
 through measured benefit.
+
+
+## Planner result semantics
+
+Do not combine search proof and domain outcome in one enum.
+
+`PlanningOutcome`: SOLUTION / NO_SOLUTION / NEEDS_RELAXATION / INSUFFICIENT_INFORMATION.
+
+`SearchAssessment`: PROVEN_OPTIMAL / COMPLETE / BEST_FOUND.
+
+`PROVEN_OPTIMAL` requires exhaustive evaluation/proof over the explicitly declared search space and objective. Wall-clock timeout results are never PROVEN_OPTIMAL.
+
+## Deterministic search tests
+
+Prefer deterministic candidate/expansion/depth budgets in tests and research. Use stable tie-breakers: objective cost, mutation count, shifted duration, candidate start, stable ID.
+
+## Validator testing
+
+Zero violations in validated plans is necessary but not sufficient. Include intentionally invalid plans and mutation/adversarial tests to verify the validator detects violations rather than merely withholding validation.

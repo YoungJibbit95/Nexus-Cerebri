@@ -50,3 +50,20 @@ separation and deterministic validation.
 
 Prefer boring, explicit and testable infrastructure over clever
 abstractions.
+
+
+## Decisions the agent must not invent
+
+The following are now fixed for the foundation:
+- specification revision and software version are separate;
+- initial CPIR schema is 0.1/internal, not a public v1 compatibility promise;
+- permissions are not ordinary hard constraints;
+- executable lifecycle is ProposedPlan -> ValidatedPlan -> ActionPlan -> AuthorizedActionPlan -> ExecutionResult;
+- planner outcome and search assessment are separate;
+- bounded PlanningScope is explicit;
+- production code never depends on research code;
+- ActionLedger/retry/recovery ownership belongs to execution/application layer;
+- `PERSONAL_LOCAL` is logical user scope, not necessarily physical device storage;
+- Cerebri Lab is initially internal/research tooling.
+
+If implementation pressure reveals a contradiction with these rules, stop at the boundary, document the issue, and request an ADR rather than silently choosing a new architecture.

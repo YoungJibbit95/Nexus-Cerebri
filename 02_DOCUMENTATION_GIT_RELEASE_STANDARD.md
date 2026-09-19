@@ -98,3 +98,27 @@ Implementation/tests/security green; DE/EN docs current;
 README/ROADMAP/CHANGELOG/version current; ADRs/progress log current;
 compatibility reviewed; artifacts/checksums prepared where relevant;
 release notes/tag/Pages build complete.
+
+
+## Canonical version authorities
+
+- Software: Cargo workspace/package version; Git release tags mirror it.
+- Specification: independent document revision (`0.x`), not a software release.
+- CPIR: serialized schema version + schema docs.
+- API: route/protocol version.
+- Model: ModelRegistry artifact metadata.
+- Dataset: dataset manifest + checksum.
+
+Use ISO 8601 dates everywhere.
+
+## ADR triggers
+
+ADR required for public API/CPIR semantics, dependency/module boundaries, persistence ownership, planner/executor boundary, permission/security model, version authority, temporal interval semantics, solver/search semantics, or replacement of an accepted architecture strategy.
+
+## DE/EN parity
+
+Canonical public architecture/reference/learning docs require DE and EN counterparts. CI checks existence/metadata/links, not semantic translation quality. Progress logs, raw experiment notes and ADR records may remain in one canonical language unless explicitly promoted to public documentation.
+
+## Visualization applicability
+
+“Code + tests + visualization + documentation = feature” means visualization **when it materially improves understanding of behavior, trends, distributions or decisions**. Infrastructure changes do not require artificial graphs.

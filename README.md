@@ -1,25 +1,32 @@
-# Nexus Cerebri Planning Package v0.1
+# Nexus Cerebri Planning Package — Specification Revision 0.2
 
-Planning baseline consolidated on **2026-09-19**.
+**Status:** architecture/planning baseline; implementation not yet represented by this package.  
+**Specification revision:** 0.2  
+**Planned first software milestone:** 0.1.0
 
-## Included documents
+Nexus Cerebri is a planned Rust-based temporal planning and scheduling intelligence system built around **neural intuition + symbolic verification**.
 
-1.  `00_MASTER_SPECIFICATION_v0.1.md` --- consolidated product and
-    architecture specification.
-2.  `01_DEVELOPMENT_LEARNING_ROADMAP.md` --- dated October
-    2026--September 2027 development/learning plan.
-3.  `02_DOCUMENTATION_GIT_RELEASE_STANDARD.md` --- bilingual
-    documentation, Git, versioning, changelog, release and GitHub Pages
-    rules.
-4.  `03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md` --- testing,
-    invariants, visualization, dataset and reproducible research
-    standards.
-5.  `04_AGENT_IMPLEMENTATION_BOUNDARY.md` --- boundaries for the future
-    scaffolding/coding agent.
+## Current capabilities
 
-## Review note
+This package contains architecture, roadmap, governance, testing/research and coding-agent boundary documents. It does **not** claim that the Cerebri software described by them is implemented.
 
-This is a **v0.1 planning baseline**, intentionally suitable for an
-independent logic/architecture review before implementation. Material
-corrections should become a specification revision or ADR rather than
-silently changing intent.
+## Documents
+
+- `00_MASTER_SPECIFICATION_v0.2.md`
+- `01_DEVELOPMENT_LEARNING_ROADMAP.md`
+- `02_DOCUMENTATION_GIT_RELEASE_STANDARD.md`
+- `03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md`
+- `04_AGENT_IMPLEMENTATION_BOUNDARY.md`
+- `05_REVIEW_RESOLUTION_v0.1_to_v0.2.md`
+- `CHANGELOG.md`
+- `ROADMAP.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+
+## Important version distinction
+
+Specification revision `0.2` is a documentation/review revision. The planned software release `v0.1.0` is a separate version namespace.
+
+## Next step
+
+Independent logic review of specification revision 0.2, followed by foundation implementation only after critical architecture findings are resolved.

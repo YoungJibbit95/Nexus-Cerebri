@@ -156,3 +156,18 @@ outcomes; 3. review tests/metrics; 4. verify DE/EN documentation parity;
 5. review ADRs and technical debt; 6. re-estimate next two months; 7.
 update README/ROADMAP; 8. release only if Definition of Done is
 satisfied.
+
+
+## Release gating
+
+Monthly candidate versions are sequencing labels, not calendar promises. A release occurs only when:
+- milestone acceptance criteria are met;
+- required tests and docs are green/current;
+- unresolved critical safety issues are zero;
+- any scope reduction is recorded in ROADMAP/CHANGELOG.
+
+Do not skip a version merely because a calendar month elapsed.
+
+## Search reproducibility rule
+
+Research/test runs use deterministic search budgets whenever possible. Production may add wall-clock timeout limits, but any timeout-limited solution is recorded as `BEST_FOUND`.
