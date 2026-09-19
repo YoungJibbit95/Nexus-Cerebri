@@ -1,0 +1,29 @@
+name: Foundation CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal --component rustfmt,clippy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: cargo fmt --check
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo build -p cerebri-node --locked
+      - run: node --test bindings/node/test.mjs
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npm run docs:build
+      - run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
+

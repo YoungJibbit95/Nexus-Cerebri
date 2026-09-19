@@ -1,0 +1,16 @@
+{
+  "name": "nexus-cerebri-tooling",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node scripts/check-repository.mjs",
+    "docs:build": "node scripts/build-docs.mjs",
+    "test:node": "node --test bindings/node/test.mjs"
+  },
+  "devDependencies": {
+    "markdown-it": "14.3.2"
+  }
+}

@@ -304,8 +304,8 @@ Initial soft factors:
 An initial weighted cost function is acceptable. Lower cost is better.
 Keep multiple ranked candidates.
 
-Preference precedence: explicit user \> personal learned \>
-integration/domain \> global learned \> default.
+Preference precedence follows section 2: explicit current request \>
+session context \> personal learned \> global learned \> default.
 
 ## 10. Candidate generation and repair
 
@@ -601,7 +601,7 @@ integration/contract and ML regression/evaluation.
 Core invariants:
 
 -   ValidatedPlan =\> zero hard-constraint violations
--   Execution =\> validated ActionPlan
+-   Execution =\> AuthorizedActionPlan
 -   LearnedPreference cannot override explicit constraint
 -   Inference cannot override fact
 -   StalePlan =\> revalidation

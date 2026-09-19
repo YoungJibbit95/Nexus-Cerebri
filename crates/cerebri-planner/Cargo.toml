@@ -1,0 +1,24 @@
+[package]
+name = "cerebri-planner"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cerebri-types.workspace = true
+cerebri-temporal.workspace = true
+cerebri-constraints.workspace = true
+cerebri-semantics.workspace = true
+cerebri-preferences.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+sha2.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

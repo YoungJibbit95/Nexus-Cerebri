@@ -1,0 +1,20 @@
+[package]
+name = "cerebri-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+cerebri-core.workspace = true
+serde_json.workspace = true
+axum.workspace = true
+tokio.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
+tower.workspace = true
+serde_json.workspace = true

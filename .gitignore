@@ -1,0 +1,15 @@
+/target/
+/site/
+node_modules/
+*.node
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/datasets/personal/
+/datasets/private/
+/models/artifacts/
+*.log
+.DS_Store
+.idea/

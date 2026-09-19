@@ -1,6 +1,21 @@
 # Changelog
 
-All notable planning-specification changes are documented here.
+Notable implementation and specification changes are documented separately below.
+
+## [Unreleased] - software target 0.1.0
+### Added
+- Rust workspace with nine domain crates, development REST app and Node process bridge.
+- Validated IDs/time ranges, CPIR schema 0.1, knowledge states and bounded scope.
+- Deterministic grid planning, structured conflicts and restricted optimality claims.
+- Distinct lifecycle types, authorization, freshness, replay and partial-result mock contracts.
+- Storage/inference ports, synthetic fixtures, internal Lab, CI and documentation build.
+- Paired DE/EN Foundation references, six ADRs and dated progress log.
+### Fixed
+- Stale README 0.3 review and Master execution invariant.
+- Master section 9 preference summary synchronized with section 2 and bootstrap requirements.
+### Deferred
+- Production providers/authentication/durable execution, recurrence, advanced planning and ML.
+- No release, tag or deployment is created by this bootstrap.
 
 ## [Specification 0.4] - 2026-09-19
 ### Changed

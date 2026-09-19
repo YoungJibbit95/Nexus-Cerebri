@@ -1,42 +1,88 @@
-# Nexus Cerebri Architecture & Foundation Package — Specification Revision 0.4 — Foundation Architecture Baseline
+# Nexus Cerebri
 
-**Status:** architecture/planning baseline; implementation not yet represented by this package.  
-**Specification revision:** 0.4  
-**Planned first software milestone:** 0.1.0
+**Software:** 0.1.0 foundation — unreleased. No release/tag has been created.
 
-Nexus Cerebri is a planned Rust-based temporal planning and scheduling intelligence system built around **neural intuition + symbolic verification**.
+**Specification:** 0.4, frozen Foundation Architecture Baseline.
 
-## Current capabilities
+**CPIR:** internal schema 0.1. **REST:** development routes under /v1.
 
-This package contains architecture, roadmap, governance, testing/research and coding-agent boundary documents. It does **not** claim that the Cerebri software described by them is implemented.
+A Rust temporal planning foundation built around **neural intuition + symbolic verification**.
+The current implementation is deterministic; neural inference is a future milestone.
 
-## Documents
+## Working today
 
-- `00_MASTER_SPECIFICATION_v0.4.md`
-- `01_DEVELOPMENT_LEARNING_ROADMAP.md`
-- `02_DOCUMENTATION_GIT_RELEASE_STANDARD.md`
-- `03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md`
-- `04_AGENT_IMPLEMENTATION_BOUNDARY.md`
-- `05_REVIEW_RESOLUTION_v0.1_to_v0.2.md` — historical
-- `06_REVIEW_RESOLUTION_v0.2_to_v0.3.md` — historical
-- `CHANGELOG.md`
-- `ROADMAP.md`
-- `CONTRIBUTING.md`
-- `SECURITY.md`
+- Validated identifiers, confidence and explicit knowledge/processing states.
+- IANA timezones, DST ambiguity rejection and half-open intervals.
+- CPIR validation, bounded scope, facts, hard constraints and interpretable preferences.
+- Single-event grid search with deterministic ordering, structured explanations and honest search assessments.
+- Strong plan lifecycle, policy/capability/confirmation checks, and mock execution with freshness, replay protection and per-action results.
+- REST facade, Node process bridge and a small developer Lab.
 
-## Important version distinction
+No provider integration, production authentication, durable ledger, recurrence engine, advanced repair, learning or autonomous calendar mutation is implemented.
 
-Specification revision `0.4` is a documentation/review revision. The planned software release `v0.1.0` is a separate version namespace.
+## Quick start
 
-## Next step
+Install Rust via rustup. The repository pins Rust 1.97.0 and its formatter/linter.
+Node 22+ is needed only for the Node bridge and documentation tooling.
 
-Independent logic review of specification revision 0.3, followed by foundation implementation only after critical architecture findings are resolved.
+```sh
+cargo build --workspace --locked
+cargo test --workspace --locked
+cargo fmt --check
+cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+cargo run -p cerebri-core --example plan
+cargo run -p cerebri-api
+```
 
+The development server binds only to [localhost:3000](http://127.0.0.1:3000).
+Open [Cerebri Lab](http://127.0.0.1:3000/lab) and load [the synthetic request](examples/request.json).
 
-## Normative document precedence
+```sh
+cargo build -p cerebri-node
+node --test bindings/node/test.mjs
+npm ci --ignore-scripts
+npm run check
+npm run docs:build
+```
 
-Accepted ADRs that explicitly amend a Master rule (with the Master updated), then Master Specification, domain standards, Coding Agent Boundary, Roadmap, and finally historical review/progress records.
+Documentation is generated from repository Markdown into ignored `site/`.
+The optional Pages workflow requires manual dispatch and repository Pages configuration.
 
-## Normative baseline
+## Workspace
 
-`00_MASTER_SPECIFICATION_v0.4.md` is the current Foundation Architecture Baseline. Archived specifications and review-resolution documents are historical/non-normative.
+| Area | Responsibility |
+| --- | --- |
+| cerebri-types | IDs, revisions, confidence, evidence and knowledge states |
+| cerebri-temporal | trusted instants, zones, duration and interval relationships |
+| cerebri-constraints | facts, hard rules and structured violations |
+| cerebri-semantics | eight-dimensional evidence and derived deadline metadata |
+| cerebri-preferences | interpretable precedence, scoring features and storage ports |
+| cerebri-ml | production model/dataset/training metadata and inference ports |
+| cerebri-planner | CPIR, scope, validation, search and lifecycle proofs |
+| cerebri-core | synchronous planning facade and JSON bridge |
+| cerebri-integrations | execution/ledger ports and in-memory contract adapters |
+| apps/cerebri-api | HTTP transport; no execution endpoint |
+| bindings/node | provisional asynchronous process bridge to the same Rust core |
+| apps/cerebri-lab | internal typed-result inspection shell |
+| research/ml-from-scratch | reserved human learning path, outside the workspace |
+
+## Documentation
+
+- [Deutsch](docs/de/README.md) · [English](docs/en/README.md)
+- [Master specification 0.4](00_MASTER_SPECIFICATION_v0.4.md)
+- [Implementation boundary](04_AGENT_IMPLEMENTATION_BOUNDARY.md)
+- [Testing standard](03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md)
+- [Documentation/release standard](02_DOCUMENTATION_GIT_RELEASE_STANDARD.md)
+- [Roadmap](ROADMAP.md) · [Learning roadmap](01_DEVELOPMENT_LEARNING_ROADMAP.md)
+- [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
+- [Foundation decisions](docs/decisions/ADR-0001-workspace.md) · [Progress](docs/progress/2026-09-19-foundation.md)
+
+Accepted ADRs explicitly amending the Master take precedence only with synchronized Master updates;
+then the current Master, domain standards, agent boundary and roadmap apply.
+Review-resolution and archived documents remain historical/non-normative.
+The new Foundation reference pages have DE/EN counterparts; the entire historical repository does not claim bilingual parity.
+
+## Next milestone
+
+Temporal Core: bounded recurrence and independently verified free/busy behavior.
+Software version, specification revision, CPIR schema, REST version and future model/dataset versions remain separate authorities.

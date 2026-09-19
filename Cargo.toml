@@ -1,0 +1,35 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/cerebri-api", "bindings/node"]
+exclude = ["research/ml-from-scratch"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+publish = false
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+sha2 = "0.10"
+chrono = { version = "0.4", default-features = false, features = ["std", "serde"] }
+chrono-tz = { version = "0.10", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+axum = "0.8"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+tower = { version = "0.5", features = ["util"] }
+cerebri-types = { path = "crates/cerebri-types" }
+cerebri-temporal = { path = "crates/cerebri-temporal" }
+cerebri-constraints = { path = "crates/cerebri-constraints" }
+cerebri-semantics = { path = "crates/cerebri-semantics" }
+cerebri-preferences = { path = "crates/cerebri-preferences" }
+cerebri-planner = { path = "crates/cerebri-planner" }
+cerebri-integrations = { path = "crates/cerebri-integrations" }
+cerebri-ml = { path = "crates/cerebri-ml" }
+cerebri-core = { path = "crates/cerebri-core" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
