@@ -58,6 +58,8 @@ for(const p of packages.values()){
  if(p.name==='cerebri-core'&&p.dependencies.some(d=>['axum','tokio','sqlx','rusqlite','reqwest'].includes(d.name)))throw new Error('core I/O dependency');
 }
 const readme=await readFile('README.md','utf8');
+const changelog=await readFile('CHANGELOG.md','utf8');
+if(!changelog.includes('**Software target:** `'+version+'`'))throw new Error('CHANGELOG software target mismatch');
 for(const text of [version,'0.4','0.1'])if(!readme.includes(text))throw new Error('README version missing');
 if(JSON.parse(await readFile('apps/cerebri-lab/package.json','utf8')).version!==version)throw new Error('Lab version mismatch');
 const fixture=JSON.parse(await readFile('examples/request.json','utf8'));

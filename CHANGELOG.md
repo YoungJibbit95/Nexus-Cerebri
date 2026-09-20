@@ -6,7 +6,7 @@
 
 <br>
 
-![Software Target](https://img.shields.io/badge/software_target-0.1.0-0969da?style=flat-square)
+![Software Target](https://img.shields.io/badge/software_target-0.2.0-0969da?style=flat-square)
 ![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=flat-square)
 ![Status](https://img.shields.io/badge/status-unreleased-d29922?style=flat-square)
 
@@ -33,7 +33,7 @@ This changelog maintains two independent histories:
 
 # 🚧 [Unreleased]
 
-**Software target:** `0.1.0`
+**Software target:** `0.2.0`
 **Release status:** `Unreleased`
 
 > [!WARNING]
@@ -42,6 +42,12 @@ This changelog maintains two independent histories:
 ---
 
 ## 📅 2026-09-20 — Temporal Core, Cerebri Lab and Repository Structure
+
+### Version authority reconciliation
+
+* Synchronized the current software target with Cargo workspace and Lab version `0.2.0`.
+* `0.1.0` remains the historical unreleased Foundation target; specification `0.4`,
+  CPIR `0.1` and REST `/v1` are independent authorities. No release was created by this correction.
 
 ### ✨ Added
 
