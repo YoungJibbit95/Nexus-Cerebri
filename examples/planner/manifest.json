@@ -1,0 +1,128 @@
+{
+  "scenarios": [
+    {
+      "name": "feasible",
+      "file": "feasible.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "Solution",
+        "assessment": "ProvenOptimal",
+        "first_start": "2026-10-01T10:00:00Z",
+        "candidates": 7
+      }
+    },
+    {
+      "name": "hard-rejection",
+      "file": "hard-rejection.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "NoSolution",
+        "assessment": "Complete",
+        "candidates": 0
+      }
+    },
+    {
+      "name": "insufficient-information",
+      "file": "insufficient-information.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "InsufficientInformation",
+        "assessment": "BestFound",
+        "candidates": 0
+      }
+    },
+    {
+      "name": "scope-exclusion",
+      "file": "scope-exclusion.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "InsufficientInformation",
+        "assessment": "BestFound",
+        "candidates": 0
+      }
+    },
+    {
+      "name": "dependency-order",
+      "file": "dependency-order.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "Solution",
+        "assessment": "ProvenOptimal",
+        "first_start": "2026-10-01T11:00:00Z",
+        "candidates": 3,
+        "dependency_order": [
+          "busy",
+          "new-event"
+        ]
+      }
+    },
+    {
+      "name": "recurrence-busy",
+      "file": "recurrence-busy.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "Solution",
+        "assessment": "ProvenOptimal",
+        "first_start": "2026-10-01T11:00:00Z",
+        "candidates": 3,
+        "occurrences": 1
+      }
+    },
+    {
+      "name": "incomplete-coverage",
+      "file": "incomplete-coverage.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "InsufficientInformation",
+        "assessment": "BestFound",
+        "candidates": 0,
+        "occurrences": 1,
+        "unknown_ranges": 1
+      }
+    },
+    {
+      "name": "duplicate-series",
+      "file": "duplicate-series.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "InsufficientInformation",
+        "assessment": "BestFound",
+        "candidates": 0,
+        "compilation": null
+      }
+    },
+    {
+      "name": "dependency-cycle",
+      "file": "dependency-cycle.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "InsufficientInformation",
+        "assessment": "BestFound",
+        "candidates": 0,
+        "graph_issues": 1
+      }
+    },
+    {
+      "name": "dst-skipped-planning",
+      "file": "dst-skipped-planning.json",
+      "route": "/v1/plan",
+      "expected": {
+        "outcome": "Solution",
+        "assessment": "ProvenOptimal",
+        "first_start": "2026-03-29T00:00:00Z",
+        "candidates": 15,
+        "occurrences": 0,
+        "skipped": 1
+      }
+    },
+    {
+      "name": "dst-diagnostic",
+      "file": "dst-diagnostic.json",
+      "route": "/v1/temporal",
+      "expected": {
+        "status": "Complete",
+        "skipped": 1
+      }
+    }
+  ]
+}

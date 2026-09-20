@@ -1,0 +1,28 @@
+{
+  "horizon": {
+    "start": "2026-03-29T00:00:00Z",
+    "end": "2026-03-29T04:00:00Z"
+  },
+  "busy": [],
+  "coverage": "Complete",
+  "recurrences": [
+    {
+      "start_date": "2026-03-29",
+      "local_time": "02:30:00",
+      "timezone": "Europe/Berlin",
+      "duration": 3600,
+      "pattern": {
+        "frequency": "DAILY",
+        "every": 1
+      },
+      "until": "2026-03-29",
+      "count": 1,
+      "gap_policy": "Skip",
+      "fold_policy": "Earlier"
+    }
+  ],
+  "limits": {
+    "max_dates": 64,
+    "max_occurrences": 32
+  }
+}

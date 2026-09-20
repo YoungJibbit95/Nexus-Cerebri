@@ -1,16 +1,17 @@
 <!-- doc: cpir; lang: de; counterpart: ../en/cpir.md -->
-# CPIR 0.1 und Schnittstellen
+# CPIR 0.2 und Schnittstellen
 
-Softwareversion 0.2.0. Spezifikation 0.4, CPIR 0.1 und REST v1 sind unabhängige
+Softwareversion 0.2.0. Spezifikation 0.4, CPIR 0.2 und REST v1 sind unabhängige
 Versionsbereiche. CPIR ist ein internes, veränderliches Schema ohne öffentliches v1-Stabilitätsversprechen.
 
 [Die ausführbare synthetische Anfrage](../../examples/request.json) zeigt das vollständige Format.
 Die Rust-Strukturen in cerebri-planner/model.rs definieren die Repräsentation.
 Zentrale Objekte lehnen unbekannte Felder ab, einschließlich vertippter Scope-Felder.
-Andere Schemaversionen als {major: 0, minor: 1} ergeben UnsupportedSchema.
+Akzeptiert werden {major: 0, minor: 1} und {major: 0, minor: 2}. Temporale Eingaben verlangen 0.2; andere Versionen ergeben UnsupportedSchema.
+Die [Planner-Integration](planner-integration.md) beschreibt Compiler, Graph und Sortierschlüssel.
 
 Eine Anfrage enthält Identität/Trace/Principal, Operation, Scope, unveränderlichen Kontext mit
-Objekten und Fakten, Ziele, Dauerevidenz, Constraints, Präferenzen, typisierte Policy,
+Objekten, Fakten und optionalen temporalen Quelldaten, Ziele, Dauerevidenz, Constraints, Präferenzen, typisierte Policy,
 Planungsrechte, Raster und deterministisches Budget. Event, Task, Deadline, Availability und
 Resource sind modelliert. Such- und Mutationsziele sind derzeit Events. Bestehende blockierende
 Zeiten müssen bekannt sein; neue Events haben den Zeitstatus Missing. Explizite Wunschzeiten

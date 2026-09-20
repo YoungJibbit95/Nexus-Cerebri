@@ -1,6 +1,6 @@
 # English documentation
 
-Software 0.2.0, Temporal Core research milestone; specification 0.4; CPIR 0.1.
+Software 0.2.0, Temporal Core research milestone; specification 0.4; CPIR 0.2 (legacy 0.1).
 
 - [Foundation and architecture](foundation.md)
 - [CPIR and interfaces](cpir.md)

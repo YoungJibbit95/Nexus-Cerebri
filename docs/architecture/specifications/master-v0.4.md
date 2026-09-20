@@ -228,6 +228,12 @@ Relations: BEFORE, AFTER, OVERLAPS, CONTAINS, INSIDE, TOUCHES, EQUAL.
 
 Recurrence is expanded only inside a bounded PlanningHorizon.
 
+[ADR-0012](../decisions/ADR-0012-planner-snapshot-compilation.md) defines the explicit
+planner compilation boundary: CPIR 0.2 adds identified existing series to the source
+ContextSnapshot, compiled into a bounded immutable view with occurrence identities,
+full/clipped ranges, provenance, DST evidence and completeness. CPIR 0.1 without temporal
+input remains accepted. Prospective series and recurrence constraints remain fail-closed.
+
 Candidate granularity is configurable; proposed initial default: 15
 minutes.
 
@@ -318,6 +324,11 @@ Tiers:
 4.  no safe solution: explain conflict / ask user
 
 Hard constraints define feasible space before soft ranking.
+
+ADR-0012 adds deterministic dependency graph validation with missing-reference and cycle
+evidence before search. DependencyOrder means predecessor.end <= dependent.start; graph
+ordering grants no permission. The baseline still searches one event against fixed context.
+Its explicit ranking tuple is preference distance, mutations, shift seconds, start, object ID.
 
 No-solution cases create a `ConflictSet`; movable blockers may create
 `RepairCandidate`s.
@@ -662,7 +673,7 @@ Canonical authorities:
 
 - **Software version:** root Cargo workspace package metadata / designated workspace package version; release tags use `vMAJOR.MINOR.PATCH`.
 - **API version:** route/protocol declaration (initially `v1` only when the public API is intentionally declared).
-- **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation starts at `0.1`, not “v1”.
+- **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation started at `0.1`; ADR-0012 adds `0.2` with legacy `0.1` support, not “v1”.
 - **Model version:** immutable ModelRegistry metadata/artifact ID.
 - **Dataset version:** dataset manifest metadata/checksum.
 - **Specification revision:** document front matter/header, e.g. `0.2`; no software compatibility guarantee is implied.

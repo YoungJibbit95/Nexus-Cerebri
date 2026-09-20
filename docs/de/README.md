@@ -1,6 +1,6 @@
 # Deutsche Dokumentation
 
-Software 0.2.0, Temporal-Core-Forschungsmeilenstein; Spezifikation 0.4; CPIR 0.1.
+Software 0.2.0, Temporal-Core-Forschungsmeilenstein; Spezifikation 0.4; CPIR 0.2 (legacy 0.1).
 
 - [Foundation und Architektur](foundation.md)
 - [CPIR und Schnittstellen](cpir.md)

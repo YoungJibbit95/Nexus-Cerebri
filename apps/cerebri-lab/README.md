@@ -116,3 +116,14 @@ confirm that the model console remains inactive.
 Nexus Cerebri is an open-source project built with human and AI collaboration.
 Human review, inspectable evidence and reproducible checks remain part of the
 development process. See the [development guide](../../docs/en/development.md).
+
+## Planner integration (CPIR 0.2)
+
+The source-scenario selector loads checked-in CPIR inputs. Compiler panels show actual Core
+occurrence identities, provenance, full/clipped ranges, DST skips and busy/free/unknown
+coverage. The dependency graph displays Core order and cycle/missing-reference evidence.
+Candidate details expose every lexicographic ordering component. No UI planner is implemented.
+
+The Lab tests build and start the Rust API on a private loopback port and exercise the
+shared scenario manifest plus negative contract mutations. Rust is therefore required for
+`npm test`. See [planner integration](../../docs/en/planner-integration.md).

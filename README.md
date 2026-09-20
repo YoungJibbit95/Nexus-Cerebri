@@ -8,7 +8,7 @@
 
 [![Software](https://img.shields.io/badge/software-0.2.0-0969da?style=for-the-badge)](#)
 [![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=for-the-badge)](#)
-[![CPIR](https://img.shields.io/badge/CPIR-0.1-1f883d?style=for-the-badge)](#)
+[![CPIR](https://img.shields.io/badge/CPIR-0.2-1f883d?style=for-the-badge)](#)
 [![REST](https://img.shields.io/badge/REST-%2Fv1-d1242f?style=for-the-badge)](#)
 
 [![Rust](https://img.shields.io/badge/Rust-1.97.0-000000?style=flat-square\&logo=rust\&logoColor=white)](https://www.rust-lang.org/)
@@ -32,7 +32,7 @@
 >
 > **Specification:** `0.4`, frozen Foundation Architecture Baseline.
 >
-> **CPIR:** internal schema `0.1`. **REST:** development routes under `/v1`.
+> **CPIR:** internal schema `0.2`; legacy `0.1` remains accepted. **REST:** development routes under `/v1`.
 
 A Rust temporal planning foundation built around **neural intuition + symbolic verification**.
 The current implementation is deterministic; neural inference is a future milestone.
@@ -46,12 +46,13 @@ The current implementation is deterministic; neural inference is a future milest
 * Completeness-aware free/busy, buffer/travel calculations and typed temporal traces.
 * CPIR validation, bounded scope, facts, hard constraints and interpretable preferences.
 * Single-event grid search with deterministic ordering, structured explanations and honest search assessments.
+* Identified recurrence occupancy, dependency graph/cycle evidence and explicit candidate ordering keys ([integration reference](docs/en/planner-integration.md)).
 * Strong plan lifecycle, policy/capability/confirmation checks, and mock execution with freshness, replay protection and per-action results.
 * REST facade, provisional Node process bridge and a Svelte developer Lab with timelines, scores and structured output.
 * Static SvelteKit official site with repository-backed documentation, Rust-generated planning/temporal fixtures, explicit truth labels and Understand/Technical/Research explanation depth.
 
 > [!IMPORTANT]
-> No provider integration, production authentication, durable ledger, advanced repair, learning or autonomous calendar mutation is implemented. Recurrence diagnostics are not yet integrated into CPIR planner constraints.
+> No provider integration, production authentication, durable ledger, advanced repair, learning or autonomous calendar mutation is implemented. Existing recurrence occupancy compiles into bounded planner snapshots; recurrence constraints and prospective series remain unsupported.
 
 This MIT-licensed open-source project also uses AI development tools. Assisted contributions
 must pass the same review, tests, safety, documentation and CI gates as every other contribution.
@@ -176,6 +177,6 @@ constraint composition and weighted score explanations, with bounded reproducibl
 [![Made with Rust](https://img.shields.io/badge/Made%20with-Rust-000000?style=flat-square\&logo=rust)](https://www.rust-lang.org/)
 [![Open Source](https://img.shields.io/badge/Open%20Source-MIT-1f883d?style=flat-square\&logo=opensourceinitiative\&logoColor=white)](LICENSE)
 
-<sub>Software 0.2.0 · Specification 0.4 · CPIR 0.1 · REST /v1</sub>
+<sub>Software 0.2.0 · Specification 0.4 · CPIR 0.2 (legacy 0.1) · REST /v1</sub>
 
 </div>

@@ -33,6 +33,16 @@ pub struct RankedCandidate {
     pub start: Instant,
     pub object_id: PlanningObjectId,
     pub explanation: Vec<ScoreComponent>,
+    pub ordering_key: CandidateOrderingKey,
+}
+/// Lexicographic ranking; each component participates in precisely this order.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct CandidateOrderingKey {
+    pub preference_distance_seconds: u64,
+    pub mutation_count: u32,
+    pub shifted_seconds: u64,
+    pub start: Instant,
+    pub object_id: PlanningObjectId,
 }
 /// Sound rejected facts/constraints for this declared search space; never claimed minimal.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -52,6 +62,8 @@ pub struct PlanningResult {
     pub candidates: Vec<RankedCandidate>,
     pub conflicts: ConflictSet,
     pub search_space: SearchSpace,
+    pub compilation: Option<CompiledContextSnapshot>,
+    pub dependency_graph: DependencyGraph,
 }
 pub trait Planner {
     fn plan(&self, request: PlanningRequest) -> PlanningResult;
@@ -75,6 +87,16 @@ impl Planner for BaselinePlanner {
             outcome: PlanningOutcome::InsufficientInformation,
             assessment: SearchAssessment::BestFound,
             validation,
+            dependency_graph: crate::dependency_graph(
+                &request.context.objects,
+                &request.constraints,
+            ),
+            compilation: crate::compile_snapshot(
+                &request.context,
+                cerebri_temporal::PlanningHorizon(request.scope.time_range),
+            )
+            .ok()
+            .flatten(),
             candidates: vec![],
             conflicts: ConflictSet { rejections: vec![] },
             search_space: SearchSpace {
@@ -117,8 +139,11 @@ impl Planner for BaselinePlanner {
                 object_id: object.id.clone(),
                 range: TimeRange::new(start, end).expect("positive duration"),
             };
-            let reasons =
-                crate::lifecycle::placement_violations(&request, std::slice::from_ref(&placement));
+            let reasons = crate::lifecycle::placement_violations_compiled(
+                &request,
+                std::slice::from_ref(&placement),
+                result.compilation.as_ref(),
+            );
             if reasons.is_empty() {
                 let cost = request
                     .preferences
@@ -162,6 +187,13 @@ impl Planner for BaselinePlanner {
                     start,
                     object_id: object.id.clone(),
                     explanation,
+                    ordering_key: CandidateOrderingKey {
+                        preference_distance_seconds: cost,
+                        mutation_count: if request.analysis_only() { 0 } else { 1 },
+                        shifted_seconds: shift,
+                        start,
+                        object_id: object.id.clone(),
+                    },
                 });
             } else {
                 result
@@ -177,22 +209,9 @@ impl Planner for BaselinePlanner {
                 }
             }
         }
-        result.candidates.sort_by(|a, b| {
-            (
-                a.cost,
-                a.mutation_count,
-                a.shifted_seconds,
-                a.start,
-                &a.object_id,
-            )
-                .cmp(&(
-                    b.cost,
-                    b.mutation_count,
-                    b.shifted_seconds,
-                    b.start,
-                    &b.object_id,
-                ))
-        });
+        result
+            .candidates
+            .sort_by(|a, b| a.ordering_key.cmp(&b.ordering_key));
         result.outcome = if !result.candidates.is_empty() {
             PlanningOutcome::Solution
         } else if result.search_space.exhausted {

@@ -2,7 +2,8 @@
   import fixture from '../../../../examples/temporal-request.json';
   import Icon from './Icon.svelte';
   import JsonPanel from './JsonPanel.svelte';
-  import { date, intervalStyle, readable, time } from '../lib/presentation.ts';
+  import AvailabilityTimeline from './AvailabilityTimeline.svelte';
+  import { readable } from '../lib/presentation.ts';
   import { downloadJson, postJson, readJsonFile } from '../lib/transport.ts';
   import { parseTemporalRequest, parseTemporalResult } from '../lib/temporal.ts';
   import type { TemporalRequest, TemporalResult } from '../lib/temporal.ts';
@@ -14,7 +15,6 @@
   let error = $state('');
   let input: HTMLInputElement;
   const report = $derived(result?.status === 'Complete' ? result.data : null);
-  const ticks = $derived(report ? Array.from({ length: 4 }, (_, index) => new Date(Date.parse(report.availability.horizon.start) + (Date.parse(report.availability.horizon.end) - Date.parse(report.availability.horizon.start)) * index / 3).toISOString()) : []);
   async function run() {
     busy = true; error = ''; result = null;
     try {
@@ -38,7 +38,7 @@
   {#if result?.status === 'Rejected'}<div class="temporal-rejection" role="status"><strong>Temporal request rejected</strong><p>No partial availability report is used.</p><JsonPanel title="Core rejection" value={result.data} open /></div>
   {:else if report}
     <div class="temporal-summary" role="status"><span class="badge subtle">{report.availability.coverage} coverage</span><span>{report.availability.busy.length} busy intervals</span><span>{report.availability.free.length} free intervals</span><span>{report.availability.unknown.length} unknown intervals</span><button class="quiet" onclick={() => downloadJson(result, 'cerebri-temporal-result.json')}><Icon name="download" size={13} /> Export temporal JSON</button></div>
-    <div class="timeline-scroll"><div class="timeline"><div class="timeline-axis"><span>TIME / UTC</span><div>{#each ticks as tick}<span>{date(tick).slice(0, 6)}<br />{time(tick)}</span>{/each}</div></div>{#each ['busy', 'free', 'unknown'] as key}<div class="timeline-row"><span class="row-label">{key === 'busy' ? 'Occupied' : key === 'free' ? 'Verified free' : 'Unknown'}<small>{report.availability[key as 'busy' | 'free' | 'unknown'].length} intervals</small></span><div class="track">{#each report.availability[key as 'busy' | 'free' | 'unknown'] as range}<span class={`time-block temporal-block ${key}-block`} style={intervalStyle(range, report.availability.horizon)} title={`${key}: ${range.start} — ${range.end}`}></span>{/each}</div></div>{/each}</div></div>
+    <AvailabilityTimeline availability={report.availability} />
     <p class="fine-print">Source data for every interval is below. Unknown availability is never displayed as free.</p><JsonPanel title="Busy, free and unknown interval data" value={{ horizon: report.availability.horizon, busy: report.availability.busy, free: report.availability.free, unknown: report.availability.unknown }} />
     {#each report.expansions as expansion, index}<h3 class="subheading">Recurrence {index + 1} · {expansion.timezone}</h3><p class="panel-description">{expansion.examined_dates} dates examined · {expansion.occurrences.length} visible occurrences · {expansion.skipped.length} skipped</p><div class="table-wrap"><table><thead><tr><th>Sequence</th><th>Local date / time</th><th>UTC interval</th><th>Resolution</th></tr></thead><tbody>{#each expansion.occurrences.slice(0, 100) as occurrence}<tr><td>{occurrence.sequence}</td><td>{occurrence.date}<br />{occurrence.local_time}</td><td>{occurrence.range.start}<br />{occurrence.range.end}</td><td>{readable(occurrence.resolution)}</td></tr>{/each}{#each expansion.skipped.slice(0, 100) as skip}<tr><td>{skip.sequence}</td><td>{skip.date}</td><td>Skipped</td><td>{readable(skip.reason)}</td></tr>{/each}</tbody></table></div>{/each}
     {#if mode !== 'Simple'}<JsonPanel title="Buffer, clipping and recurrence traces" value={report} open={mode === 'Research'} />{/if}

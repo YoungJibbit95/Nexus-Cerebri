@@ -293,6 +293,20 @@ pub(crate) fn placement_violations(
     request: &PlanningRequest,
     placements: &[Placement],
 ) -> Vec<CandidateRejectionReason> {
+    let Ok(compiled) = crate::compile_snapshot(
+        &request.context,
+        cerebri_temporal::PlanningHorizon(request.scope.time_range),
+    ) else {
+        return vec![CandidateRejectionReason::InvalidTargets];
+    };
+    placement_violations_compiled(request, placements, compiled.as_ref())
+}
+
+pub(crate) fn placement_violations_compiled(
+    request: &PlanningRequest,
+    placements: &[Placement],
+    compiled: Option<&crate::CompiledContextSnapshot>,
+) -> Vec<CandidateRejectionReason> {
     let mut errors = Vec::new();
     let mut ids: Vec<_> = placements.iter().map(|p| p.object_id.clone()).collect();
     ids.sort();
@@ -334,7 +348,7 @@ pub(crate) fn placement_violations(
         }
     }
     final_objects.sort_by(|a, b| a.id.cmp(&b.id));
-    let busy: Vec<_> = final_objects
+    let mut busy: Vec<_> = final_objects
         .iter()
         .filter(|timed| {
             request.object(&timed.id).is_some_and(|o| {
@@ -346,6 +360,13 @@ pub(crate) fn placement_violations(
         })
         .cloned()
         .collect();
+    if let Some(compiled) = compiled {
+        busy.extend(compiled.occurrences.iter().map(|o| TimedObject {
+            id: PlanningObjectId::new(o.id.as_str()).expect("validated occurrence ID"),
+            range: o.occurrence.range,
+            timezone: cerebri_temporal::TimeZoneId::UTC,
+        }));
+    }
     for placement in placements {
         let Some(object) = request.object(&placement.object_id) else {
             return vec![CandidateRejectionReason::InvalidTargets];
@@ -409,6 +430,10 @@ pub(crate) fn placement_violations(
             });
         }
     }
+    for constraint in &mut constraints {
+        constraint.evidence.sort();
+        constraint.evidence.dedup();
+    }
     constraints.sort_by_key(|c| serde_json::to_string(c).expect("serializable constraint"));
     for specification in constraints {
         if let Some(candidate) = final_objects
@@ -419,11 +444,70 @@ pub(crate) fn placement_violations(
                 .object(&candidate.id)
                 .and_then(|o| o.time.value.required(false).ok())
                 .map(|(r, _)| *r);
-            if let Some(v) = check(&specification, candidate, original, &busy) {
+            // Recurrence occupancy cannot be a graph node; dependencies refer to planning objects.
+            let others = if matches!(specification.rule, HardConstraint::DependencyOrder(_)) {
+                &final_objects
+            } else {
+                &busy
+            };
+            if let Some(v) = check(&specification, candidate, original, others) {
                 errors.push(CandidateRejectionReason::HardConstraint(v));
+            }
+            if let (Some(compiled), HardConstraint::RequiredBuffer(buffer)) =
+                (compiled, &specification.rule)
+            {
+                let margin = TimeDelta::seconds(buffer.as_seconds());
+                let certified = candidate
+                    .range
+                    .start()
+                    .checked_sub_signed(margin)
+                    .zip(candidate.range.end().checked_add_signed(margin))
+                    .is_some_and(|(start, end)| {
+                        start >= compiled.horizon.0.start() && end <= compiled.horizon.0.end()
+                    });
+                if !certified {
+                    errors.push(CandidateRejectionReason::HardConstraint(
+                        ConstraintViolation {
+                            constraint: specification.rule.clone(),
+                            object_id: candidate.id.clone(),
+                            reason: cerebri_constraints::ViolationReason::OutsideBounds,
+                            evidence: cerebri_constraints::ConstraintEvidence {
+                                facts: specification.evidence.clone(),
+                                blocking_objects: vec![],
+                                blocking_occurrences: vec![],
+                            },
+                        },
+                    ));
+                }
             }
         } else {
             errors.push(CandidateRejectionReason::InvalidTargets);
+        }
+    }
+    // Keep materialized occupancy identity distinct from external/planning object identity.
+    if let Some(compiled) = compiled {
+        for error in &mut errors {
+            if let CandidateRejectionReason::HardConstraint(violation) = error {
+                violation.evidence.blocking_objects.retain(|id| {
+                    if let Some(occurrence) = compiled
+                        .occurrences
+                        .iter()
+                        .find(|o| o.id.as_str() == id.as_str())
+                    {
+                        violation
+                            .evidence
+                            .blocking_occurrences
+                            .push(occurrence.id.clone());
+                        violation.evidence.facts.extend(occurrence.evidence.clone());
+                        false
+                    } else {
+                        true
+                    }
+                });
+                violation.evidence.blocking_occurrences.sort();
+                violation.evidence.facts.sort();
+                violation.evidence.facts.dedup();
+            }
         }
     }
     errors

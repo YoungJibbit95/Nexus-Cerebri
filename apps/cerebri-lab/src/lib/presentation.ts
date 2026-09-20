@@ -30,7 +30,7 @@ export function rejectionLabel(reason: RejectionReason): string {
   if (typeof reason === 'string') return readable(reason);
   if ('HardConstraint' in reason) {
     const violation = reason.HardConstraint;
-    const blockers = violation.evidence.blocking_objects;
+    const blockers = [...violation.evidence.blocking_objects, ...violation.evidence.blocking_occurrences.map((id) => `occurrence ${id}`)];
     return `${readable(violation.reason)}${blockers.length ? ` · ${blockers.join(', ')}` : ''}`;
   }
   const [kind, id] = Object.entries(reason)[0];
