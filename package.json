@@ -7,7 +7,8 @@
   },
   "scripts": {
     "check": "node scripts/check-repository.mjs",
-    "docs:build": "node scripts/build-docs.mjs",
+    "docs:build": "npm --prefix apps/cerebri-site run build",
+    "docs:check": "npm --prefix apps/cerebri-site run check",
     "test:node": "node --test bindings/node/test.mjs"
   },
   "devDependencies": {
