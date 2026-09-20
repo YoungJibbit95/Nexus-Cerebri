@@ -27,5 +27,9 @@ REST v1 denotes transport routes, not CPIR stability or a released product. Node
 
 Master sections 10, 19, 23, 25; Foundation prompt sections 17–20, 32–35.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 
+
+## 2026-09-20 follow-up
+
+[ADR-0009](ADR-0009-bounded-temporal-diagnostics.md) adds temporal diagnostics and [ADR-0010](ADR-0010-lab-svelte.md) replaces the HTML shell; Node remains provisional.

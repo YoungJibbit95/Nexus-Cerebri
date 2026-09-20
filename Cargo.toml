@@ -4,7 +4,7 @@ members = ["crates/*", "apps/cerebri-api", "bindings/node"]
 exclude = ["research/ml-from-scratch"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.97"
 publish = false
@@ -21,6 +21,7 @@ tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
 axum = "0.8"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
 tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["fs"] }
 cerebri-types = { path = "crates/cerebri-types" }
 cerebri-temporal = { path = "crates/cerebri-temporal" }
 cerebri-constraints = { path = "crates/cerebri-constraints" }

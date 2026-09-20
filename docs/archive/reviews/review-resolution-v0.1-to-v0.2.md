@@ -1,3 +1,5 @@
+> Historical / non-normative review record. Current authority: [Master specification](../../architecture/specifications/master-v0.4.md).
+
 # Historical Review Resolution: Specification 0.1 -> 0.2
 
 > **NON-NORMATIVE HISTORY.** All accepted architectural decisions from this review must exist in the Master Specification or relevant normative standard. If this file conflicts with current normative documentation, this file loses.

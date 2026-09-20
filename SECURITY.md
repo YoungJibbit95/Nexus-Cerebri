@@ -21,4 +21,4 @@ Partial execution is represented explicitly and does not imply rollback.
 Tracing records a validated TraceId, not request bodies, event titles or descriptions.
 HTTP/Node inputs and core search work have explicit bounds. The development API is not hardened
 for hostile multi-user traffic. Repository checks detect selected credential patterns; they are
-not a comprehensive secret audit. No license or production disclosure channel has been selected.
+not a comprehensive secret audit. The project uses the MIT license; a private production disclosure channel still needs to be configured before production use.

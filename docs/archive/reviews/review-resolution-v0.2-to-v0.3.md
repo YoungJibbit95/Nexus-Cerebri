@@ -1,3 +1,5 @@
+> Historical / non-normative review record. Current authority: [Master specification](../../architecture/specifications/master-v0.4.md).
+
 # Historical Review Resolution: Specification 0.2 -> 0.3
 
 **Date:** 2026-09-19  

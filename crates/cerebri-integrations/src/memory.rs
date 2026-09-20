@@ -100,6 +100,13 @@ impl IntegrationAdapter for InMemoryAdapter {
         if !self.supported.contains(&action.action.kind().into()) {
             return Err(AdapterError::UnsupportedCapability);
         }
+        // A create consumes a prospective target. All other writes address existing state.
+        // This mock stores both in one context; a real provider need not have a row for create.
+        if matches!(action.action, EventAction::CreateEvent { .. })
+            != action.expected_revision.is_none()
+        {
+            return Err(AdapterError::Stale);
+        }
         if self.fail_on.as_ref() == Some(&action.target) {
             return Err(AdapterError::Unavailable);
         }

@@ -5,8 +5,14 @@ pub use chrono_tz::Tz as TimeZoneId;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 pub type Instant = DateTime<Utc>;
+mod availability;
+mod diagnostics;
+mod recurrence;
+pub use availability::*;
+pub use diagnostics::*;
+pub use recurrence::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Error)]
+#[derive(Debug, Clone, PartialEq, Eq, Error, Serialize, Deserialize)]
 pub enum TemporalError {
     #[error("range start must precede end")]
     InvalidRange,
@@ -18,6 +24,14 @@ pub enum TemporalError {
     AmbiguousLocalTime,
     #[error("local time does not exist during a timezone transition")]
     NonexistentLocalTime,
+    #[error("invalid recurrence definition")]
+    InvalidRecurrence,
+    #[error("temporal input exceeds admitted limits")]
+    InputLimit,
+    #[error("occurrence limit exceeded; no partial expansion may be treated as complete")]
+    OccurrenceLimitExceeded,
+    #[error("date evaluation limit exceeded; no partial expansion may be treated as complete")]
+    DateLimitExceeded,
 }
 
 /// Positive integral seconds. Zero/negative durations cannot enter trusted planning.

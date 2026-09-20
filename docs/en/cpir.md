@@ -1,7 +1,7 @@
 <!-- doc: cpir; lang: en; counterpart: ../de/cpir.md -->
 # CPIR 0.1 and interfaces
 
-Software 0.1.0 is unreleased; specification 0.4, CPIR 0.1 and REST v1 are independent.
+Software version 0.2.0; specification 0.4, CPIR 0.1 and REST v1 are independent.
 CPIR is an internal evolving schema, not a stable public v1 protocol.
 
 [The executable synthetic fixture](../../examples/request.json) is the complete request example.
@@ -25,7 +25,7 @@ Existing event times must use a fact provenance, not learned/model inference.
 TimeRange uses RFC 3339 UTC instants, validated on deserialization, with start < end.
 All intervals are half-open [start,end); touching events do not overlap. Original IANA timezone
 is retained on planning objects/ZonedDateTime. Naive local time conversion rejects DST folds/gaps.
-Durations are positive integral seconds. Recurrence has a horizon-bounded expansion port only.
+Durations are positive integral seconds. Bounded recurrence diagnostics are available separately; CPIR recurrence constraints still fail closed. See [Temporal Core](temporal.md).
 
 Optional scope lists: omitted/null adds no filter and no permission; [] selects nothing;
 [A,B] restricts to those IDs. A resource filter requires a nonempty object resource set entirely
@@ -41,7 +41,8 @@ The planner searches one target; explicit batch proposals go through the same va
 - GET /health: software/schema/status metadata.
 - POST /v1/validate: typed ValidationReport.
 - POST /v1/plan: typed PlanningResult, including candidates, scores, conflicts and search coverage.
-- GET /lab: internal result inspection.
+- POST /v1/temporal: typed recurrence/free-busy diagnostic report.
+- GET /lab: redirects to the built Svelte Lab at /lab/.
 - No execution endpoint.
 
 Malformed transport input produces HTTP 400/422; oversized bodies produce 413.

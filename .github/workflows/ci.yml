@@ -1,4 +1,4 @@
-name: Foundation CI
+name: Cerebri CI
 on:
   push:
   pull_request:
@@ -23,7 +23,12 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run check
       - run: npm run docs:build
+      - run: npm --prefix apps/cerebri-lab ci
+      - run: npm --prefix apps/cerebri-lab run check
+      - run: npm --prefix apps/cerebri-lab test
+      - run: npm --prefix apps/cerebri-lab run build
+      - run: npm audit --audit-level=high
+      - run: npm --prefix apps/cerebri-lab audit --audit-level=high
       - run: cargo doc --workspace --no-deps --locked
         env:
           RUSTDOCFLAGS: -D warnings
-

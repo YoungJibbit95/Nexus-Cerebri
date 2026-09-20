@@ -11,8 +11,8 @@ workspace = true
 [dependencies]
 cerebri-types.workspace = true
 cerebri-planner.workspace = true
+cerebri-temporal.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
-

@@ -27,5 +27,5 @@ No migration for historic JSON exists. Unknown schema versions are rejected. The
 
 Master sections 2, 4, 9, 11, 25; Foundation prompt sections 7, 10–13, 28.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 

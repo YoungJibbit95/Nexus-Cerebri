@@ -27,5 +27,5 @@ Native authenticated execution is not exposed through REST or Node. A durable ad
 
 Master sections 18–21; Foundation prompt sections 21–27.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 

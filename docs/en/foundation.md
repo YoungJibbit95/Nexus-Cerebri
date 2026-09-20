@@ -72,3 +72,5 @@ minimal or irreducible. Fixed deterministic budgets and exhaustive small-domain 
 tests avoid uncontrolled timing and randomness.
 
 [CPIR reference](cpir.md) · [Testing](development.md) · [Deutsch](../de/foundation.md)
+
+Core also imports temporal directly for typed diagnostics; see [Temporal Core](temporal.md).

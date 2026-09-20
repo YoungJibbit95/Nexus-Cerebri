@@ -378,6 +378,18 @@ For optional collection dimensions such as `object_ids`, `movable_object_ids`, `
 - present as `[]`: explicitly selects no objects for that dimension;
 - present as `[A, B]`: restricts that dimension to exactly those identifiers.
 
+For resource_ids specifically, a nonempty filter uses **ALL containment**: the object must
+have at least one resource and all its resource IDs must occur in the filter. Object [A,B]
+with filter [A] is excluded; filter [A,B,C] includes it. Resource-free objects are excluded
+by a nonempty resource filter. Omitted/null remains unrestricted in that dimension and []
+selects nothing. This preserves existing behavior, as recorded in
+[ADR-0008](../decisions/ADR-0008-scope-and-prospective-identity.md).
+
+PlanningObject.id is a planning identity: revision=None marks a prospective CREATE target,
+not an existing provider record. Some(revision) marks existing state for MOVE/UPDATE/DELETE.
+A real CREATE adapter creates remote state from the prospective object and returns identity
+and revision; it must not require that the target already exists at the provider.
+
 The effective mutable set is the intersection of scope, policy, planning capability, hard constraints, and current authorization. Read visibility never implies mutability.
 
 `max_mutations = 0` means **analysis-only / non-mutating planning**. No executable mutating ActionPlan may be produced.
@@ -777,6 +789,6 @@ The foundation implementation must create real Rust type boundaries/skeletons fo
 
 ## Specification archival policy
 
-The repository root contains only the **current normative Master Specification**. Superseded Master Specification revisions belong under `docs/archive/specifications/` and are historical/non-normative. Coding agents must not treat archived revisions as current architecture.
+The current normative Master Specification is `docs/architecture/specifications/master-v0.4.md`. ADR-0007 supersedes the former root-location rule: specifications, decisions and development standards live under `docs/`, with the normative hierarchy unchanged. Superseded Master Specification revisions belong under `docs/archive/specifications/` and are historical/non-normative. Coding agents must not treat archived revisions as current architecture.
 
 Specification v0.4 is the **Foundation Architecture Baseline**. Future architectural changes use ADRs and synchronized updates to the current Master Specification before merge.

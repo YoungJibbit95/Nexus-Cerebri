@@ -27,5 +27,9 @@ Temporal serde validation is part of CPIR 0.1. No change to the Master's half-op
 
 Master section 6; Testing standard.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 
+
+## 2026-09-20 follow-up
+
+Bounded daily/weekly recurrence is implemented by [ADR-0009](ADR-0009-bounded-temporal-diagnostics.md); plain local conversion still rejects gaps/folds.

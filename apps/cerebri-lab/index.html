@@ -1,68 +1,14 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>Cerebri Lab · Foundation</title>
-<style>
-:root{color-scheme:light dark;font-family:system-ui,sans-serif}body{max-width:1040px;margin:2rem auto;padding:0 1rem;line-height:1.6}
-header{border-bottom:2px solid #668b95}nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
-button,input{font:inherit;padding:.4rem}button[aria-current=true]{outline:2px solid #668b95}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;border-bottom:1px solid #888;padding:.4rem}
-pre{overflow:auto;max-height:28rem;padding:1rem;background:light-dark(#f0f4f6,#17202a)}
-.track{position:relative;height:2rem;background:light-dark(#edf1f3,#243444);margin:.4rem 0}
-.slot{position:absolute;background:#417b90;color:white;height:100%;min-width:1px;text-align:center;overflow:hidden}
-small{display:block}a{color:light-dark(#18566c,#9fd6ed)}
-</style>
-<header><h1>Cerebri Lab</h1><p>Foundation 0.1.0 · unreleased · CPIR 0.1 · internal developer tooling</p></header>
-<p>Load a synthetic CPIR request and call the Rust core, or inspect an exported PlanningResult.
-All times below use UTC. This tool does not execute calendar actions.</p>
-<label>CPIR request <input id="request" type="file" accept=".json,application/json"></label>
-<button id="plan" disabled>Plan through local API</button><br>
-<label>PlanningResult <input id="result" type="file" accept=".json,application/json"></label>
-<button id="download" disabled>Download source JSON</button>
-<p id="status" role="status">Load examples/request.json to begin.</p>
-<nav aria-label="Lab views"></nav><main id="view"></main>
-<script>
-'use strict';
-const views=['Planner','Trace','Semantics','Preferences','ML','Dataset'];
-let current='Planner', result=null, request=null;
-const status=document.querySelector('#status'), view=document.querySelector('#view');
-const append=(tag,text,parent=view)=>{const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;};
-function render(){
- document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',String(b.textContent===current)));
- view.replaceChildren();append('h2',current);
- if(!result){append('p','No planning result loaded.');return;}
- if(current==='Planner'){
-  append('p',result.outcome+' · '+result.assessment+' · evaluated '+result.search_space.evaluated+' grid positions');
-  append('small','Horizon: '+result.search_space.horizon.start+' — '+result.search_space.horizon.end);
-  const h=result.search_space.horizon, start=Date.parse(h.start), width=Date.parse(h.end)-start;
-  const table=append('table','');const head=append('tr','',table);
-  ['Candidate start (UTC)','Cost (seconds)','Mutations','Shift (seconds)'].forEach(x=>append('th',x,head));
-  result.candidates.slice(0,50).forEach((candidate,index)=>{
-   const row=append('tr','',table);
-   [candidate.start,candidate.cost,candidate.mutation_count,candidate.shifted_seconds].forEach(x=>append('td',String(x),row));
-   const range=candidate.proposed.placements[0].range, track=append('div','');track.className='track';
-   const slot=append('span',String(index+1),track);slot.className='slot';
-   slot.style.left=(100*(Date.parse(range.start)-start)/width)+'%';
-   slot.style.width=(100*(Date.parse(range.end)-Date.parse(range.start))/width)+'%';
-   track.setAttribute('aria-label','Candidate '+(index+1)+': '+range.start+' to '+range.end);
-  });
-  append('p','Displaying up to 50 candidates. Raw data contains the full result.');
- } else if(current==='Trace'){
-  append('pre',JSON.stringify({validation:result.validation,search:result.search_space,conflicts:result.conflicts},null,2));
- } else if(current==='Preferences'){
-  append('pre',JSON.stringify(result.candidates.map(c=>({start:c.start,score:c.explanation})),null,2));
- } else {
-  append('p','Reserved for a later milestone. No '+current.toLowerCase()+' model, training run or dataset is loaded.');
- }
-}
-function accept(value){
- if(!value.search_space||!Array.isArray(value.candidates)||!value.validation||!value.conflicts)throw new Error('Expected typed PlanningResult JSON');
- result=value;document.querySelector('#download').disabled=false;status.textContent='Result loaded.';render();
-}
-for(const name of views){const button=append('button',name,document.querySelector('nav'));button.onclick=()=>{current=name;render();};}
-document.querySelector('#request').onchange=async event=>{try{request=JSON.parse(await event.target.files[0].text());document.querySelector('#plan').disabled=false;status.textContent='Request loaded.';}catch(e){status.textContent=e.message;}};
-document.querySelector('#result').onchange=async event=>{try{accept(JSON.parse(await event.target.files[0].text()));}catch(e){status.textContent=e.message;}};
-document.querySelector('#plan').onclick=async()=>{try{const response=await fetch('/v1/plan',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(request)});if(!response.ok)throw new Error('API rejected request: '+response.status);accept(await response.json());}catch(e){status.textContent=e.message;}};
-document.querySelector('#download').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='planning-result.json';a.click();URL.revokeObjectURL(url);};
-render();
-</script></html>
-
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a101c" />
+    <meta name="description" content="Nexus Cerebri Lab — an inspectable workspace for deterministic temporal planning." />
+    <title>Cerebri Lab · Nexus</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

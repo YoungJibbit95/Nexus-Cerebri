@@ -1,7 +1,7 @@
 <!-- doc: development; lang: de; counterpart: ../en/development.md -->
 # Entwicklung und Prüfung
 
-Rust 1.97.0 ist festgelegt; für Werkzeuge wird Node 22+ benötigt. Im Repository-Wurzelverzeichnis:
+Rust 1.97.0 ist festgelegt; für Werkzeuge wird Node 22.12+ benötigt. Im Repository-Wurzelverzeichnis:
 
 ```sh
 cargo fmt --check
@@ -12,6 +12,12 @@ node --test bindings/node/test.mjs
 npm ci --ignore-scripts
 npm run check
 npm run docs:build
+npm --prefix apps/cerebri-lab ci
+npm --prefix apps/cerebri-lab run check
+npm --prefix apps/cerebri-lab test
+npm --prefix apps/cerebri-lab run build
+npm audit --audit-level=high
+npm --prefix apps/cerebri-lab audit --audit-level=high
 cargo doc --workspace --no-deps --locked
 ```
 
@@ -27,9 +33,9 @@ Sprachmetadaten, Versionsmarker und ausgewählte Credential-Muster. Er ersetzt w
 vollständigen Secret-Scanner noch Übersetzungsprüfung und externe Linkprüfung.
 Cargo.lock und package-lock.json sind versioniert; target/, site/ und Binärdateien werden ignoriert.
 
-API starten und /lab mit examples/request.json verwenden. Planner zeigt UTC-Zeitbalken und
+Lab bauen, API starten und /lab/ mit examples/request.json verwenden. Planner zeigt UTC-Zeitbalken und
 Bewertungen, Trace typisierte Validierungs-/Konfliktdaten, Preferences die Bewertungskomponenten.
-Semantics, ML und Dataset sind reservierte Ansichten. JSON-Export erhält die zugrunde liegenden Daten.
+Temporal zeigt Free/Busy/Unknown und DST-Traces des Cores. Semantics zeigt gelieferte Evidenz; ML und Dataset bleiben inaktiv. JSON-Export erhält die zugrunde liegenden Daten.
 Die Oberfläche ist internes Werkzeug ohne stabile Produktgarantie. Fixtures enthalten nur
 synthetische IDs und Daten, keine Kalendertitel, Beschreibungen, personenbezogenen Daten oder Tokens.
 

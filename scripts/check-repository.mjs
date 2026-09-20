@@ -2,7 +2,7 @@ import { readFile, readdir, access } from 'node:fs/promises';
 import { resolve, dirname, relative, sep } from 'node:path';
 import { execFileSync } from 'node:child_process';
 const root = process.cwd();
-const excluded = new Set(['.git','.idea','target','node_modules','site']);
+const excluded = new Set(['.git','.idea','target','node_modules','site','dist']);
 async function files(dir) {
  const out=[];
  for(const entry of await readdir(dir,{withFileTypes:true})) {
@@ -35,6 +35,7 @@ for(const path of de) {
  }
 }
 const metadata=JSON.parse(execFileSync('cargo',['metadata','--no-deps','--format-version','1'],{encoding:'utf8'}));
+const version=(await readFile('Cargo.toml','utf8')).match(/\[workspace\.package\][\s\S]*?version = "([^"]+)"/)[1];
 const packages=new Map(metadata.packages.map(p=>[p.name,p]));
 const allowed={
  'cerebri-types':[], 'cerebri-temporal':[],
@@ -44,12 +45,12 @@ const allowed={
  'cerebri-ml':['cerebri-types','cerebri-temporal'],
  'cerebri-planner':['cerebri-types','cerebri-temporal','cerebri-constraints','cerebri-semantics','cerebri-preferences'],
  'cerebri-integrations':['cerebri-types','cerebri-temporal','cerebri-planner','cerebri-constraints'],
- 'cerebri-core':['cerebri-types','cerebri-planner'],
+ 'cerebri-core':['cerebri-types','cerebri-planner','cerebri-temporal'],
  'cerebri-api':['cerebri-core'],
  'cerebri-node':['cerebri-core']
 };
 for(const p of packages.values()){
- if(p.version!=='0.1.0')throw new Error('workspace version mismatch');
+ if(p.version!==version)throw new Error('workspace version mismatch');
  for(const d of p.dependencies){
   if(d.path?.replaceAll('\\','/').includes('/research/'))throw new Error('production dependency on research');
   if(packages.has(d.name)&&!allowed[p.name]?.includes(d.name))throw new Error('layer violation: '+p.name+' -> '+d.name);
@@ -57,10 +58,11 @@ for(const p of packages.values()){
  if(p.name==='cerebri-core'&&p.dependencies.some(d=>['axum','tokio','sqlx','rusqlite','reqwest'].includes(d.name)))throw new Error('core I/O dependency');
 }
 const readme=await readFile('README.md','utf8');
-for(const text of ['0.1.0','0.4','0.1','unreleased'])if(!readme.includes(text))throw new Error('README version/status missing');
+for(const text of [version,'0.4','0.1'])if(!readme.includes(text))throw new Error('README version missing');
+if(JSON.parse(await readFile('apps/cerebri-lab/package.json','utf8')).version!==version)throw new Error('Lab version mismatch');
 const fixture=JSON.parse(await readFile('examples/request.json','utf8'));
 if(fixture.schema_version.major!==0||fixture.schema_version.minor!==1)throw new Error('CPIR fixture version mismatch');
-const master=await readFile('00_MASTER_SPECIFICATION_v0.4.md','utf8');
+const master=await readFile('docs/architecture/specifications/master-v0.4.md','utf8');
 if(master.includes('validated ActionPlan'))throw new Error('stale execution invariant');
 for(const path of paths) {
  const name=relative(root,path).replaceAll('\\','/');

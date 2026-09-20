@@ -2,6 +2,11 @@
 //! No database, HTTP, provider schema, executor, clock or filesystem dependency.
 use cerebri_planner::{BaselinePlanner, Planner};
 pub use cerebri_planner::{PlanningRequest, PlanningResult, ValidationReport};
+pub use cerebri_temporal::{TemporalRequest, TemporalResult};
+
+pub fn inspect_temporal(request: TemporalRequest) -> TemporalResult {
+    cerebri_temporal::temporal_diagnostics(request)
+}
 
 pub fn plan(request: PlanningRequest) -> PlanningResult {
     BaselinePlanner.plan(request)

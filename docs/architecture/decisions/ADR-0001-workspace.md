@@ -27,5 +27,9 @@ No stable bootstrap API compatibility is promised. No Master rule is superseded.
 
 Master sections 17–19, 31; Agent Implementation Boundary.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 
+
+## 2026-09-20 follow-up
+
+The initial 0.1.0 Foundation was unreleased. The completed Temporal milestone uses workspace 0.2.0; the pinned Rust toolchain is unchanged.

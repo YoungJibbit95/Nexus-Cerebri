@@ -72,3 +72,5 @@ ohne Minimalitätsgarantie. Feste Budgets und erschöpfende Intervalltests auf e
 Definitionsbereich vermeiden unkontrollierte Zeit- und Zufallsabhängigkeit.
 
 [CPIR-Referenz](cpir.md) · [Tests](development.md) · [English](../en/foundation.md)
+
+Core importiert temporal zusätzlich direkt für typisierte Diagnosen; siehe [Temporal Core](temporal.md).

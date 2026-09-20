@@ -228,6 +228,65 @@ fn provider_checks_object_revision_atomically_and_deduplicates() {
     assert_eq!(adapter.apply(&changed), Err(AdapterError::Stale));
 }
 #[test]
+fn create_promotes_prospective_identity_to_existing_state() {
+    let input = request();
+    let plan = action_plan(&input);
+    let auth = authorization(&input, &plan);
+    let mut adapter = InMemoryAdapter::new(input.context, auth);
+    let action = &plan.actions()[0];
+    assert!(action.expected_revision.is_none());
+    assert!(
+        adapter
+            .context
+            .objects
+            .iter()
+            .find(|o| o.id == action.target)
+            .unwrap()
+            .revision
+            .is_none()
+    );
+    let receipt = adapter.apply(action).unwrap();
+    let object = adapter
+        .context
+        .objects
+        .iter()
+        .find(|o| o.id == action.target)
+        .unwrap();
+    assert_eq!(object.revision, Some(receipt.revision));
+    assert_eq!(object.time.provenance, Provenance::IntegrationFact);
+}
+#[test]
+fn mock_rejects_existing_create_and_prospective_move_update_delete() {
+    let input = request();
+    let plan = action_plan(&input);
+    let base = &plan.actions()[0];
+    let range = range("2026-10-01T10:00:00Z", "2026-10-01T10:30:00Z");
+    for kind in [
+        EventAction::MoveEvent { range },
+        EventAction::UpdateEvent { range },
+        EventAction::DeleteEvent,
+        EventAction::CreateEvent { range },
+    ] {
+        let mut adapter = InMemoryAdapter::new(input.context.clone(), authorization(&input, &plan));
+        let mut action = base.clone();
+        action.action = kind;
+        if matches!(action.action, EventAction::CreateEvent { .. }) {
+            action.expected_revision = Some(Revision(7));
+            adapter
+                .context
+                .objects
+                .iter_mut()
+                .find(|o| o.id == action.target)
+                .unwrap()
+                .revision = action.expected_revision;
+        }
+        let before = adapter.context.clone();
+        assert_eq!(adapter.apply(&action), Err(AdapterError::Stale));
+        assert_eq!(adapter.context, before);
+        assert!(adapter.applied.is_empty());
+    }
+}
+#[test]
 fn unavailable_ledger_prevents_side_effects() {
     struct Unavailable;
     impl ActionLedger for Unavailable {

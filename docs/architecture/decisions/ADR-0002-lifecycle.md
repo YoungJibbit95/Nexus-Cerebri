@@ -27,5 +27,5 @@ No stable wire format exists for lifecycle proofs. No Master rule is superseded.
 
 Master sections 3, 20 and Foundation typing requirement.
 
-[Master](../../00_MASTER_SPECIFICATION_v0.4.md) · [Foundation reference](../en/foundation.md)
+[Master](../specifications/master-v0.4.md) · [Foundation reference](../../en/foundation.md)
 

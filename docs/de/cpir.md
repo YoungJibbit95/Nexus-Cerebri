@@ -1,7 +1,7 @@
 <!-- doc: cpir; lang: de; counterpart: ../en/cpir.md -->
 # CPIR 0.1 und Schnittstellen
 
-Software 0.1.0 ist unveröffentlicht. Spezifikation 0.4, CPIR 0.1 und REST v1 sind unabhängige
+Softwareversion 0.2.0. Spezifikation 0.4, CPIR 0.1 und REST v1 sind unabhängige
 Versionsbereiche. CPIR ist ein internes, veränderliches Schema ohne öffentliches v1-Stabilitätsversprechen.
 
 [Die ausführbare synthetische Anfrage](../../examples/request.json) zeigt das vollständige Format.
@@ -26,7 +26,8 @@ TimeRange verwendet RFC-3339-UTC-Zeitpunkte und prüft beim Deserialisieren star
 Intervalle sind halboffen [start,end); angrenzende Events überlappen nicht.
 Die IANA-Ursprungszeitzone bleibt am Objekt/ZonedDateTime erhalten. Lokale Umrechnung weist
 DST-Lücken und doppelte Zeiten zurück. Dauer ist eine positive ganze Sekundenzahl.
-Für Wiederholungen existiert ausschließlich ein an Horizont und Anzahl gebundener Erweiterungsport.
+Begrenzte Wiederholungsdiagnosen sind separat verfügbar; CPIR-Wiederholungsconstraints werden
+weiterhin sicher abgelehnt. Siehe [Temporal Core](temporal.md).
 
 Optionale Scope-Listen: weggelassen/null bedeutet keinen Zusatzfilter und keine Berechtigung;
 [] wählt nichts; [A,B] begrenzt auf diese IDs. Ressourcenfilter verlangen eine nichtleere
@@ -44,7 +45,8 @@ durchlaufen denselben Validator.
 - GET /health: Software-, Schema- und Statusmetadaten.
 - POST /v1/validate: typisierter ValidationReport.
 - POST /v1/plan: PlanningResult mit Kandidaten, Bewertung, Konflikten und Suchabdeckung.
-- GET /lab: interne Ergebnisansicht.
+- POST /v1/temporal: typisierter Wiederholungs-/Free-Busy-Bericht.
+- GET /lab: Weiterleitung zum gebauten Svelte Lab unter /lab/.
 - Kein Ausführungsendpunkt.
 
 Fehlerhafte Transporteingaben ergeben HTTP 400/422, übergroße Anfragen 413.
@@ -64,4 +66,3 @@ Native N-API-/Electron-Verteilung folgt später; ein Binary-Override ermöglicht
 Limits: 256 KiB Eingabe, 16 MiB Ausgabe. Binärdateien werden nicht eingecheckt.
 
 [Architektur](foundation.md) · [English](../en/cpir.md)
-

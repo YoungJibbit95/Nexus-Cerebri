@@ -24,7 +24,7 @@ Central formulas must define variables and give intuition.
 
 ## Required files
 
-README.md, CHANGELOG.md, ROADMAP.md, CONTRIBUTING.md, SECURITY.md,
+README.md, CHANGELOG.md, docs/development/roadmap/README.md, CONTRIBUTING.md, SECURITY.md,
 LICENSE when selected, `docs/`, ADRs, research docs and dated progress
 logs.
 
@@ -125,4 +125,4 @@ Canonical public architecture/reference/learning docs require DE and EN counterp
 
 ## Master Specification archive rule
 
-Only the current normative Master Specification remains in the repository root. Superseded revisions move to `docs/archive/specifications/`.
+The current normative Master Specification lives at `docs/architecture/specifications/master-v0.4.md` (ADR-0007). Superseded revisions move to `docs/archive/specifications/`. Root Markdown is reserved for repository entry points and agent instructions.

@@ -79,7 +79,7 @@ They may initially contain minimal fields, but must be separate types with contr
 
 ## Foundation Baseline v0.4 requirements
 
-Use `00_MASTER_SPECIFICATION_v0.4.md` as the current Master. Do not treat archived specs or review-resolution files as normative.
+Use `docs/architecture/specifications/master-v0.4.md` as the current Master. Do not treat archived specs or review-resolution files as normative.
 
 Foundation strong types are required for `ProposedPlan`, `ValidatedPlan`, `ActionPlan`, `AuthorizedActionPlan`, `ExecutionResult`, and per-action `ActionExecutionResult`. The executor must not accept earlier lifecycle types.
 

@@ -18,5 +18,5 @@ Future lessons, implemented by the human learning path:
 
 No lesson is implemented in Foundation Prompt 01. Future experiments must record seed,
 data/version/checksum, environment and independently checked results.
-[Learning roadmap](../../01_DEVELOPMENT_LEARNING_ROADMAP.md)
+[Learning roadmap](../../docs/development/roadmap/development-learning-roadmap.md)
 

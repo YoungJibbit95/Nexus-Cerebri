@@ -1,0 +1,40 @@
+{
+  "horizon": {
+    "start": "2026-03-28T00:00:00Z",
+    "end": "2026-03-31T00:00:00Z"
+  },
+  "coverage": "Complete",
+  "busy": [
+    {
+      "range": {
+        "start": "2026-03-28T10:00:00Z",
+        "end": "2026-03-28T11:00:00Z"
+      },
+      "buffers": {
+        "before_seconds": 300,
+        "after_seconds": 300,
+        "travel_seconds": 600
+      }
+    }
+  ],
+  "recurrences": [
+    {
+      "start_date": "2026-03-28",
+      "local_time": "02:30:00",
+      "timezone": "Europe/Berlin",
+      "duration": 1800,
+      "pattern": {
+        "frequency": "DAILY",
+        "every": 1
+      },
+      "until": null,
+      "count": 3,
+      "gap_policy": "Skip",
+      "fold_policy": "Earlier"
+    }
+  ],
+  "limits": {
+    "max_occurrences": 100,
+    "max_dates": 366
+  }
+}

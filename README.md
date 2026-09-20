@@ -1,6 +1,6 @@
 # Nexus Cerebri
 
-**Software:** 0.1.0 foundation — unreleased. No release/tag has been created.
+**Software:** 0.2.0 — Temporal Core research milestone. First public release candidate.
 
 **Specification:** 0.4, frozen Foundation Architecture Baseline.
 
@@ -12,18 +12,23 @@ The current implementation is deterministic; neural inference is a future milest
 ## Working today
 
 - Validated identifiers, confidence and explicit knowledge/processing states.
-- IANA timezones, DST ambiguity rejection and half-open intervals.
+- IANA timezones, half-open interval algebra, bounded daily/weekly recurrence with explicit DST policies.
+- Completeness-aware free/busy, buffer/travel calculations and typed temporal traces.
 - CPIR validation, bounded scope, facts, hard constraints and interpretable preferences.
 - Single-event grid search with deterministic ordering, structured explanations and honest search assessments.
 - Strong plan lifecycle, policy/capability/confirmation checks, and mock execution with freshness, replay protection and per-action results.
-- REST facade, Node process bridge and a small developer Lab.
+- REST facade, provisional Node process bridge and a Svelte developer Lab with timelines, scores and structured output.
 
-No provider integration, production authentication, durable ledger, recurrence engine, advanced repair, learning or autonomous calendar mutation is implemented.
+No provider integration, production authentication, durable ledger, advanced repair, learning or autonomous calendar mutation is implemented. Recurrence diagnostics are not yet integrated into CPIR planner constraints.
+
+This MIT-licensed open-source project also uses AI development tools. Assisted contributions
+must pass the same review, tests, safety, documentation and CI gates as every other contribution.
+See the [AI development policy](docs/en/ai-assisted-development.md) and [license](LICENSE).
 
 ## Quick start
 
 Install Rust via rustup. The repository pins Rust 1.97.0 and its formatter/linter.
-Node 22+ is needed only for the Node bridge and documentation tooling.
+Node 22.12+ is needed for the Lab, Node bridge and documentation tooling.
 
 ```sh
 cargo build --workspace --locked
@@ -31,11 +36,15 @@ cargo test --workspace --locked
 cargo fmt --check
 cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
 cargo run -p cerebri-core --example plan
+npm --prefix apps/cerebri-lab ci
+npm --prefix apps/cerebri-lab run build
 cargo run -p cerebri-api
 ```
 
 The development server binds only to [localhost:3000](http://127.0.0.1:3000).
-Open [Cerebri Lab](http://127.0.0.1:3000/lab) and load [the synthetic request](examples/request.json).
+Open [Cerebri Lab](http://127.0.0.1:3000/lab/) and load [the synthetic request](examples/request.json).
+Temporal diagnostics use [a Berlin DST fixture](examples/temporal-request.json).
+For UI development use `npm --prefix apps/cerebri-lab run dev` alongside the Rust API.
 
 ```sh
 cargo build -p cerebri-node
@@ -43,6 +52,8 @@ node --test bindings/node/test.mjs
 npm ci --ignore-scripts
 npm run check
 npm run docs:build
+npm --prefix apps/cerebri-lab run check
+npm --prefix apps/cerebri-lab test
 ```
 
 Documentation is generated from repository Markdown into ignored `site/`.
@@ -53,29 +64,30 @@ The optional Pages workflow requires manual dispatch and repository Pages config
 | Area | Responsibility |
 | --- | --- |
 | cerebri-types | IDs, revisions, confidence, evidence and knowledge states |
-| cerebri-temporal | trusted instants, zones, duration and interval relationships |
+| cerebri-temporal | trusted instants, zones, bounded recurrence, free/busy and interval relationships |
 | cerebri-constraints | facts, hard rules and structured violations |
 | cerebri-semantics | eight-dimensional evidence and derived deadline metadata |
 | cerebri-preferences | interpretable precedence, scoring features and storage ports |
 | cerebri-ml | production model/dataset/training metadata and inference ports |
 | cerebri-planner | CPIR, scope, validation, search and lifecycle proofs |
-| cerebri-core | synchronous planning facade and JSON bridge |
+| cerebri-core | synchronous planning/temporal facade and JSON bridge |
 | cerebri-integrations | execution/ledger ports and in-memory contract adapters |
 | apps/cerebri-api | HTTP transport; no execution endpoint |
 | bindings/node | provisional asynchronous process bridge to the same Rust core |
-| apps/cerebri-lab | internal typed-result inspection shell |
+| apps/cerebri-lab | Svelte timelines, typed-result inspection and structured console |
 | research/ml-from-scratch | reserved human learning path, outside the workspace |
 
 ## Documentation
 
 - [Deutsch](docs/de/README.md) · [English](docs/en/README.md)
-- [Master specification 0.4](00_MASTER_SPECIFICATION_v0.4.md)
-- [Implementation boundary](04_AGENT_IMPLEMENTATION_BOUNDARY.md)
-- [Testing standard](03_TESTING_VISUALIZATION_RESEARCH_STANDARD.md)
-- [Documentation/release standard](02_DOCUMENTATION_GIT_RELEASE_STANDARD.md)
-- [Roadmap](ROADMAP.md) · [Learning roadmap](01_DEVELOPMENT_LEARNING_ROADMAP.md)
+- [Documentation map](docs/README.md) · [Temporal Core](docs/en/temporal.md)
+- [Master specification 0.4](docs/architecture/specifications/master-v0.4.md)
+- [Implementation boundary](docs/development/agent-boundaries/implementation-boundary.md)
+- [Testing standard](docs/testing/testing-visualization-research-standard.md)
+- [Documentation/release standard](docs/development/documentation-git-release-standard.md)
+- [Roadmap](docs/development/roadmap/README.md) · [Learning roadmap](docs/development/roadmap/development-learning-roadmap.md)
 - [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
-- [Foundation decisions](docs/decisions/ADR-0001-workspace.md) · [Progress](docs/progress/2026-09-19-foundation.md)
+- [Foundation decisions](docs/architecture/decisions/ADR-0001-workspace.md) · [Progress](docs/development/progress/2026-09-19-foundation.md)
 
 Accepted ADRs explicitly amending the Master take precedence only with synchronized Master updates;
 then the current Master, domain standards, agent boundary and roadmap apply.
@@ -84,5 +96,6 @@ The new Foundation reference pages have DE/EN counterparts; the entire historica
 
 ## Next milestone
 
-Temporal Core: bounded recurrence and independently verified free/busy behavior.
+Deterministic Planner: explicit recurrence/snapshot integration, dependency cycle detection,
+constraint composition and weighted score explanations, with bounded reproducible search.
 Software version, specification revision, CPIR schema, REST version and future model/dataset versions remain separate authorities.
