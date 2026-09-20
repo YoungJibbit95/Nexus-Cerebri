@@ -37,3 +37,19 @@ All accepted ADRs through ADR-0010 were reviewed before architecture work. ADR-0
 - The website never claims unavailable providers, production execution, neural inference or learned preferences.
 - Recurrence diagnostics remain separate from CPIR planner constraints until the roadmap milestone integrates them.
 - Research/future concepts are visually distinguishable from implemented behavior.
+
+## Implemented website slice
+
+- Added ADR-0011 and `apps/cerebri-site` as the static public SvelteKit application.
+- Added a build-time authority extractor for Cargo version, Master revision, CPIR version and canonical Markdown.
+- Added real Rust-generated planner and temporal outputs through `cerebri-core` examples.
+- Added the public routes `/`, `/explore`, `/cpir`, `/planning`, `/time`, `/safety`, `/architecture`, `/lab`, `/roadmap`, `/developers` and repository-backed `/docs/[...slug]`.
+- Added global Understand / Technical / Research depth state and REAL / EDUCATIONAL / FUTURE CONCEPT visualization labels.
+- Added keyboard focus treatment, skip navigation, text alternatives for visualizations, reduced-motion handling and responsive transformations.
+- Added Playwright route/navigation checks, Axe serious/critical accessibility floor, horizontal-overflow checks and visual baselines at 1440, 1024, 768 and 390 px.
+- Retired the old `scripts/build-docs.mjs`, `scripts/docs-theme.css` and `scripts/docs-ui.js` portal pipeline.
+- Extended repository truth checks to guard official-site versioning, static Pages configuration, route inventory, retired portal files and runtime font imports.
+
+## Verification state
+
+The feature commit stack is prepared and will be pushed as one coherent branch state so GitHub Actions tests the complete implementation rather than intentionally incomplete intermediate commits. Remote CI evidence and generated lockfile/visual baselines are recorded after that run.

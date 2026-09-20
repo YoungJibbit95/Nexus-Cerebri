@@ -1,12 +1,12 @@
 # Documentation map
 
 - [Current normative Master](architecture/specifications/master-v0.4.md)
-- [Architecture decisions](architecture/decisions/ADR-0001-workspace.md)
+- [Architecture decisions](architecture/decisions/ADR-0001-workspace.md), including [official site architecture](architecture/decisions/ADR-0011-official-site.md)
 - [Roadmap](development/roadmap/README.md) and [learning sequence](development/roadmap/development-learning-roadmap.md)
 - [Development and release standard](development/documentation-git-release-standard.md)
 - [Agent boundary](development/agent-boundaries/implementation-boundary.md)
 - [Testing standard](testing/testing-visualization-research-standard.md)
-- [Progress logs](development/progress/README.md)
+- [Progress logs](development/progress/README.md), including [official site implementation](development/progress/2026-09-20-official-site.md)
 - [Deutsch](de/README.md) / [English](en/README.md)
 - [Historical specifications](archive/specifications/README.md)
 
