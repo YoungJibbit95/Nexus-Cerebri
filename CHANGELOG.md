@@ -42,6 +42,30 @@ This changelog maintains two independent histories:
 
 ---
 
+## 2026-09-21 — Deterministic planner integration
+
+### Added
+
+* Added CPIR 0.2 temporal source input and an independently testable bounded snapshot compiler; CPIR 0.1 remains accepted without temporal input.
+* Materialized existing recurrence occupancy with stable occurrence identity, full and clipped ranges, source revision, provenance, evidence and explicit DST outcomes. Duplicate series, unsafe provenance, prospective series, horizon mismatch and exhausted budgets fail closed.
+* Added deterministic dependency graphs with stable topological order, missing-reference diagnostics and iterative cycle-component evidence. Graphs grant no scope, policy, capability or authorization.
+* Exposed the complete lexicographic candidate ordering key; preserved single-event grid search and truthful exhaustive/budget assessments.
+* Added real Lab compiler, availability, dependency and score inspection plus 11 source scenarios exercised through Core, REST and TypeScript contract guards.
+* Added combined hard-constraint, independent integer-oracle, golden schedule and negative contract tests.
+
+### Architecture and compatibility
+
+* Accepted ADR-0012 and synchronized the Master and DE/EN CPIR/planner references. ADR-0011 remains the official-site decision.
+* Kept occurrences separate from mutable planning/provider objects. Lifecycle validation rechecks the same source snapshot. Recurrence constraints and prospective series remain unsupported.
+* Incomplete temporal coverage blocks planning; required buffers must fit within the compiled horizon. Series reconciliation, exceptions, joint search and repair remain deferred.
+* Software remains unreleased 0.2.0, specification 0.4 and REST /v1; no release or tag is created by this session.
+
+### Verification
+
+* Exact commands, results and the interruption recovery are recorded in [the session log](docs/development/progress/2026-09-20-planner-integration.md).
+
+---
+
 ## 📅 2026-09-20 — Official Nexus Cerebri Website
 
 ### ✨ Added

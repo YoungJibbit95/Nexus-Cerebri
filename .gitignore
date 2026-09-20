@@ -18,3 +18,4 @@ dist/
 /apps/cerebri-site/static/nexus-cerebri-logo.png
 /apps/cerebri-site/test-results/
 /apps/cerebri-site/playwright-report/
+/apps/cerebri-site/.svelte-kit/
