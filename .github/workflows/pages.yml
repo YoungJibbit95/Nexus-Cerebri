@@ -19,35 +19,31 @@ jobs:
   documentation:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+      url: \${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-
-      - name: Install dependencies
+      - name: Install repository tooling
         run: npm ci --ignore-scripts
-
+      - name: Install official site dependencies
+        run: npm --prefix apps/cerebri-site install --ignore-scripts
       - name: Build documentation
         run: npm run docs:build
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

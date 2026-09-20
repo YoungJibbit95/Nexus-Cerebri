@@ -20,14 +20,44 @@ jobs:
       - run: cargo test --workspace --locked
       - run: cargo build -p cerebri-node --locked
       - run: node --test bindings/node/test.mjs
-      - run: npm ci --ignore-scripts
+      - name: Install repository tooling
+        run: npm ci --ignore-scripts
       - run: npm run check
-      - run: npm run docs:build
-      - run: npm --prefix apps/cerebri-lab ci
+      - name: Install official site dependencies
+        run: npm --prefix apps/cerebri-site install --ignore-scripts
+      - name: Typecheck official site
+        run: npm --prefix apps/cerebri-site run check
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Build official site with GitHub Pages base path
+        run: npm --prefix apps/cerebri-site run build
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Install Playwright Chromium
+        run: npm --prefix apps/cerebri-site exec -- playwright install --with-deps chromium
+      - name: Browser and accessibility tests
+        run: npm --prefix apps/cerebri-site run test:e2e
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Generate visual baselines
+        run: npm --prefix apps/cerebri-site run test:visual:update
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Upload site reproducibility artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cerebri-site-bootstrap
+          if-no-files-found: error
+          path: |
+            apps/cerebri-site/package-lock.json
+            apps/cerebri-site/tests/**/*-snapshots/**
+      - name: Install Lab dependencies
+        run: npm --prefix apps/cerebri-lab ci
       - run: npm --prefix apps/cerebri-lab run check
       - run: npm --prefix apps/cerebri-lab test
       - run: npm --prefix apps/cerebri-lab run build
       - run: npm audit --audit-level=high
+      - run: npm --prefix apps/cerebri-site audit --audit-level=high
       - run: npm --prefix apps/cerebri-lab audit --audit-level=high
       - run: cargo doc --workspace --no-deps --locked
         env:
