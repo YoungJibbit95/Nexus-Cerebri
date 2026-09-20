@@ -19,13 +19,16 @@ export function entries() {
 }
 
 function rewriteInternalLinks(raw: string, sourcePath: string) {
-  return raw.replace(/\]\(([^)]+\.md(?:#[^)\s]+)?)(?:\s+"[^"]*")?\)/g, (whole, href: string) => {
-    if (/^[a-z]+:/i.test(href)) return whole;
+  return raw.replace(/\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (whole, href: string) => {
+    if (href.startsWith('#') || /^[a-z]+:/i.test(href) || href.startsWith('//')) return whole;
     const [pathPart, hash] = href.split('#');
+    if (!pathPart || pathPart.startsWith('/')) return whole;
     const resolved = posix.normalize(posix.join(posix.dirname(sourcePath), pathPart));
+    if (resolved.startsWith('../')) return whole;
     const target = bySource.get(resolved);
-    if (!target) return whole;
-    return `](__BASE__/docs/${target.slug}/${hash ? `#${hash}` : ''})`;
+    if (target) return `](__BASE__/docs/${target.slug}/${hash ? `#${hash}` : ''})`;
+    const sourceHref = `https://github.com/YoungJibbit95/Nexus-Cerebri/blob/main/${resolved}${hash ? `#${hash}` : ''}`;
+    return `](${sourceHref})`;
   });
 }
 
