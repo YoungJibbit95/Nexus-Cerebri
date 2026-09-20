@@ -39,8 +39,8 @@ jobs:
         run: npm --prefix apps/cerebri-site run test:e2e
         env:
           CEREBRI_BASE_PATH: /Nexus-Cerebri
-      - name: Generate visual baselines
-        run: npm --prefix apps/cerebri-site run test:visual:update
+      - name: Verify visual regression hashes
+        run: npm --prefix apps/cerebri-site run test:visual
         env:
           CEREBRI_BASE_PATH: /Nexus-Cerebri
       - name: Upload site reproducibility artifacts
@@ -48,9 +48,7 @@ jobs:
         with:
           name: cerebri-site-bootstrap
           if-no-files-found: error
-          path: |
-            apps/cerebri-site/package-lock.json
-            apps/cerebri-site/tests/**/*-snapshots/**
+          path: apps/cerebri-site/package-lock.json
       - name: Install Lab dependencies
         run: npm --prefix apps/cerebri-lab ci
       - run: npm --prefix apps/cerebri-lab run check

@@ -10,8 +10,7 @@
     "check": "npm run prepare:data && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "build": "npm run prepare:data && svelte-kit sync && vite build",
     "test:e2e": "playwright test --grep-invert @visual",
-    "test:visual": "playwright test --grep @visual",
-    "test:visual:update": "playwright test --grep @visual --update-snapshots"
+    "test:visual": "playwright test --grep @visual"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

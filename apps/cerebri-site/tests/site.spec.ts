@@ -1,5 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { createHash } from 'node:crypto';
+import visualBaselines from './visual-baselines.json';
 
 const prefix = process.env.CEREBRI_BASE_PATH ?? '';
 const routes = ['/', '/explore/', '/cpir/', '/planning/', '/time/', '/safety/', '/architecture/', '/lab/', '/roadmap/', '/developers/', '/docs/'];
@@ -47,6 +49,8 @@ for (const width of [1440, 1024, 768, 390]) {
   test('@visual homepage ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(prefix + '/');
-    await expect(page).toHaveScreenshot('home-' + width + '.png', { fullPage: true, animations: 'disabled' });
+    const screenshot = await page.screenshot({ fullPage: true, animations: 'disabled' });
+    const hash = createHash('sha256').update(screenshot).digest('hex');
+    expect(hash).toBe(visualBaselines[String(width) as keyof typeof visualBaselines]);
   });
 }
