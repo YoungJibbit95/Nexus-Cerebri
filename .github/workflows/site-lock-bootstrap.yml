@@ -1,0 +1,34 @@
+name: Site Lock Bootstrap
+
+on:
+  push:
+    branches:
+      - feat/cerebri-official-site
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: "!contains(github.event.head_commit.message, '[site-lock]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/cerebri-official-site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate official site lockfile
+        run: npm --prefix apps/cerebri-site install --package-lock-only --ignore-scripts
+      - name: Commit generated lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/cerebri-site/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Lockfile already current."
+            exit 0
+          fi
+          git commit -m "chore(site): lock site dependencies [site-lock]"
+          git push origin HEAD:feat/cerebri-official-site
