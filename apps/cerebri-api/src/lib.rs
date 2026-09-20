@@ -13,7 +13,7 @@ use tower_http::services::ServeDir;
 pub fn router() -> Router {
     Router::new()
         .route("/health",get(|| async { Json(serde_json::json!({
-            "status":"ok","software_version":env!("CARGO_PKG_VERSION"),"release_state":"research","cpir_schema":"0.1"
+            "status":"ok","software_version":env!("CARGO_PKG_VERSION"),"release_state":"research","cpir_schema":"0.2", "supported_cpir_schemas":["0.1","0.2"]
         })) }))
         .route("/v1/validate",post(validate))
         .route("/v1/plan",post(plan))

@@ -141,7 +141,7 @@ fn cpir_round_trip_and_future_schema_rejection() {
         input
     );
     let mut future = input;
-    future.schema_version.minor = 2;
+    future.schema_version.minor = 99;
     assert!(
         validate_request(&future)
             .issues

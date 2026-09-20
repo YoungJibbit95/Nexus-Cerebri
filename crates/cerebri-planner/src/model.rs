@@ -90,6 +90,9 @@ pub struct ContextSnapshot {
     pub captured_at: Instant,
     pub objects: Vec<PlanningObject>,
     pub facts: Vec<Fact>,
+    /// CPIR 0.2 source state, compiled before candidate generation. Never a provider record.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub temporal: Option<crate::TemporalContext>,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

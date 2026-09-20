@@ -1,6 +1,6 @@
 //! Deterministic facts and constraints; permissions deliberately live elsewhere.
 use cerebri_temporal::{Deadline, Duration, Instant, LocalDate, TimeDelta, TimeRange, TimeZoneId};
-use cerebri_types::{FactId, PlanningObjectId, Provenance};
+use cerebri_types::{FactId, OccurrenceId, PlanningObjectId, Provenance};
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "value", rename_all = "SCREAMING_SNAKE_CASE")]
@@ -63,6 +63,8 @@ pub enum ViolationReason {
 pub struct ConstraintEvidence {
     pub facts: Vec<FactId>,
     pub blocking_objects: Vec<PlanningObjectId>,
+    #[serde(default)]
+    pub blocking_occurrences: Vec<OccurrenceId>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConstraintViolation {
@@ -164,6 +166,7 @@ pub fn check(
         evidence: ConstraintEvidence {
             facts: specification.evidence.clone(),
             blocking_objects: blockers,
+            blocking_occurrences: vec![],
         },
     })
 }

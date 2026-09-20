@@ -35,6 +35,9 @@ pub enum ValidationIssue {
     UnsupportedSearchBudget,
     UnsupportedTargetCount,
     InputLimit,
+    Compilation(crate::CompilationError),
+    IncompleteCoverage,
+    Dependency(crate::DependencyIssue),
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ValidationReport {
@@ -53,7 +56,12 @@ pub(crate) fn mutation_kind(object: &PlanningObject) -> MutationKind {
 pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
     let mut issues = Vec::new();
     let mut uncertain = false;
-    if request.schema_version != SchemaVersion::CPIR_0_1 {
+    if !matches!(
+        request.schema_version,
+        SchemaVersion::CPIR_0_1 | SchemaVersion::CPIR_0_2
+    ) || (request.schema_version == SchemaVersion::CPIR_0_1
+        && request.context.temporal.is_some())
+    {
         issues.push(ValidationIssue::UnsupportedSchema);
     }
     if !matches!(
@@ -183,6 +191,35 @@ pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
             issues.push(ValidationIssue::UnknownObject(constraint.object_id.clone()));
         }
     }
+    match crate::compile_snapshot(
+        &request.context,
+        cerebri_temporal::PlanningHorizon(request.scope.time_range),
+    ) {
+        Err(error) => issues.push(ValidationIssue::Compilation(error)),
+        Ok(Some(compiled)) => {
+            if compiled.availability.coverage == cerebri_temporal::Coverage::Incomplete {
+                issues.push(ValidationIssue::IncompleteCoverage);
+            }
+            let count =
+                request.context.objects.len() as u64 + compiled.occurrences.len() as u64 + 1;
+            if u64::from(request.budget.max_candidates)
+                * count
+                * (request.constraints.len() as u64 + request.context.facts.len() as u64 + count)
+                > 1_000_000
+            {
+                issues.push(ValidationIssue::InputLimit);
+            }
+        }
+        Ok(None) => {}
+    }
+    issues.extend(
+        crate::dependency_graph(&request.context.objects, &request.constraints)
+            .issues
+            .into_iter()
+            .map(ValidationIssue::Dependency),
+    );
+    issues.sort_by_key(|issue| serde_json::to_string(issue).expect("serializable issue"));
+    issues.dedup();
     let state = if !issues.is_empty() {
         ValidationState::InsufficientInformation
     } else if uncertain {

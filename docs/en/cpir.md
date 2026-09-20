@@ -1,16 +1,17 @@
 <!-- doc: cpir; lang: en; counterpart: ../de/cpir.md -->
-# CPIR 0.1 and interfaces
+# CPIR 0.2 and interfaces
 
-Software version 0.2.0; specification 0.4, CPIR 0.1 and REST v1 are independent.
+Software version 0.2.0; specification 0.4, CPIR 0.2 and REST v1 are independent.
 CPIR is an internal evolving schema, not a stable public v1 protocol.
 
 [The executable synthetic fixture](../../examples/request.json) is the complete request example.
 Rust structs in cerebri-planner/model.rs are the representation authority.
 Top-level objects reject unknown fields, including misspelled scope controls.
-Schema versions other than {major: 0, minor: 1} produce UnsupportedSchema.
+Schemas {major: 0, minor: 1} and {major: 0, minor: 2} are accepted. Temporal input requires 0.2; other versions produce UnsupportedSchema.
+See [planner integration](planner-integration.md) for the explicit compiler, graph and ordering contracts.
 
 A request includes identity/trace/principal, operation, scope, immutable context snapshot
-(objects and facts), targets, duration evidence, constraints, preferences, typed policy,
+(objects, facts and optional temporal source state), targets, duration evidence, constraints, preferences, typed policy,
 planning capability, granularity and deterministic search budget.
 Event, Task, Deadline, Availability and Resource objects are represented. Only Events are
 current search/mutation targets. Existing blocking times must be known; prospective Event

@@ -38,6 +38,8 @@ macro_rules! identifier {
 identifier!(
     RequestId,
     PlanningObjectId,
+    SeriesId,
+    OccurrenceId,
     PlanId,
     ActionId,
     TraceId,
@@ -64,6 +66,7 @@ pub struct SchemaVersion {
 }
 impl SchemaVersion {
     pub const CPIR_0_1: Self = Self { major: 0, minor: 1 };
+    pub const CPIR_0_2: Self = Self { major: 0, minor: 2 };
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
