@@ -1,6 +1,6 @@
 # 2026-09-20 — Official website implementation
 
-Status: in progress on `feat/cerebri-official-site`
+Status: implemented and verified on `feat/cerebri-official-site`
 
 ## Research snapshot
 
@@ -52,4 +52,25 @@ All accepted ADRs through ADR-0010 were reviewed before architecture work. ADR-0
 
 ## Verification state
 
-The feature commit stack is prepared and will be pushed as one coherent branch state so GitHub Actions tests the complete implementation rather than intentionally incomplete intermediate commits. Remote CI evidence and generated lockfile/visual baselines are recorded after that run.
+Verified on commit `ca3406a027b68e66a3e98a1dbc53138f7e4c8171`.
+
+GitHub Actions push run `35520398395` and pull-request run `35520401015` both completed successfully.
+
+The verified pipeline includes:
+
+- `cargo fmt --check`;
+- workspace `clippy` with warnings denied;
+- complete Rust workspace tests;
+- Node bridge tests;
+- repository truth/link/version checks;
+- reproducible `npm ci` for the official site;
+- Svelte diagnostics with zero errors/warnings;
+- static SvelteKit build under the real `/Nexus-Cerebri` Pages base path;
+- Playwright route, explanation-depth and horizontal-overflow tests;
+- Axe serious/critical accessibility checks;
+- deterministic visual regression hashes at 1440, 1024, 768 and 390 px;
+- Cerebri Lab check/test/build;
+- root, site and Lab high-severity npm audits;
+- Rust documentation with warnings denied.
+
+The official-site `package-lock.json` is committed. The one-time lock bootstrap workflow was removed after generating it. CI and Pages now use `npm ci`. GitHub Actions dependencies were updated to their current majors during verification.

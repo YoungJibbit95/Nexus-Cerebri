@@ -77,7 +77,9 @@ This changelog maintains two independent histories:
 
 * Retired `scripts/build-docs.mjs`, `scripts/docs-theme.css` and `scripts/docs-ui.js`.
 * Added an official-site README and dated implementation/progress record.
-* Remote GitHub Actions verification is recorded after the coherent feature branch is pushed.
+* Verified the final site stack on GitHub Actions push run `35520398395` and pull-request run `35520401015`; both completed successfully.
+* Committed the official-site lockfile, switched CI/Pages to reproducible `npm ci`, updated GitHub Actions dependencies, and removed the temporary lock bootstrap workflow.
+* Locked deterministic visual-regression hashes at 1440, 1024, 768 and 390 px after successful browser/Axe verification.
 
 ---
 
