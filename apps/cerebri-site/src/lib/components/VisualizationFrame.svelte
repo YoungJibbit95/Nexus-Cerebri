@@ -14,6 +14,6 @@
 <figure class="visual-frame" data-truth={kind}>
   <div class="visual-heading"><span class="truth-label" data-kind={kind}>{kind}</span><strong>{label}</strong></div>
   <div class="visual-body">{@render children()}</div>
-  <figcaption>{caption}</figcaption>
   <details class="visual-alt"><summary>Text alternative</summary><p>{textAlternative}</p></details>
+  <figcaption>{caption}</figcaption>
 </figure>

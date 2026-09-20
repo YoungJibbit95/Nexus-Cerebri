@@ -6,7 +6,8 @@ import { docsData } from '$lib/generated/docs-data';
 export const prerender = true;
 
 const markdown = new MarkdownIt({ html: true, linkify: false, typographer: false });
-const bySource = new Map(docsData.map((doc) => [doc.sourcePath, doc]));
+const bySource = new Map<string, (typeof docsData)[number]>();
+for (const doc of docsData) bySource.set(doc.sourcePath, doc);
 
 markdown.renderer.rules.image = (tokens, idx) => {
   const alt = markdown.utils.escapeHtml(tokens[idx].content || 'repository image');

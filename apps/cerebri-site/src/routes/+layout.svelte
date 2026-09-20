@@ -5,7 +5,7 @@
   import { primaryNav } from '$lib/site';
 
   let { children } = $props();
-  let menuOpen = false;
+  let menuOpen = $state(false);
   const href = (path: string) => base + path;
 </script>
 

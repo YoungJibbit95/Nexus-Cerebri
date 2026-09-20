@@ -7,7 +7,7 @@
   import { runtimeData } from '$lib/generated/runtime-data';
 
   let { data } = $props();
-  const section = data.section;
+  const section = $derived(data.section);
   const textAlternatives: Record<string, string> = {
     atlas: 'A central Cerebri node connects to Temporal, CPIR, Constraints, Planner and Validation. A visually distinct Research node sits outside the implemented core.',
     cpir: 'Four panels summarize canonical request identity, knowledge/provenance, policy and search budget from examples/request.json.',

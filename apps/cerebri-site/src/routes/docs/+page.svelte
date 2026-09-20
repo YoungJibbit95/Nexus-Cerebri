@@ -12,7 +12,7 @@
   ] as const;
 
   const groupDocs = (prefix: string) => data.docs.filter((doc: any) => doc.sourcePath.startsWith('docs/' + prefix));
-  const rootDocs = data.docs.filter((doc: any) => !doc.sourcePath.startsWith('docs/'));
+  const rootDocs = $derived(data.docs.filter((doc: any) => !doc.sourcePath.startsWith('docs/')));
 </script>
 
 <svelte:head>
