@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const prefix = process.env.CEREBRI_BASE_PATH ?? '';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -13,7 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'node tests/serve.mjs',
-    url: 'http://127.0.0.1:4173',
+    url: 'http://127.0.0.1:4173' + prefix + '/',
     reuseExistingServer: !process.env.CI
   },
   projects: [
