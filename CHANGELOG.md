@@ -6,7 +6,7 @@
 
 <br>
 
-![Software Target](https://img.shields.io/badge/software_target-0.1.0-0969da?style=flat-square)
+![Software](https://img.shields.io/badge/software-0.2.0-0969da?style=flat-square)
 ![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=flat-square)
 ![Status](https://img.shields.io/badge/status-unreleased-d29922?style=flat-square)
 
@@ -33,11 +33,53 @@ This changelog maintains two independent histories:
 
 # 🚧 [Unreleased]
 
-**Software target:** `0.1.0`
+**Current software:** `0.2.0`
+**Next roadmap target:** `0.3.0`
 **Release status:** `Unreleased`
 
 > [!WARNING]
 > No software release or tag has been created yet.
+
+---
+
+## 📅 2026-09-20 — Official Nexus Cerebri Website
+
+### ✨ Added
+
+* Added `apps/cerebri-site`, a static SvelteKit/Svelte 5/TypeScript official website.
+* Added public knowledge surfaces for Explore, CPIR, deterministic planning, time, safety, architecture, Lab, roadmap, developers and canonical repository documentation.
+* Added global Understand / Technical / Research explanation depth.
+* Added explicit REAL / EDUCATIONAL / FUTURE CONCEPT labels and text alternatives for significant visualizations.
+* Added build-time website authority data derived from Cargo, the current Master, CPIR fixtures and repository Markdown.
+* Added Rust-generated planner and temporal website fixtures through `cerebri-core`.
+* Added Playwright navigation, accessibility, responsive-overflow and visual-regression coverage.
+
+### 🔄 Changed
+
+* Replaced the bespoke static documentation portal with the repository-backed SvelteKit site while keeping `site/` as the Pages artifact and `npm run docs:build` as the canonical build command.
+* Updated GitHub Pages and CI to build the official site with the `/Nexus-Cerebri` base path.
+* Extended repository checks for site version authority, route inventory, static-host configuration, retired portal files and runtime font imports.
+* Kept canonical Markdown as documentation truth and Cerebri Lab as a separate developer/research client.
+
+### 🏛️ Architecture
+
+* Added ADR-0011 for the official-site frontend strategy.
+* Preserved Rust as planner/temporal authority; TypeScript contains no duplicated planning or recurrence implementation.
+* Preserved Planner ≠ Executor and does not expose or simulate provider execution, production authentication, durable ledger behavior, preference learning or neural inference.
+
+### 🧪 Testing
+
+* Added Axe serious/critical accessibility checks for representative public routes.
+* Added route/prerender checks plus horizontal-overflow coverage at 1440, 1024, 768 and 390 px.
+* Added visual-regression capture at the same four widths.
+
+### 🛠️ Development
+
+* Retired `scripts/build-docs.mjs`, `scripts/docs-theme.css` and `scripts/docs-ui.js`.
+* Added an official-site README and dated implementation/progress record.
+* Verified the final site stack on GitHub Actions push run `35520398395` and pull-request run `35520401015`; both completed successfully.
+* Committed the official-site lockfile, switched CI/Pages to reproducible `npm ci`, updated GitHub Actions dependencies, and removed the temporary lock bootstrap workflow.
+* Locked deterministic visual-regression hashes at 1440, 1024, 768 and 390 px after successful browser/Axe verification.
 
 ---
 
