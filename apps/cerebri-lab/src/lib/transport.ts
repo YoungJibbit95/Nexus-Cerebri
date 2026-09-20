@@ -1,34 +1,8 @@
 import type { PlanningRequest, PlanningResult, ValidationReport } from './contracts.ts';
+import { parseCompiledContext, parseTemporalContext } from './compilation.ts';
 
-function object(value: unknown, path: string): Record<string, unknown> {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new Error(`${path}: expected an object.`);
-  return value as Record<string, unknown>;
-}
-function array(value: unknown, path: string): unknown[] {
-  if (!Array.isArray(value)) throw new Error(`${path}: expected an array.`);
-  return value;
-}
-function string(value: unknown, path: string): string {
-  if (typeof value !== 'string') throw new Error(`${path}: expected text.`);
-  return value;
-}
-function number(value: unknown, path: string): number {
-  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) throw new Error(`${path}: expected a nonnegative safe integer.`);
-  return value;
-}
-function instant(value: unknown, path: string): void {
-  const text = string(value, path);
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/i.test(text) || !Number.isFinite(Date.parse(text))) throw new Error(`${path}: expected an ISO timestamp with an explicit UTC offset.`);
-}
-function range(value: unknown, path: string): void {
-  const item = object(value, path);
-  instant(item.start, `${path}.start`);
-  instant(item.end, `${path}.end`);
-  if (Date.parse(item.start as string) >= Date.parse(item.end as string)) throw new Error(`${path}: expected a positive interval.`);
-}
-function member(value: unknown, choices: string[], path: string): void {
-  if (!choices.includes(string(value, path))) throw new Error(`${path}: unsupported value ${String(value)}.`);
-}
+import { shape } from './shape.ts';
+const { object, array, string, number, instant, range, member } = shape;
 export function parseValidation(value: unknown): ValidationReport {
   const item = object(value, 'validation');
   member(item.state, ['Valid', 'ValidWithUncertainty', 'InsufficientInformation'], 'validation.state');
@@ -50,6 +24,7 @@ export function parseRequest(value: unknown): PlanningRequest {
   array(item.target_ids, 'target_ids').forEach((id) => string(id, 'target_id'));
   const context = object(item.context, 'context');
   number(context.revision, 'context.revision');
+  if (context.temporal != null) parseTemporalContext(context.temporal);
   for (const raw of array(context.objects, 'context.objects')) {
     const entry = object(raw, 'object');
     for (const key of ['id', 'timezone']) string(entry[key], `object.${key}`);
@@ -91,6 +66,30 @@ export function parseResult(value: unknown): PlanningResult {
   member(item.outcome, ['Solution', 'NoSolution', 'NeedsRelaxation', 'InsufficientInformation'], 'outcome');
   member(item.assessment, ['ProvenOptimal', 'Complete', 'BestFound'], 'assessment');
   parseValidation(item.validation);
+  if (item.compilation !== null) parseCompiledContext(item.compilation);
+  const graph = object(item.dependency_graph, 'dependency_graph');
+  for (const key of ['nodes', 'order']) array(graph[key], `dependency_graph.${key}`).forEach((id) => string(id, `dependency_graph.${key}.id`));
+  function edge(value: unknown): void {
+    const item = object(value, 'dependency edge');
+    string(item.predecessor, 'edge.predecessor');
+    string(item.dependent, 'edge.dependent');
+  }
+  array(graph.edges, 'dependency_graph.edges').forEach(edge);
+  for (const raw of array(graph.issues, 'dependency_graph.issues')) {
+    if (typeof raw === 'string') member(raw, ['InputLimit'], 'dependency.issue');
+    else {
+      const issue = object(raw, 'dependency.issue');
+      const keys = Object.keys(issue);
+      if (keys.length !== 1) throw new Error('Expected a tagged dependency issue.');
+      member(keys[0], ['MissingReference', 'Cycle'], 'dependency.issue');
+      if ('MissingReference' in issue) edge(issue.MissingReference);
+      else {
+        const cycle = object(issue.Cycle, 'dependency.Cycle');
+        array(cycle.members, 'cycle.members').forEach((id) => string(id, 'cycle.member'));
+        array(cycle.edges, 'cycle.edges').forEach(edge);
+      }
+    }
+  }
   const search = object(item.search_space, 'search_space');
   range(search.horizon, 'search_space.horizon');
   number(search.granularity, 'search_space.granularity');
@@ -102,6 +101,10 @@ export function parseResult(value: unknown): PlanningResult {
     instant(candidate.start, 'candidate.start');
     string(candidate.object_id, 'candidate.object_id');
     for (const key of ['cost', 'mutation_count', 'shifted_seconds']) number(candidate[key], `candidate.${key}`);
+    const ordering = object(candidate.ordering_key, 'candidate.ordering_key');
+    for (const key of ['preference_distance_seconds', 'mutation_count', 'shifted_seconds']) number(ordering[key], `ordering_key.${key}`);
+    instant(ordering.start, 'ordering_key.start');
+    string(ordering.object_id, 'ordering_key.object_id');
     const proposed = object(candidate.proposed, 'candidate.proposed');
     string(proposed.id, 'proposed.id');
     number(proposed.source_revision, 'proposed.source_revision');
@@ -130,7 +133,7 @@ export function parseResult(value: unknown): PlanningResult {
           string(violation.reason, 'violation.reason');
           string(violation.object_id, 'violation.object_id');
           const evidence = object(violation.evidence, 'violation.evidence');
-          for (const key of ['facts', 'blocking_objects']) array(evidence[key], `evidence.${key}`).forEach((v) => string(v, key));
+          for (const key of ['facts', 'blocking_objects', 'blocking_occurrences']) array(evidence[key], `evidence.${key}`).forEach((v) => string(v, key));
         } else {
           const keys = Object.keys(tagged);
           if (keys.length !== 1) throw new Error('Expected a tagged rejection reason.');
@@ -168,4 +171,4 @@ export function downloadJson(value: unknown, filename: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export const shape = { object, array, string, number, instant, range, member };
+export { shape } from './shape.ts';

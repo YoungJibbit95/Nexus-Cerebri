@@ -1,4 +1,5 @@
-/** Transport shapes for the internal CPIR 0.1 and Rust planning API.
+import type { CompiledContextSnapshot, TemporalContext } from './compilation.ts';
+/** Transport shapes for the internal CPIR 0.1 / 0.2 and Rust planning API.
  * These types describe data, never confer validation or execution authority. */
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 export type JsonObject = { [key: string]: Json };
@@ -28,7 +29,7 @@ export interface PlanningRequest {
   trace_id: string;
   operation: string;
   scope: { time_range: TimeRange; max_mutations: number };
-  context: { revision: number; objects: PlanningObject[] };
+  context: { revision: number; objects: PlanningObject[]; temporal?: TemporalContext | null };
   duration: EvidenceField<number>;
   target_ids: string[];
   granularity: number;
@@ -37,6 +38,10 @@ export interface PlanningRequest {
 }
 export type PlanReason = 'FeasibleWithinScope' | 'EarliestTieBreak' | 'AnalysisOnly' | 'DurationUncertain' | { PreferredStart: string };
 export interface ScoreComponent { reason: PlanReason; cost: number }
+export interface CandidateOrderingKey {
+  preference_distance_seconds: number; mutation_count: number; shifted_seconds: number;
+  start: string; object_id: string;
+}
 export interface RankedCandidate {
   proposed: { id: string; source_revision: number; placements: { object_id: string; range: TimeRange }[] };
   cost: number;
@@ -45,12 +50,13 @@ export interface RankedCandidate {
   start: string;
   object_id: string;
   explanation: ScoreComponent[];
+  ordering_key: CandidateOrderingKey;
 }
 export interface ConstraintViolation {
   constraint: Json;
   object_id: string;
   reason: string;
-  evidence: { facts: string[]; blocking_objects: string[] };
+  evidence: { facts: string[]; blocking_objects: string[]; blocking_occurrences: string[] };
 }
 export type RejectionReason = 'MutationLimit' | 'MovedObjectLimit' | 'InvalidTargets'
   | { Scope: string } | { InvalidDuration: string } | { Capability: string } | { Policy: string }
@@ -60,6 +66,9 @@ export interface ValidationReport {
   state: 'Valid' | 'ValidWithUncertainty' | 'InsufficientInformation';
   issues: Json[];
 }
+export interface DependencyEdge { predecessor: string; dependent: string }
+export type DependencyIssue = 'InputLimit' | { MissingReference: DependencyEdge } | { Cycle: { members: string[]; edges: DependencyEdge[] } };
+export interface DependencyGraph { nodes: string[]; edges: DependencyEdge[]; order: string[]; issues: DependencyIssue[] }
 export interface PlanningResult {
   outcome: 'Solution' | 'NoSolution' | 'NeedsRelaxation' | 'InsufficientInformation';
   assessment: 'ProvenOptimal' | 'Complete' | 'BestFound';
@@ -67,6 +76,8 @@ export interface PlanningResult {
   candidates: RankedCandidate[];
   conflicts: { rejections: CandidateRejection[] };
   search_space: { horizon: TimeRange; granularity: number; objective: string; evaluated: number; exhausted: boolean };
+  compilation: CompiledContextSnapshot | null;
+  dependency_graph: DependencyGraph;
 }
 export type ExplanationMode = 'Simple' | 'Technical' | 'Research';
 export type LabView = 'Planner' | 'Temporal' | 'Trace' | 'Semantics' | 'Preferences' | 'ML' | 'Dataset';

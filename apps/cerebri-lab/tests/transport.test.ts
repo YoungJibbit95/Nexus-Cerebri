@@ -11,9 +11,10 @@ const horizon = { start: '2026-10-01T09:00:00Z', end: '2026-10-01T12:00:00Z' };
 function resultFixture(): PlanningResult {
   // Small transport fixture; it is never presented as a planner run in the UI.
   return {
+    compilation: null, dependency_graph: { nodes: ['busy', 'new-event'], edges: [], order: ['busy', 'new-event'], issues: [] },
     outcome: 'Solution', assessment: 'BestFound', validation: { state: 'Valid', issues: [] },
-    candidates: [{ proposed: { id: 'transport-fixture', source_revision: 1, placements: [{ object_id: 'new-event', range: { start: '2026-10-01T10:00:00Z', end: '2026-10-01T10:30:00Z' } }] }, cost: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event', explanation: [{ reason: 'EarliestTieBreak', cost: 0 }] }],
-    conflicts: { rejections: [{ start: horizon.start, reasons: [{ HardConstraint: { constraint: { kind: 'NO_OVERLAP' }, object_id: 'new-event', reason: 'Overlap', evidence: { facts: [], blocking_objects: ['busy'] } } }] }] },
+    candidates: [{ proposed: { id: 'transport-fixture', source_revision: 1, placements: [{ object_id: 'new-event', range: { start: '2026-10-01T10:00:00Z', end: '2026-10-01T10:30:00Z' } }] }, cost: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event', explanation: [{ reason: 'EarliestTieBreak', cost: 0 }], ordering_key: { preference_distance_seconds: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event' } }],
+    conflicts: { rejections: [{ start: horizon.start, reasons: [{ HardConstraint: { constraint: { kind: 'NO_OVERLAP' }, object_id: 'new-event', reason: 'Overlap', evidence: { facts: [], blocking_objects: ['busy'], blocking_occurrences: [] } } }] }] },
     search_space: { horizon: { ...horizon }, granularity: 900, objective: 'transport fixture', evaluated: 2, exhausted: false },
   };
 }

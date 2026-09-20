@@ -10,10 +10,13 @@
   import OutputConsole from './components/OutputConsole.svelte';
   import InspectorViews from './components/InspectorViews.svelte';
   import TemporalView from './components/TemporalView.svelte';
+  import CompilationPanel from './components/CompilationPanel.svelte';
+  import DependencyPanel from './components/DependencyPanel.svelte';
   import JsonPanel from './components/JsonPanel.svelte';
   import type { ConsoleEntry, ExplanationMode, LabView, PlanningRequest, PlanningResult, ValidationReport } from './lib/contracts.ts';
   import { downloadJson, parseRequest, parseResult, parseValidation, postJson, readJsonFile } from './lib/transport.ts';
   import { readable } from './lib/presentation.ts';
+  import { scenarioRequest } from './lib/scenarios.ts';
 
   function demo(): PlanningRequest {
     const value = structuredClone(fixture);
@@ -63,6 +66,12 @@
     request = demo(); requestLabel = 'Synthetic focus session'; result = null; resultRequest = null; validation = null; selected = 0;
     status = 'Synthetic request loaded with an explicit 10:45 UTC preference.'; error = false; log('lab', status);
   }
+  function loadScenario(file: string) {
+    request = scenarioRequest(file); requestLabel = file.replace('.json', '').replaceAll('-', ' ');
+    result = null; resultRequest = null; validation = null; selected = 0; error = false;
+    status = `Synthetic scenario loaded: ${requestLabel}. Run the Rust planner to inspect the result.`;
+    log('lab', status, { file, request_id: request.request_id });
+  }
   async function importRequest(file: File) {
     try {
       const parsed = parseRequest(await readJsonFile(file, 256 * 1024));
@@ -105,11 +114,13 @@
     <main id="workspace" tabindex="-1">
       <div class="hero"><div><span class="eyebrow">NEXUS CEREBRI / {view.toUpperCase()}</span><h1>{titles[view][0]}</h1><p>{titles[view][1]}</p></div><div class="hero-actions"><button class="secondary" onclick={() => resultInput.click()} disabled={busy}><Icon name="upload" size={16} />Import result</button><button class="secondary" disabled={!result} onclick={() => result && downloadJson(result, 'cerebri-planning-result.json')}><Icon name="download" size={16} />Export JSON</button></div></div>
       <input bind:this={resultInput} class="visually-hidden" tabindex="-1" type="file" accept=".json,application/json" aria-label="Import PlanningResult" onchange={(event) => { const file = event.currentTarget.files?.[0]; if (file) void importResult(file); event.currentTarget.value = ''; }} />
-      <div class="workspace-controls"><div class="view-context"><span class="status-dot" class:online={result !== null}></span>{result ? 'RESULT LOADED' : 'READY TO EXPLORE'}<span class="context-separator">/</span>CPIR 0.1</div><div class="explanation-switch" role="group" aria-label="Explanation depth">{#each ['Simple', 'Technical', 'Research'] as value}<button class:active={mode === value} aria-pressed={mode === value} onclick={() => mode = value as ExplanationMode}>{value}</button>{/each}</div></div>
+      <div class="workspace-controls"><div class="view-context"><span class="status-dot" class:online={result !== null}></span>{result ? 'RESULT LOADED' : 'READY TO EXPLORE'}<span class="context-separator">/</span>CPIR {request.schema_version.major}.{request.schema_version.minor}</div><div class="explanation-switch" role="group" aria-label="Explanation depth">{#each ['Simple', 'Technical', 'Research'] as value}<button class:active={mode === value} aria-pressed={mode === value} onclick={() => mode = value as ExplanationMode}>{value}</button>{/each}</div></div>
       <p class="status-message" class:error role="status">{status}</p>
       {#if view === 'Planner'}
         <div class="summary-grid"><article class="summary-card"><span class="eyebrow">OUTCOME</span><strong class="outcome">{result ? readable(result.outcome) : 'Ready'}</strong><small>{result ? readable(result.validation.state) : 'Synthetic input loaded'}</small></article><article class="summary-card"><span class="eyebrow">FEASIBLE CANDIDATES</span><strong>{result?.candidates.length ?? '—'}<span> / {result?.search_space.evaluated ?? '—'}</span></strong><small>Evaluated grid positions</small></article><article class="summary-card"><span class="eyebrow">REJECTIONS</span><strong>{result?.conflicts.rejections.length ?? '—'}</strong><small>Inspectable constraint evidence</small></article><article class="summary-card"><span class="eyebrow">SEARCH ASSESSMENT</span><strong class="assessment">{result ? readable(result.assessment) : 'Awaiting run'}</strong><small>Applies only to the declared grid</small></article></div>
-        <div class="planner-grid"><RequestPanel {request} label={requestLabel} {busy} {validation} ondemo={loadDemo} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><Timeline request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} /><ScoreChart {result} {selected} onselect={(index) => selected = index} /><CandidateDetail candidate={result?.candidates[selected]} rank={selected + 1} {mode} /></div>
+        <div class="planner-grid"><RequestPanel {request} label={requestLabel} {busy} {validation} ondemo={loadDemo} onscenario={loadScenario} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><Timeline request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} /><ScoreChart {result} {selected} onselect={(index) => selected = index} /><CandidateDetail candidate={result?.candidates[selected]} rank={selected + 1} {mode} /></div>
+        {#if result?.compilation}<CompilationPanel compiled={result.compilation} />{/if}
+        {#if result}<DependencyPanel graph={result.dependency_graph} />{/if}
         {#if result && mode !== 'Simple'}<section class="research-context"><p>{mode === 'Research' ? 'Research boundary: optimality covers the bounded discrete grid, stated objective and stable tie breaks. It does not prove a continuous-time or global scheduling optimum.' : 'Technical boundary: proposals are not executable ActionPlans. No execution endpoint is available in this workspace.'}</p><JsonPanel title="Complete PlanningResult / graph source data" value={result} /></section>{/if}
       {:else if view === 'Temporal'}<TemporalView {mode} onlog={log} />
       {:else}<InspectorViews {view} {result} {request} />{/if}
