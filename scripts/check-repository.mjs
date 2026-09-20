@@ -62,6 +62,19 @@ const changelog=await readFile('CHANGELOG.md','utf8');
 if(!changelog.includes('**Software target:** `'+version+'`'))throw new Error('CHANGELOG software target mismatch');
 for(const text of [version,'0.4','0.1'])if(!readme.includes(text))throw new Error('README version missing');
 if(JSON.parse(await readFile('apps/cerebri-lab/package.json','utf8')).version!==version)throw new Error('Lab version mismatch');
+const sitePackage=JSON.parse(await readFile('apps/cerebri-site/package.json','utf8'));
+if(sitePackage.version!==version)throw new Error('Official site version mismatch');
+const siteSource=await readFile('apps/cerebri-site/src/lib/site.ts','utf8');
+for(const section of ['explore','cpir','planning','time','safety','architecture','lab','roadmap','developers']) {
+ if(!siteSource.includes(section+':'))throw new Error('missing official site surface: '+section);
+}
+const siteConfig=await readFile('apps/cerebri-site/svelte.config.js','utf8');
+if(!siteConfig.includes('@sveltejs/adapter-static')||!siteConfig.includes('/Nexus-Cerebri'))throw new Error('official site static/base-path configuration missing');
+const siteCss=await readFile('apps/cerebri-site/src/app.css','utf8');
+if(/fonts\.googleapis\.com|@import\s+url\(/i.test(siteCss))throw new Error('official site must not depend on runtime font imports');
+for(const retired of ['scripts/build-docs.mjs','scripts/docs-theme.css','scripts/docs-ui.js']) {
+ if(paths.some(p=>relative(root,p).replaceAll('\\','/')===retired))throw new Error('retired docs portal file remains: '+retired);
+}
 const fixture=JSON.parse(await readFile('examples/request.json','utf8'));
 if(fixture.schema_version.major!==0||fixture.schema_version.minor!==1)throw new Error('CPIR fixture version mismatch');
 const master=await readFile('docs/architecture/specifications/master-v0.4.md','utf8');
@@ -69,9 +82,9 @@ if(master.includes('validated ActionPlan'))throw new Error('stale execution inva
 for(const path of paths) {
  const name=relative(root,path).replaceAll('\\','/');
  if(/^(datasets\/(personal|private)|models\/artifacts)\//.test(name))throw new Error('private/generated data in source tree');
- if(!/\.(md|rs|json|mjs|toml|yml|html)$/.test(path))continue;
+ if(!/\.(md|rs|json|mjs|js|ts|svelte|css|toml|yml|html)$/.test(path))continue;
  const text=await readFile(path,'utf8');
  if(/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/.test(text) ||
    /(?:ghp|github_pat)_[A-Za-z0-9_]{30,}/.test(text))throw new Error('possible credential: '+name);
 }
-console.log('Repository checks passed: local Markdown links, DE/EN counterparts, versions, dependency boundaries and credential patterns.');
+console.log('Repository checks passed: links, DE/EN counterparts, versions, dependency boundaries, official site truth/configuration and credential patterns.');

@@ -8,26 +8,52 @@ jobs:
   foundation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.97.0 --profile minimal --component rustfmt,clippy
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/cerebri-site/package-lock.json
+            apps/cerebri-lab/package-lock.json
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
       - run: cargo test --workspace --locked
       - run: cargo build -p cerebri-node --locked
       - run: node --test bindings/node/test.mjs
-      - run: npm ci --ignore-scripts
+      - name: Install repository tooling
+        run: npm ci --ignore-scripts
       - run: npm run check
-      - run: npm run docs:build
-      - run: npm --prefix apps/cerebri-lab ci
+      - name: Install official site dependencies
+        run: npm --prefix apps/cerebri-site ci --ignore-scripts
+      - name: Typecheck official site
+        run: npm --prefix apps/cerebri-site run check
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Build official site with GitHub Pages base path
+        run: npm --prefix apps/cerebri-site run build
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Install Playwright Chromium
+        run: npm --prefix apps/cerebri-site exec -- playwright install --with-deps chromium
+      - name: Browser and accessibility tests
+        run: npm --prefix apps/cerebri-site run test:e2e
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Verify visual regression hashes
+        run: npm --prefix apps/cerebri-site run test:visual
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Install Lab dependencies
+        run: npm --prefix apps/cerebri-lab ci
       - run: npm --prefix apps/cerebri-lab run check
       - run: npm --prefix apps/cerebri-lab test
       - run: npm --prefix apps/cerebri-lab run build
       - run: npm audit --audit-level=high
+      - run: npm --prefix apps/cerebri-site audit --audit-level=high
       - run: npm --prefix apps/cerebri-lab audit --audit-level=high
       - run: cargo doc --workspace --no-deps --locked
         env:

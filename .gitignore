@@ -14,3 +14,7 @@ node_modules/
 .DS_Store
 .idea/
 dist/
+/apps/cerebri-site/src/lib/generated/
+/apps/cerebri-site/static/nexus-cerebri-logo.png
+/apps/cerebri-site/test-results/
+/apps/cerebri-site/playwright-report/
