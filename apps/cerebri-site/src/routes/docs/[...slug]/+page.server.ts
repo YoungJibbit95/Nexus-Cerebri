@@ -30,7 +30,7 @@ function rewriteInternalLinks(raw: string, sourcePath: string) {
 }
 
 export function load({ params }) {
-  const requestedSlug = (params.slug ?? '').replace(/^\\/+|\\/+$/g, '');
+  const requestedSlug = (params.slug ?? '').replace(/^\/+|\/+$/g, '');
   const doc = docsData.find((item) => item.slug === requestedSlug);
   if (!doc) error(404, 'Documentation page not found');
   const raw = doc.raw.replace(/^<!-- doc:[^]*?-->\s*/, '');
