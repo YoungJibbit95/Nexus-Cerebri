@@ -72,7 +72,7 @@ cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
 cargo run -p cerebri-core --example plan
 npm --prefix apps/cerebri-lab ci
 npm --prefix apps/cerebri-lab run build
-npm --prefix apps/cerebri-site install
+npm --prefix apps/cerebri-site ci
 npm --prefix apps/cerebri-site run check
 npm run docs:build
 cargo run -p cerebri-api

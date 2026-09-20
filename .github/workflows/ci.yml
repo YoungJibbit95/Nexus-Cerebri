@@ -8,13 +8,17 @@ jobs:
   foundation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.97.0 --profile minimal --component rustfmt,clippy
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/cerebri-site/package-lock.json
+            apps/cerebri-lab/package-lock.json
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
       - run: cargo test --workspace --locked
@@ -24,7 +28,7 @@ jobs:
         run: npm ci --ignore-scripts
       - run: npm run check
       - name: Install official site dependencies
-        run: npm --prefix apps/cerebri-site install --ignore-scripts
+        run: npm --prefix apps/cerebri-site ci --ignore-scripts
       - name: Typecheck official site
         run: npm --prefix apps/cerebri-site run check
         env:
@@ -43,12 +47,6 @@ jobs:
         run: npm --prefix apps/cerebri-site run test:visual
         env:
           CEREBRI_BASE_PATH: /Nexus-Cerebri
-      - name: Upload site reproducibility artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cerebri-site-bootstrap
-          if-no-files-found: error
-          path: apps/cerebri-site/package-lock.json
       - name: Install Lab dependencies
         run: npm --prefix apps/cerebri-lab ci
       - run: npm --prefix apps/cerebri-lab run check

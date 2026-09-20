@@ -14,7 +14,7 @@
 ## Commands
 
 ```sh
-npm install
+npm ci
 npm run check
 npm run build
 npm run test:e2e
