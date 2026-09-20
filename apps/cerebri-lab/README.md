@@ -5,14 +5,27 @@ uses rounded glass panels, restrained cyan/violet accents, light/dark themes,
 responsive navigation and reduced-motion support. It is research/developer
 tooling; its UI contracts are not a stable consumer API.
 
-## Run
+## Setup
 
 From the repository root, with Node.js **22.12 or newer**:
 
 ```sh
 npm --prefix apps/cerebri-lab ci
-npm --prefix apps/cerebri-lab run build
+npm --prefix apps/cerebri-lab test
+```
+
+## Run
+
+Before starting the vite server run this to setup the api:
+
+```sh
 cargo run -p cerebri-api
+```
+
+From the repository root, with Node.js **22.12 or newer**:
+
+```sh
+npm --prefix apps/cerebri-lab run dev 
 ```
 
 Open [the built Lab](http://127.0.0.1:3000/lab/). The API serves
