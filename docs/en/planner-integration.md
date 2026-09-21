@@ -27,6 +27,11 @@ clipping and source revision. Duplicate series and object/occurrence identity co
 reject atomically. Callers must not supply one external occurrence both as an ordinary
 object and under a different series identity. Provider reconciliation remains future work.
 
+Earlier/Later DST fold policies intentionally keep the same nominal occurrence identity,
+while UTC ranges and resolution evidence differ. Planning reuses the validated immutable
+compilation view; compiler errors cannot fall back to legacy planning. Lifecycle validation
+still checks and recompiles the current snapshot independently.
+
 All supplied Event/Task objects and compiled occurrences conservatively block overlap,
 even outside mutation scope. Incomplete coverage returns unknown complement and
 `InsufficientInformation`; it never creates free slots. RequiredBuffer checks full ranges
@@ -58,6 +63,18 @@ duplicate materialization, DST and incomplete coverage. Rust API and live HTTP-t
 tests consume these inputs. Negative contract tests reject drift in newly added fields.
 Schema generation becomes justified with multiple maintained clients or recurrent drift;
 small explicit parity tests suffice for this internal Lab contract today.
+
+The [2026-09-21 verification campaign](../development/progress/2026-09-21-planner-verification.md)
+cross-checks seeded small schedules, every three-node directed graph, generated recurrence,
+malformed JSON and real API/Lab contracts. This is bounded property testing, not formal
+verification. Manual guards now check validation variants and bounded IDs; schema generation
+remains deferred because the observed gaps are localized missing guards, not recurring wire
+schema changes across multiple clients.
+
+[ADR-0013](../architecture/decisions/ADR-0013-planner-resource-admission.md) adds compact
+request size <= 256 KiB, request bytes times candidate budget <= 16 MiB and materialized
+occurrence evidence <= 1 MiB. These complement the existing workload limits. Local-date
+overflow rejects the candidate rather than panicking. No feature expansion or release is implied.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporal reference](temporal.md) · [CPIR reference](cpir.md)

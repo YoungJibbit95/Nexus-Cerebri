@@ -42,6 +42,26 @@ This changelog maintains two independent histories:
 
 ---
 
+## 2026-09-21 — Deterministic planner verification and hardening
+
+### Added
+
+* Deterministic SplitMix64 test generator without new dependencies: 512 independent schedule seeds with integer feasibility/ranking oracles and three full-response permutations each; 256 recurrence seeds with day-by-day expectations; all 512 directed three-node graphs and 256 additional small graph seeds checked with transitive-closure and exhaustive-order oracles.
+* Named malformed CPIR corpus, 128 reproducible byte-mutation cases, explicit CPIR 0.1/0.2/future-version round trips and API/Core parity. Added arithmetic, maximum-workload, DST identity/clipping and shared-budget regressions.
+
+### Fixed / Security
+
+* Reuse the validated immutable compilation during planning instead of compiling twice and discarding the second error. Lifecycle revalidation remains independent.
+* Reject unrepresentable local dates through checked timezone-offset arithmetic; extreme valid UTC JSON input no longer panics in ExplicitDate constraints.
+* Bound serialized typed input, repeated request metadata work and materialized occurrence evidence (ADR-0013). Existing count/work limits remain intact; rejection is atomic.
+* Lab now rejects malformed validation issue payloads and domain identifiers before rendering. Real Rust response mutations demonstrate the fixes.
+
+### Documentation / compatibility
+
+* Confirmed ADR-0012 nominal occurrence identity: Earlier/Later share an ID while UTC ranges and resolution evidence differ. CPIR 0.1 remains distinct from temporal CPIR 0.2; unknown coverage still blocks planning.
+* Updated Master, roadmap, DE/EN references and the [dated verification report](docs/development/progress/2026-09-21-planner-verification.md), including limits and remaining blind spots.
+* No new dependency, schema generation, UI redesign, feature expansion, software bump, tag or release. Independent review and release qualification remain the next bounded milestone.
+
 ## 2026-09-21 — Deterministic planner integration
 
 ### Added
