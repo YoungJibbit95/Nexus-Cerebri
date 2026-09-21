@@ -1,8 +1,10 @@
 # Nexus Cerebri agent instructions
 
 Communicate with the maintainer in German. Code, identifiers and technical artifacts use English.
-Read [the current Master](docs/architecture/specifications/master-v0.4.md), applicable
-[ADRs](docs/architecture/decisions/ADR-0001-workspace.md), and [roadmap](docs/development/roadmap/README.md) before architectural work.
+Before architectural work, read [the current Master](docs/architecture/specifications/master-v0.4.md),
+the [ADR index](docs/architecture/decisions/README.md), all Accepted ADRs relevant to every subsystem
+you intend to modify, and the [roadmap](docs/development/roadmap/README.md). Follow amendments
+identified in the index; an early ADR alone does not describe the current architecture.
 
 ## Implementation
 - Finish one bounded roadmap milestone at a time; preserve the strong lifecycle, execution preflight and deterministic core.

@@ -1,10 +1,16 @@
 <!-- doc: cpir; lang: de; counterpart: ../en/cpir.md -->
 # CPIR 0.2 und Schnittstellen
 
+**Current CPIR:** `0.2`
+**Legacy CPIR:** `0.1`
+
 Softwareversion 0.2.0. Spezifikation 0.4, CPIR 0.2 und REST v1 sind unabhängige
 Versionsbereiche. CPIR ist ein internes, veränderliches Schema ohne öffentliches v1-Stabilitätsversprechen.
 
-[Die ausführbare synthetische Anfrage](../../examples/request.json) zeigt das vollständige Format.
+[Die aktuelle CPIR-0.2-Anfrage](../../examples/request.json) ist der normale Quick Start.
+[Die CPIR-0.1-Legacy-Anfrage](../../examples/legacy-cpir-0.1.json) prüft Kompatibilität ohne temporale Eingaben.
+Die Current-/Legacy-Angaben setzen [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) um;
+die Repository-Prüfung gleicht sie mit Rust-Schemakonstanten, beiden Beispielen und der README ab.
 Die Rust-Strukturen in cerebri-planner/model.rs definieren die Repräsentation.
 Zentrale Objekte lehnen unbekannte Felder ab, einschließlich vertippter Scope-Felder.
 Akzeptiert werden {major: 0, minor: 1} und {major: 0, minor: 2}. Temporale Eingaben verlangen 0.2; andere Versionen ergeben UnsupportedSchema.

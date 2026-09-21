@@ -9,6 +9,7 @@
 [![Software](https://img.shields.io/badge/software-0.2.0-0969da?style=for-the-badge)](#)
 [![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=for-the-badge)](#)
 [![CPIR](https://img.shields.io/badge/CPIR-0.2-1f883d?style=for-the-badge)](#)
+[![Release status](https://img.shields.io/badge/status-unreleased-d29922?style=for-the-badge)](#)
 [![REST](https://img.shields.io/badge/REST-%2Fv1-d1242f?style=for-the-badge)](#)
 
 [![Rust](https://img.shields.io/badge/Rust-1.97.0-000000?style=flat-square\&logo=rust\&logoColor=white)](https://www.rust-lang.org/)
@@ -22,17 +23,29 @@
 [![GitHub issues](https://img.shields.io/github/issues/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/issues)
 [![GitHub last commit](https://img.shields.io/github/last-commit/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/commits/main)
 [![GitHub repo size](https://img.shields.io/github/repo-size/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri)
-![Repository Views](https://komarev.com/ghpvc/?username=YoungJibbit95\&repo=Nexus-Cerebri\&label=Repository%20Views\&style=flat-square)
 
 </div>
 
 ---
 
-> **Software:** `0.2.0` — Temporal Core research milestone. First public release candidate.
+> **Software:** `0.2.0`
 >
-> **Specification:** `0.4`, frozen Foundation Architecture Baseline.
+> **Release status:** `Unreleased`
 >
-> **CPIR:** internal schema `0.2`; legacy `0.1` remains accepted. **REST:** development routes under `/v1`.
+> **Release qualification:** `Undergoing release qualification`
+>
+> **Published release:** `None`
+>
+> **Specification:** `0.4`
+>
+> **Current CPIR:** `0.2`
+>
+> **Legacy CPIR:** `0.1`
+>
+> **REST:** development routes under `/v1`.
+
+These are separate version domains. No formal release candidate, version tag or software release
+has been published. See [version authorities](docs/development/documentation-git-release-standard.md).
 
 A Rust temporal planning foundation built around **neural intuition + symbolic verification**.
 The current implementation is deterministic; neural inference is a future milestone.
@@ -82,7 +95,8 @@ cargo run -p cerebri-api
 > [!TIP]
 > The development server binds only to [localhost:3000](http://127.0.0.1:3000).
 
-Open [Cerebri Lab](http://127.0.0.1:3000/lab/) and load [the synthetic request](examples/request.json).
+Open [Cerebri Lab](http://127.0.0.1:3000/lab/) and load [the current CPIR 0.2 request](examples/request.json).
+[CPIR 0.1](examples/legacy-cpir-0.1.json) is an explicitly supported legacy fixture.
 Temporal diagnostics use [a Berlin DST fixture](examples/temporal-request.json).
 For UI development use `npm --prefix apps/cerebri-lab run dev` alongside the Rust API.
 
@@ -147,7 +161,7 @@ GitHub Pages deploys that static artifact from `main`; the site build handles th
 ### 🤝 Project
 
 * [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
-* [Foundation decisions](docs/architecture/decisions/ADR-0001-workspace.md) · [Official site ADR](docs/architecture/decisions/ADR-0011-official-site.md) · [Progress](docs/development/progress/2026-09-20-official-site.md)
+* [Foundation decisions](docs/architecture/decisions/README.md) · [Official site ADR](docs/architecture/decisions/ADR-0011-official-site.md) · [Progress](docs/development/progress/2026-09-20-official-site.md)
 
 > [!NOTE]
 > Accepted ADRs explicitly amending the Master take precedence only with synchronized Master updates;
@@ -179,6 +193,6 @@ integration, dependency diagnostics and deterministic oracle tests are implement
 [![Made with Rust](https://img.shields.io/badge/Made%20with-Rust-000000?style=flat-square\&logo=rust)](https://www.rust-lang.org/)
 [![Open Source](https://img.shields.io/badge/Open%20Source-MIT-1f883d?style=flat-square\&logo=opensourceinitiative\&logoColor=white)](LICENSE)
 
-<sub>Software 0.2.0 · Specification 0.4 · CPIR 0.2 (legacy 0.1) · REST /v1</sub>
+<sub>Software 0.2.0 · Specification 0.4 · CPIR 0.2 (legacy 0.1) · REST /v1 · Unreleased</sub>
 
 </div>

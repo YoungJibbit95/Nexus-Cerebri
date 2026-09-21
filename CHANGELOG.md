@@ -36,11 +36,34 @@ This changelog maintains two independent histories:
 **Software target:** `0.2.0`
 **Next roadmap target:** `0.3.0`
 **Release status:** `Unreleased`
+**Release qualification:** `Undergoing release qualification`
+**Published release:** `None`
 
 > [!WARNING]
 > No software release or tag has been created yet.
 
 ---
+
+## 2026-09-22 — Release qualification corrections
+
+### Fixed
+
+* Separated workspace 0.2.0 from unreleased qualification and publication status in current documentation and generated website metadata. No formal RC, tag, release or version bump.
+* Replaced loose README version presence checks with exact authority fields, badge/footer checks and targeted stale/contradictory-metadata mutations; site generation shares these checks.
+* Made CPIR 0.2 the normal Quick Start, preserved the exact former CPIR 0.1 example as a named legacy fixture, and strengthened Core/API/Node/Lab compatibility and unknown-version rejection coverage.
+
+### Security and CI
+
+* Added pinned cargo-audit 0.22.2 lockfile scanning; known vulnerabilities, warnings and scanner failures block CI without ignored advisories. Added the explicit locked workspace build.
+* Pinned all direct CI/Pages actions to upstream commit SHAs, retained exact tag comments, added weekly Dependabot updates, removed persisted checkout credentials and scoped Pages write permissions to deployment.
+* Preserved short-lived synthetic browser failure evidence for review. Kept all existing deterministic planner, frontend, documentation and npm audit gates.
+
+### Documentation and governance
+
+* Added the Accepted ADR index and subsystem-reading rule; clarified the Master's original baseline date without inventing revision dates.
+* Restored exact historical specification 0.1/0.2/0.3 blobs with provenance and non-normative labeling; preserved accurate historical ADR/progress wording.
+* Removed the external view counter and documented the retained informational badge policy. Documented advisory policy and the existing low-severity site dependency finding without suppressing it.
+* [Qualification evidence and limitations](docs/development/progress/2026-09-22-release-qualification-corrections.md). Independent review and a later explicit release decision remain required.
 
 ## 2026-09-21 — Deterministic planner verification and hardening
 
