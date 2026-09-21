@@ -88,16 +88,20 @@ Browser checks use `CEREBRI_BASE_PATH=/Nexus-Cerebri`; rustdoc uses `RUSTDOCFLAG
 
 Dependency setup: root/site `npm ci --ignore-scripts`, Lab `npm ci`, pinned cargo-audit install and
 `npm --prefix apps/cerebri-site exec -- playwright install chromium` succeeded.
-Remote exact-head CI and reviewed Linux snapshot evidence are pending the first branch push;
-no remote success is inferred from this local table. Pages only deploys main, so this PR's site
-build is the applicable pre-merge check, not a claimed deployment of the correction branch.
+The first branch CI run passed the Rust, Node, repository, site build, browser and accessibility
+gates before the visual hash step exposed stale Linux references. Its uploaded failure artifact was
+reviewed at 1440/1024/768/390 px; all four Linux renders matched the intended publication-status text
+change and their exact hashes were registered. Exact-head CI remains authoritative for final status.
+Pages only deploys main, so this PR's site build is the applicable pre-merge check, not a claimed
+deployment of the correction branch.
 
 ## Visualizations, lessons and documentation
 
 No new visualization or product feature. The homepage's existing metadata now shows current CPIR
 and explicit unreleased/publication status. Its screenshot references require review of that intended
-text change. All four Windows full-page renders (1440/1024/768/390 px) were visually inspected.
-Exact hashes are maintained separately for Windows and Linux; unregistered platforms fail rather
+text change. All four Windows full-page renders and all four first-CI Linux renders
+(1440/1024/768/390 px) were visually inspected. Exact hashes are maintained separately for Windows
+and Linux; unregistered platforms fail rather
 than skip comparison. No mismatch threshold or visual gate was relaxed.
 The first local build caught links to Markdown heading fragments that this renderer
 does not create; links were corrected to canonical documents without weakening prerender checks.
