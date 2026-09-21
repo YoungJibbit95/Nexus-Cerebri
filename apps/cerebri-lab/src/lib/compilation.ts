@@ -59,8 +59,8 @@ export function parseCompiledContext(value: unknown): CompiledContextSnapshot {
   }
   for (const raw of array(compiled.occurrences, 'compiled_context.occurrences')) {
     const item = object(raw, 'materialized_occurrence');
-    string(item.id, 'materialized_occurrence.id');
-    string(item.series_id, 'materialized_occurrence.series_id');
+    shape.identifier(item.id, 'materialized_occurrence.id');
+    shape.identifier(item.series_id, 'materialized_occurrence.series_id');
     number(item.source_revision, 'materialized_occurrence.source_revision');
     source(item, 'materialized_occurrence');
     parseOccurrence(item.occurrence);
