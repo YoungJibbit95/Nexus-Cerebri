@@ -1,8 +1,8 @@
-# Nexus Cerebri — Master Specification v0.4
+# Nexus Cerebri --- Master Specification v0.2
 
 **Status:** Planning baseline\
-**Specification version:** 0.4\
-**Original baseline date:** 2026-09-19\
+**Specification version:** 0.3\
+**Baseline date:** 2026-09-19\
 **Repository:** `github.com/YoungJibbit95/Nexus-Cerebri`\
 **Primary implementation language:** Rust\
 **Documentation:** German + English\
@@ -78,38 +78,44 @@ Review-resolution documents are historical/audit records after consolidation and
 
 ## 3. End-to-end architecture
 
-```text
-Input (Text / Voice Transcript / App / API)
-        ↓
-Interpretation / Semantic + Temporal Parsing
-        ↓
-CPIR Build + Validation
-        ↓
-PlanningRequest
-        ↓
-Planner
-        ↓
-ProposedPlan
-        ↓
-Deterministic Plan Validation
-        ↓
-ValidatedPlan
-        ↓
-Action Translation
-        ↓
-ActionPlan
-        ↓
-Policy + Capability + Confirmation + Authorization
-        ↓
-AuthorizedActionPlan
-        ↓
-Executor Freshness / Revision / Idempotency Preconditions
-        ↓
-Integration Adapter
-        ↓
-External System
-        ↓
-ExecutionResult
+``` text
+Text / Voice transcript / Structured App Input
+                    |
+                    v
+           Interpretation Layer
+                    |
+                    v
+ Intent + Entities + Temporal Facts
+ + Semantic Signals + Confidence
+                    |
+                    v
+              CPIR Builder
+                    |
+                    v
+               Validation
+                    |
+                    v
+        Deterministic Planning Core
+ Candidate Generation / Constraints / Search
+       Repair / Scoring / Ranking
+                    |
+                    v
+             ProposedPlan(s)
+                    |
+                    v
+          Final Plan Validation
+                    |
+                    v
+               ActionPlan
+                    |
+                    v
+ Permission + Confirmation Policy
+                    |
+                    v
+          Integration / Adapter
+                    |
+                    v
+             External System
 ```
 
 The planner never mutates a calendar.
@@ -130,7 +136,7 @@ Planning Intermediate Representation contains:
 -   soft constraints
 -   preferences
 -   semantic inference
--   PolicyContext
+-   execution policy
 -   provenance
 -   per-field confidence
 
@@ -150,31 +156,18 @@ and `DEFAULT`.
 
 ### Field knowledge states
 
-Every semantically relevant CPIR field has an explicit state when absence/uncertainty is meaningful. `KNOWN`, `MISSING`, `UNKNOWN`, `UNCERTAIN`, and `AMBIGUOUS` are epistemic states; `UNRESOLVED` is a temporary processing state:
+Every semantically relevant CPIR field has an explicit knowledge state when absence/uncertainty is meaningful:
 
-- `KNOWN` — a sufficiently established value exists.
+- `PRESENT_KNOWN` — a sufficiently established value exists.
 - `MISSING` — no value/evidence was supplied.
 - `UNKNOWN` — the field is relevant, but its value cannot currently be determined.
 - `UNCERTAIN` — a candidate value exists, but confidence is insufficient for a certainty-requiring use.
 - `AMBIGUOUS` — multiple materially different interpretations remain plausible.
-- `UNRESOLVED` — temporary **processing state**, not an epistemic state; parsing/resolution has not completed yet. After processing it must become `KNOWN`, `MISSING`, `UNKNOWN`, `UNCERTAIN`, or `AMBIGUOUS`.
+- `UNRESOLVED` — a domain-specific value still requires resolution, especially temporal expressions.
 
 Confidence may accompany a candidate value but does not replace knowledge state.
 
 A planning operation declares which fields are required. If a required field is `MISSING`, `UNKNOWN`, `AMBIGUOUS`, or `UNRESOLVED`, optimization is blocked and the result becomes `INSUFFICIENT_INFORMATION` or a clarification flow. `UNCERTAIN` may proceed only where the operation/policy explicitly permits uncertainty and the resulting plan records it.
-
-
-### Policy context in CPIR
-
-CPIR does not embed an open-ended “PolicyContext” blob. It carries a bounded `PolicyContext` containing:
-
-- `policy_set_id` and/or `policy_version`;
-- an immutable request-time `PolicySnapshot` of policy inputs relevant to planning;
-- `ConfirmationRequirements`;
-- `MutationPolicy`;
-- deployment/execution mode where applicable.
-
-Policy evaluation remains deterministic. The snapshot supports explanation/reproducibility; current authorization and freshness are still rechecked before execution.
 
 ## 5. Planning object model
 
@@ -227,12 +220,6 @@ Overlap:
 Relations: BEFORE, AFTER, OVERLAPS, CONTAINS, INSIDE, TOUCHES, EQUAL.
 
 Recurrence is expanded only inside a bounded PlanningHorizon.
-
-[ADR-0012](../decisions/ADR-0012-planner-snapshot-compilation.md) defines the explicit
-planner compilation boundary: CPIR 0.2 adds identified existing series to the source
-ContextSnapshot, compiled into a bounded immutable view with occurrence identities,
-full/clipped ranges, provenance, DST evidence and completeness. CPIR 0.1 without temporal
-input remains accepted. Prospective series and recurrence constraints remain fail-closed.
 
 Candidate granularity is configurable; proposed initial default: 15
 minutes.
@@ -310,8 +297,8 @@ Initial soft factors:
 An initial weighted cost function is acceptable. Lower cost is better.
 Keep multiple ranked candidates.
 
-Preference precedence follows section 2: explicit current request \>
-session context \> personal learned \> global learned \> default.
+Preference precedence: explicit user \> personal learned \>
+integration/domain \> global learned \> default.
 
 ## 10. Candidate generation and repair
 
@@ -324,11 +311,6 @@ Tiers:
 4.  no safe solution: explain conflict / ask user
 
 Hard constraints define feasible space before soft ranking.
-
-ADR-0012 adds deterministic dependency graph validation with missing-reference and cycle
-evidence before search. DependencyOrder means predecessor.end <= dependent.start; graph
-ordering grants no permission. The baseline still searches one event against fixed context.
-Its explicit ranking tuple is preference distance, mutations, shift seconds, start, object ID.
 
 No-solution cases create a `ConflictSet`; movable blockers may create
 `RepairCandidate`s.
@@ -349,19 +331,6 @@ Planner result semantics are two-dimensional:
 `SearchAssessment`: `PROVEN_OPTIMAL`, `COMPLETE`, `BEST_FOUND`.
 
 `PROVEN_OPTIMAL` requires proof/exhaustive evaluation over the explicitly declared search space, objective, constraints, and deterministic tie-break rules. Budget- or timeout-limited search can only report `BEST_FOUND`.
-
-[ADR-0013](../decisions/ADR-0013-planner-resource-admission.md) additionally bounds planner
-metadata admission: compact request JSON <= 256 KiB, request bytes times declared candidate
-budget <= 16 MiB, and materialized occurrence evidence <= 1 MiB. Exceeding these bounds
-rejects atomically through InputLimit; existing cardinality limits still apply.
-
-
-
-`SearchAssessment::COMPLETE` means the explicitly declared search space was fully traversed/exhausted, but no optimization proof is asserted. It is suitable for exhaustive no-solution/conflict analysis or algorithms where traversal completion alone does not prove optimality.
-
-`SearchAssessment::PROVEN_OPTIMAL` is stronger: the declared search space is complete and the returned solution is proven optimal for the declared objective and deterministic tie-break rules.
-
-`SearchAssessment::BEST_FOUND` means search stopped before completion/proof.
 
 ## 11. Operations
 
@@ -384,31 +353,6 @@ Every operation carries a typed, bounded `PlanningScope`. Initial fields are:
 - `max_mutations`
 
 Visibility/read access does not imply mutability. Missing scope dimensions never silently expand to “all visible objects” unless an explicit policy defines that expansion. `MOVE`, `RESCHEDULE`, and `OPTIMIZE` may mutate only objects included by scope, planning capability, and policy.
-
-
-#### Scope field presence semantics
-
-For optional collection dimensions such as `object_ids`, `movable_object_ids`, `calendar_ids`, `resource_ids`, and `integration_ids`:
-
-- omitted / `None`: this dimension adds no additional scope filter; it never grants permission or mutability;
-- present as `[]`: explicitly selects no objects for that dimension;
-- present as `[A, B]`: restricts that dimension to exactly those identifiers.
-
-For resource_ids specifically, a nonempty filter uses **ALL containment**: the object must
-have at least one resource and all its resource IDs must occur in the filter. Object [A,B]
-with filter [A] is excluded; filter [A,B,C] includes it. Resource-free objects are excluded
-by a nonempty resource filter. Omitted/null remains unrestricted in that dimension and []
-selects nothing. This preserves existing behavior, as recorded in
-[ADR-0008](../decisions/ADR-0008-scope-and-prospective-identity.md).
-
-PlanningObject.id is a planning identity: revision=None marks a prospective CREATE target,
-not an existing provider record. Some(revision) marks existing state for MOVE/UPDATE/DELETE.
-A real CREATE adapter creates remote state from the prospective object and returns identity
-and revision; it must not require that the target already exists at the provider.
-
-The effective mutable set is the intersection of scope, policy, planning capability, hard constraints, and current authorization. Read visibility never implies mutability.
-
-`max_mutations = 0` means **analysis-only / non-mutating planning**. No executable mutating ActionPlan may be produced.
 
 ## 12. NLP/semantic pipeline
 
@@ -591,20 +535,6 @@ Operational ledger states may include PROPOSED, APPROVED, EXECUTING, EXECUTED, F
 
 Early releases treat deletion, broad optimization and modification of external events conservatively.
 
-
-### ExecutionResult and executor preconditions
-
-One `ExecutionResult` represents one execution attempt for one `AuthorizedActionPlan`. It contains ordered per-action `ActionExecutionResult` records so multi-action plans can represent partial success/failure explicitly (`SUCCEEDED`, `FAILED`, `SKIPPED`, plus provider/error metadata). Partial success must not collapse into one boolean.
-
-`AuthorizedActionPlan` records successful authorization for a specific context/revision, but the executor must immediately before the first external side effect recheck:
-
-- source revision/freshness;
-- authorization/capabilities where re-checkable;
-- confirmation requirements;
-- idempotency/replay protection.
-
-If a final precondition fails, no new external mutation may begin; the attempt becomes stale/rejected and requires revalidation/re-authorization.
-
 ## 21. Security/privacy
 
 **Collect less, infer carefully, retain deliberately.**
@@ -629,15 +559,12 @@ integration/contract and ML regression/evaluation.
 Core invariants:
 
 -   ValidatedPlan =\> zero hard-constraint violations
--   Execution =\> AuthorizedActionPlan
+-   Execution =\> validated ActionPlan
 -   LearnedPreference cannot override explicit constraint
 -   Inference cannot override fact
 -   StalePlan =\> revalidation
 -   Unknown != assumed
 -   Planner != executor
-
-
-Safety invariant: `Execution => AuthorizedActionPlan`.
 
 ## 23. Visualization
 
@@ -678,16 +605,12 @@ Canonical authorities:
 
 - **Software version:** root Cargo workspace package metadata / designated workspace package version; release tags use `vMAJOR.MINOR.PATCH`.
 - **API version:** route/protocol declaration (initially `v1` only when the public API is intentionally declared).
-- **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation started at `0.1`; ADR-0012 adds `0.2` with legacy `0.1` support, not “v1”.
+- **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation starts at `0.1`, not “v1”.
 - **Model version:** immutable ModelRegistry metadata/artifact ID.
 - **Dataset version:** dataset manifest metadata/checksum.
 - **Specification revision:** document front matter/header, e.g. `0.2`; no software compatibility guarantee is implied.
 
 README surfaces the software version/status and links the current specification revision.
-The current CHANGELOG header records release qualification and publication status separately from
-Cargo version metadata. Actual publication requires matching remote version tags and GitHub release
-records; a workspace version or qualification statement alone never proves publication.
-See the [version authority checks](../../development/documentation-git-release-standard.md).
 
 The labels `ML-v0`, `ML-v1`, etc. are **architecture-learning milestones**, not model artifact versions.
 
@@ -770,7 +693,7 @@ A scaffolding agent must not silently implement these learning
 milestones.
 
 
-## 32. Additional domain definitions
+## 32. Additional definitions resolved in v0.2
 
 ### External lock
 
@@ -805,10 +728,3 @@ Meaningful implementation or architecture-design sessions should be logged. Pure
 ## Foundation typing requirement
 
 The foundation implementation must create real Rust type boundaries/skeletons for `ProposedPlan`, `ValidatedPlan`, `ActionPlan`, `AuthorizedActionPlan`, and `ExecutionResult`. They do not need full future behavior, but they must not be aliases of one generic plan type. Constructors/conversions should enforce the intended lifecycle so later execution code cannot accidentally accept a raw `ProposedPlan`.
-
-
-## Specification archival policy
-
-The current normative Master Specification is `docs/architecture/specifications/master-v0.4.md`. ADR-0007 supersedes the former root-location rule: specifications, decisions and development standards live under `docs/`, with the normative hierarchy unchanged. Superseded Master Specification revisions belong under `docs/archive/specifications/` and are historical/non-normative. Coding agents must not treat archived revisions as current architecture.
-
-Specification v0.4 is the **Foundation Architecture Baseline**. Future architectural changes use ADRs and synchronized updates to the current Master Specification before merge.

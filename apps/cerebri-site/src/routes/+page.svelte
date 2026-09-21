@@ -22,6 +22,7 @@
       <span>Spec {runtimeData.metadata.specVersion}</span>
       <span>CPIR {runtimeData.metadata.cpirVersion}</span>
     </div>
+    <p class="kicker">Published release: {runtimeData.metadata.publishedRelease}</p>
     <p class="kicker">NEXUS CEREBRI / OPEN RESEARCH FOUNDATION</p>
     <h1>Reason freely.<br /><em>Verify everything.</em></h1>
     <p class="hero-lede">
@@ -43,7 +44,7 @@
 </section>
 
 <section class="metrics" aria-label="Repository authority">
-  <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>Cargo workspace authority</span></article>
+  <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>{runtimeData.metadata.releaseStatus} · qualification in progress</span></article>
   <article><small>SPECIFICATION</small><strong>{runtimeData.metadata.specVersion}</strong><span>Current Master baseline</span></article>
   <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Internal serialized schema</span></article>
   <article><small>RUST</small><strong>{runtimeData.metadata.rustVersion}</strong><span>Pinned workspace language floor</span></article>

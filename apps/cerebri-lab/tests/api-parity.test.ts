@@ -47,7 +47,7 @@ test('real Rust API responses satisfy Lab contracts and retain independent scena
   }
 
   await t.test('legacy CPIR preserves the absence of a compilation claim and explicit ranking fields', async () => {
-    const request = parseRequest(fixture('request.json'));
+    const request = parseRequest(fixture('legacy-cpir-0.1.json'));
     const result = parseResult(await post('/v1/plan', request));
     assert.equal(result.outcome, 'Solution');
     assert.equal(result.compilation, null);

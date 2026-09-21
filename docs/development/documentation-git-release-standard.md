@@ -102,14 +102,35 @@ release notes/tag/Pages build complete.
 
 ## Canonical version authorities
 
-- Software: Cargo workspace/package version; Git release tags mirror it.
-- Specification: independent document revision (`0.x`), not a software release.
-- CPIR: serialized schema version + schema docs.
+- Software/workspace: `[workspace.package].version` in root `Cargo.toml`; application package versions mirror it. A Cargo version does not prove publication.
+- Specification: the current Master's `Specification version` header and matching filename. `Original baseline date` records the original 2026-09-19 architecture baseline; Git records subsequent edits. It is not a latest-update timestamp.
+- Current CPIR: serialized `schema_version` and the Current CPIR declaration in [the schema reference](../en/cpir.md), implementing ADR-0012; Rust `SchemaVersion` constants define the numeric representations.
+- Legacy CPIR compatibility: the reference's Legacy CPIR declaration, the named legacy fixture and Core/API compatibility tests; a legacy input is never silently relabeled as current.
+- Release qualification/publication: the current `CHANGELOG.md` header records status separately from software version. Actual publication is evidenced by matching remote tags and GitHub releases, not by version badges, historical targets or successful CI.
 - API: route/protocol version.
 - Model: ModelRegistry artifact metadata.
 - Dataset: dataset manifest + checksum.
 
 Use ISO 8601 dates everywhere.
+
+`npm run check` validates the exact README fields, badges and footer against these authorities,
+the current Changelog header, both CPIR fixtures, the DE reference and Rust schema constants.
+Mutation tests retain correct versions elsewhere while making individual authoritative fields stale.
+The website build consumes the same checked authorities and fails on missing/drifting metadata;
+it has no fallback version. The offline check cannot prove remote publication state. Before changing
+publication status, fetch tags and inspect GitHub releases. A subsequent explicit release decision
+must deliberately update the current unreleased qualification gate and release records together.
+Historical ADRs, dated progress entries and specification records do not set current release status.
+
+## README badge policy
+
+Retain CI, version, license, toolchain and repository-health badges that help readers assess the
+project. GitHub/Shields requests are an accepted external availability dependency; their images
+are informational and never an authority or prerequisite for builds or runtime behavior.
+Do not add visit/view counters: their limited engineering value does not justify a separate
+tracking request and availability dependency. The Komarev view counter was removed on 2026-09-22.
+The static website's application runtime remains independent of remote badge services; rendered
+repository Markdown may still contain the documented informational images.
 
 ## ADR triggers
 

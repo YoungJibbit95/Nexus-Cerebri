@@ -23,7 +23,7 @@ test('canonical CPIR parses without dropping unknown transport fields or grantin
   const fixture = readFixture('request');
   const request = parseRequest(fixture);
   assert.strictEqual(request, fixture);
-  assert.equal(request.schema_version.minor, 1);
+  assert.equal(request.schema_version.minor, 2);
   assert.equal(known(request.duration), 1800);
   assert.equal(knowledgeLabel(request.context.objects[0].time), 'MISSING');
 });

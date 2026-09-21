@@ -2,7 +2,9 @@ import { execFileSync } from 'node:child_process';
 import { copyFile, readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve, sep } from 'node:path';
 
+import { readAuthoritySources, checkVersionDeclarations } from './version-authorities.mjs';
 const root = resolve(import.meta.dirname, '..');
+const versions = checkVersionDeclarations(await readAuthoritySources(root));
 const generatedDir = resolve(root, 'apps/cerebri-site/src/lib/generated');
 const runtimeOutput = resolve(generatedDir, 'runtime-data.ts');
 const docsOutput = resolve(generatedDir, 'docs-data.ts');
@@ -43,13 +45,11 @@ function runCoreExample(name) {
 }
 
 const cargo = await readFile(resolve(root, 'Cargo.toml'), 'utf8');
-const master = await readFile(resolve(root, 'docs/architecture/specifications/master-v0.4.md'), 'utf8');
 const request = JSON.parse(await readFile(resolve(root, 'examples/request.json'), 'utf8'));
 const temporalRequest = JSON.parse(await readFile(resolve(root, 'examples/temporal-request.json'), 'utf8'));
-const softwareVersion = cargo.match(/\[workspace\.package\][\s\S]*?version = "([^"]+)"/)?.[1];
+
 const rustVersion = cargo.match(/rust-version = "([^"]+)"/)?.[1];
-const specVersion = master.match(/Specification version:\*\*\s*([0-9.]+)/)?.[1] ?? '0.4';
-if (!softwareVersion || !rustVersion) throw new Error('Cannot derive Cargo version authority');
+if (!rustVersion) throw new Error('Cannot derive Rust version authority');
 
 const all = await walk(root);
 const markdownPaths = all
@@ -73,7 +73,7 @@ for (const path of markdownPaths) {
     sourceUrl: 'https://github.com/YoungJibbit95/Nexus-Cerebri/blob/main/' + sourcePath,
     title: titleOf(raw, basename(sourcePath, '.md')),
     language,
-    status: explicitStatus,
+    status: sourcePath.startsWith('docs/archive/') ? 'Historical / non-normative' : explicitStatus,
     raw
   });
 }
@@ -85,9 +85,7 @@ try {
 
 const runtimeData = {
   metadata: {
-    softwareVersion,
-    specVersion,
-    cpirVersion: request.schema_version.major + '.' + request.schema_version.minor,
+    ...versions,
     rustVersion,
     revision
   },

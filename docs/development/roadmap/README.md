@@ -4,6 +4,14 @@
 
 The roadmap is target-based, not calendar-driven. Candidate software versions ship only when their acceptance criteria and Definition of Done are satisfied.
 
+## Current status — 2026-09-22
+
+Workspace/software version: **0.2.0**. **Unreleased; undergoing release qualification.**
+**Published release: none.** This correction pass does not create a tag, formal release candidate
+or software release. Independent review and a subsequent explicit maintainer decision are required.
+[The current Changelog header](../../../CHANGELOG.md) is the release-status record;
+the dated entries below preserve earlier milestone context.
+
 ## 2026-09-20 status
 
 Foundation (internal 0.1.0) and the bounded Temporal Core milestone are implemented.

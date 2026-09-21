@@ -1,7 +1,7 @@
 {
   "schema_version": {
     "major": 0,
-    "minor": 2
+    "minor": 1
   },
   "request_id": "synthetic-request",
   "trace_id": "synthetic-trace",
@@ -134,4 +134,3 @@
     "max_depth": 0
   }
 }
-

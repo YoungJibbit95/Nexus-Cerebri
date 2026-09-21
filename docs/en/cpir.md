@@ -1,10 +1,16 @@
 <!-- doc: cpir; lang: en; counterpart: ../de/cpir.md -->
 # CPIR 0.2 and interfaces
 
+**Current CPIR:** `0.2`
+**Legacy CPIR:** `0.1`
+
 Software version 0.2.0; specification 0.4, CPIR 0.2 and REST v1 are independent.
 CPIR is an internal evolving schema, not a stable public v1 protocol.
 
-[The executable synthetic fixture](../../examples/request.json) is the complete request example.
+[The current CPIR 0.2 fixture](../../examples/request.json) is the normal Quick Start.
+[The CPIR 0.1 legacy fixture](../../examples/legacy-cpir-0.1.json) exercises compatibility without temporal input.
+These current/legacy declarations implement [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md)
+and are checked against Rust schema constants, both fixtures and the README.
 Rust structs in cerebri-planner/model.rs are the representation authority.
 Top-level objects reject unknown fields, including misspelled scope controls.
 Schemas {major: 0, minor: 1} and {major: 0, minor: 2} are accepted. Temporal input requires 0.2; other versions produce UnsupportedSchema.
