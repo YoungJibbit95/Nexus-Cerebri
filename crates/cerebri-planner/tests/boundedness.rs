@@ -39,6 +39,8 @@ fn metadata_admission_accepts_exact_bounds_and_rejects_one_byte_more() {
 fn repeated_evidence_work_is_admitted_before_search() {
     let mut input = support::request();
     input.context.objects.truncate(1);
+    // The horizon must actually contain at least 256 evaluated placements.
+    input.granularity = Duration::seconds(1).unwrap();
     input.constraints.push(ConstraintSpec {
         object_id: input.target_ids[0].clone(),
         rule: HardConstraint::EarliestStart(input.scope.time_range.end()),
