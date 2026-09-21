@@ -62,5 +62,24 @@ verwenden diese Eingaben. Negative Vertragstests erkennen Abweichungen neuer Fel
 Schemagenerierung wird bei mehreren gepflegten Clients oder wiederholter Vertragsdrift
 sinnvoll; derzeit reichen kleine explizite Paritätstests für den internen Lab-Vertrag.
 
+Earlier/Later bei einer DST-Faltung behalten absichtlich dieselbe nominale Occurrence-ID;
+UTC-Intervall und Auflösungsevidenz unterscheiden sich. Die Planung übernimmt die bereits
+validierte unveränderliche Compilation. Compilerfehler können nicht in Legacy-Planung
+übergehen; die spätere Lifecycle-Validierung prüft und kompiliert den aktuellen Snapshot
+weiterhin unabhängig.
+
+Die [Verifikationskampagne vom 2026-09-21](../development/progress/2026-09-21-planner-verification.md)
+prüft kleine generierte Zeitpläne, alle gerichteten Dreiknotengraphen, generierte Rekurrenz,
+fehlerhaftes JSON und echte API/Lab-Verträge unabhängig gegen. Das sind begrenzte Property-Tests,
+keine formale Verifikation. Manuelle Guards prüfen jetzt Validierungsvarianten und begrenzte
+IDs. Schemagenerierung bleibt zurückgestellt: Die gefundenen Lücken waren örtlich fehlende
+Guards, keine wiederkehrenden Schemaänderungen über mehrere Clients.
+
+[ADR-0013](../architecture/decisions/ADR-0013-planner-resource-admission.md) ergänzt folgende
+Grenzen: kompaktes Request-JSON <= 256 KiB, Request-Bytes mal Kandidatenbudget <= 16 MiB und
+materialisierte Occurrence-Evidenz <= 1 MiB. Die bisherigen Arbeitslimits gelten zusätzlich.
+Ein Überlauf des lokalen Datums lehnt den Kandidaten kontrolliert ab. Daraus folgt weder eine
+Funktionserweiterung noch eine Veröffentlichung.
+
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md)

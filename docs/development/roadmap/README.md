@@ -25,7 +25,12 @@ source state; legacy 0.1 without temporal input remains supported. See
 [ADR-0012](../../architecture/decisions/ADR-0012-planner-snapshot-compilation.md).
 
 Software remains unreleased 0.2.0; this session does not claim the full 0.3.0 release gate.
-The roadmap's broader randomized-schedule and malformed-input fuzzing evidence remains open.
-Next bounded milestone: deterministic planner release validation with randomized schedules
-and malformed-input fuzzing. Do not begin ML, provider integration, advanced repair search
-or autonomous mutation. The detailed roadmap's CPIR v1 remains a future target.
+The [2026-09-21 verification campaign](../progress/2026-09-21-planner-verification.md) adds
+512 deterministic schedule seeds, exhaustive three-node graph checks, generated recurrence,
+malformed-input corpus/byte mutations and API/Lab parity. It fixes local-date overflow,
+metadata amplification and incomplete presentation guards. ADR-0013 tightens resource admission.
+This is bounded testing, not formal verification or a continuous fuzzing service.
+Next bounded milestone: independent review and release qualification of the verified planner,
+including the tightened admission contract and release artifacts. No automatic 0.3.0 release.
+Do not begin ML, provider integration, advanced repair search or autonomous mutation.
+The detailed roadmap's CPIR v1 remains a future target.

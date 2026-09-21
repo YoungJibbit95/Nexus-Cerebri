@@ -97,14 +97,14 @@ export const sections = {
     eyebrow: 'Roadmap Strata',
     title: 'Implemented foundations below, research horizons above.',
     summary: 'The roadmap deliberately sequences deterministic planner depth before provider integration, repair, learning and neural planning.',
-    technical: 'Software remains unreleased 0.2.0 with the bounded planner integration implemented. The 0.3.0 release gate still requires broader randomized-schedule and malformed-input evidence.',
+    technical: 'Software remains unreleased 0.2.0. Bounded deterministic schedule/graph/recurrence oracles and malformed-input campaigns now cover the planner baseline. Independent review and release qualification remain before 0.3.0.',
     research: 'Dates are planning targets, not promises; releases remain gated by repository truth and verified CI.',
     status: 'Planned' as StatusKind,
     truth: 'REAL' as TruthKind,
     visual: 'roadmap',
     sourcePath: 'docs/development/roadmap/README.md',
     sourceLabel: 'Current roadmap',
-    bullets: ['0.2.0 Temporal Core is implemented.', '0.3.0 planner work is next.', 'Providers, learning and neural layers remain later milestones.']
+    bullets: ['0.2.0 Temporal Core is implemented.', 'Planner verification is implemented; release qualification is next.', 'Providers, learning and neural layers remain later milestones.']
   },
   developers: {
     eyebrow: 'Developer Surface',

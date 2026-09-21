@@ -1,12 +1,13 @@
 import type { PlanningRequest, PlanningResult, ValidationReport } from './contracts.ts';
 import { parseCompiledContext, parseTemporalContext } from './compilation.ts';
+import { parseValidationIssue, parseDependencyIssue, parseEdge } from './validation.ts';
 
 import { shape } from './shape.ts';
 const { object, array, string, number, instant, range, member } = shape;
 export function parseValidation(value: unknown): ValidationReport {
   const item = object(value, 'validation');
   member(item.state, ['Valid', 'ValidWithUncertainty', 'InsufficientInformation'], 'validation.state');
-  array(item.issues, 'validation.issues');
+  array(item.issues, 'validation.issues').forEach(parseValidationIssue);
   return value as ValidationReport;
 }
 /** Presentation guards protect views from malformed imports; Rust remains the CPIR validator. */
@@ -69,27 +70,8 @@ export function parseResult(value: unknown): PlanningResult {
   if (item.compilation !== null) parseCompiledContext(item.compilation);
   const graph = object(item.dependency_graph, 'dependency_graph');
   for (const key of ['nodes', 'order']) array(graph[key], `dependency_graph.${key}`).forEach((id) => string(id, `dependency_graph.${key}.id`));
-  function edge(value: unknown): void {
-    const item = object(value, 'dependency edge');
-    string(item.predecessor, 'edge.predecessor');
-    string(item.dependent, 'edge.dependent');
-  }
-  array(graph.edges, 'dependency_graph.edges').forEach(edge);
-  for (const raw of array(graph.issues, 'dependency_graph.issues')) {
-    if (typeof raw === 'string') member(raw, ['InputLimit'], 'dependency.issue');
-    else {
-      const issue = object(raw, 'dependency.issue');
-      const keys = Object.keys(issue);
-      if (keys.length !== 1) throw new Error('Expected a tagged dependency issue.');
-      member(keys[0], ['MissingReference', 'Cycle'], 'dependency.issue');
-      if ('MissingReference' in issue) edge(issue.MissingReference);
-      else {
-        const cycle = object(issue.Cycle, 'dependency.Cycle');
-        array(cycle.members, 'cycle.members').forEach((id) => string(id, 'cycle.member'));
-        array(cycle.edges, 'cycle.edges').forEach(edge);
-      }
-    }
-  }
+  array(graph.edges, 'dependency_graph.edges').forEach(parseEdge);
+  array(graph.issues, 'dependency_graph.issues').forEach(parseDependencyIssue);
   const search = object(item.search_space, 'search_space');
   range(search.horizon, 'search_space.horizon');
   number(search.granularity, 'search_space.granularity');
@@ -104,7 +86,7 @@ export function parseResult(value: unknown): PlanningResult {
     const ordering = object(candidate.ordering_key, 'candidate.ordering_key');
     for (const key of ['preference_distance_seconds', 'mutation_count', 'shifted_seconds']) number(ordering[key], `ordering_key.${key}`);
     instant(ordering.start, 'ordering_key.start');
-    string(ordering.object_id, 'ordering_key.object_id');
+    shape.identifier(ordering.object_id, 'ordering_key.object_id');
     const proposed = object(candidate.proposed, 'candidate.proposed');
     string(proposed.id, 'proposed.id');
     number(proposed.source_revision, 'proposed.source_revision');

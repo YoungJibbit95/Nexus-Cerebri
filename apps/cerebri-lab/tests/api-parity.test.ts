@@ -63,6 +63,12 @@ test('real Rust API responses satisfy Lab contracts and retain independent scena
       (value: any) => { value.candidates[0].ordering_key.shifted_seconds = '0'; },
       (value: any) => { value.dependency_graph.edges = [{ predecessor: 'a' }]; },
       (value: any) => { value.dependency_graph.issues = [{ Cycle: { members: [], edges: [{}] } }]; },
+      (value: any) => { value.validation.issues = [null]; },
+      (value: any) => { value.validation.issues = ['InventedIssue']; },
+      (value: any) => { value.validation.issues = [{ RequiredTime: { object_id: 'busy', reason: 5 } }]; },
+      (value: any) => { value.validation.issues = [{ Compilation: { Temporal: 'InventedError' } }]; },
+      (value: any) => { value.validation.issues = [{ Dependency: { Cycle: { members: ['busy'], edges: [null] } } }]; },
+      (value: any) => { value.candidates[0].ordering_key.object_id = ''; },
     ]) {
       const changed = structuredClone(result); mutate(changed);
       assert.throws(() => parseResult(changed));
@@ -136,6 +142,11 @@ test('real Rust API responses satisfy Lab contracts and retain independent scena
       (value: any) => { delete value.compilation.occurrences[0].occurrence.visible_range; },
       (value: any) => { value.compilation.occurrences[0].occurrence.resolution = 'Guessed'; },
       (value: any) => { value.compilation.availability.unknown = null; },
+      (value: any) => { value.compilation.availability.coverage = 'Assumed'; },
+      (value: any) => { value.compilation.occurrences[0].id = ''; },
+      (value: any) => { value.compilation.occurrences[0].id = 'bad identity'; },
+      (value: any) => { value.compilation.occurrences[0].id = 'x'.repeat(129); },
+      (value: any) => { value.compilation.occurrences[0].evidence = [null]; },
       (value: any) => { value.conflicts.rejections.flatMap((rejection: any) => rejection.reasons).find((reason: any) => reason.HardConstraint).HardConstraint.evidence.blocking_occurrences = [1]; },
     ]) {
       const changed = structuredClone(recurrence); mutate(changed);

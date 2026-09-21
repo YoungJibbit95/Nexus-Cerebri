@@ -1,6 +1,6 @@
 //! Trusted half-open intervals and IANA timezone resolution. No clock reads.
 pub use chrono::{DateTime, NaiveDate as LocalDate, NaiveTime as LocalTime, TimeDelta, Utc};
-use chrono::{LocalResult, TimeZone};
+use chrono::{LocalResult, Offset, TimeZone};
 pub use chrono_tz::Tz as TimeZoneId;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -155,6 +155,21 @@ pub struct ZonedDateTime {
     pub timezone: TimeZoneId,
 }
 impl ZonedDateTime {
+    /// Local date conversion can overflow even for a valid UTC instant at the
+    /// representable boundary. Use the IANA offset with checked arithmetic.
+    pub fn local_date(self) -> Result<LocalDate, TemporalError> {
+        let offset = self
+            .timezone
+            .offset_from_utc_datetime(&self.instant.naive_utc());
+        self.instant
+            .naive_utc()
+            .checked_add_signed(TimeDelta::seconds(i64::from(
+                offset.fix().local_minus_utc(),
+            )))
+            .map(|local| local.date())
+            .ok_or(TemporalError::Overflow)
+    }
+
     /// Rejects DST folds/gaps; callers must resolve ambiguity explicitly.
     pub fn from_local(
         date: LocalDate,

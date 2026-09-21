@@ -114,6 +114,7 @@ pub fn compile_snapshot(
     let mut occurrences = Vec::new();
     let mut expansions = Vec::new();
     let mut identities = BTreeSet::new();
+    let mut evidence_bytes = 0usize;
     for series in sorted {
         let expansion = series.rule.expand_report(horizon, remaining)?;
         remaining.max_dates -= expansion.examined_dates;
@@ -124,6 +125,17 @@ pub fn compile_snapshot(
         let mut canonical_series = series.clone();
         canonical_series.evidence.sort();
         canonical_series.evidence.dedup();
+        // Bound materialized evidence amplification before cloning it into each
+        // occurrence. Includes JSON quotes/comma overhead; no partial report escapes.
+        let per_occurrence: usize = canonical_series
+            .evidence
+            .iter()
+            .map(|id| id.as_str().len() + 3)
+            .sum();
+        evidence_bytes += per_occurrence * expansion.occurrences.len();
+        if evidence_bytes > 1024 * 1024 {
+            return Err(CompilationError::InputLimit);
+        }
         for occurrence in &expansion.occurrences {
             let key = serde_json::to_vec(&(
                 &series.id,

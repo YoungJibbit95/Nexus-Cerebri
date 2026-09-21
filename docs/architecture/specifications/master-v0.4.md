@@ -350,6 +350,11 @@ Planner result semantics are two-dimensional:
 
 `PROVEN_OPTIMAL` requires proof/exhaustive evaluation over the explicitly declared search space, objective, constraints, and deterministic tie-break rules. Budget- or timeout-limited search can only report `BEST_FOUND`.
 
+[ADR-0013](../decisions/ADR-0013-planner-resource-admission.md) additionally bounds planner
+metadata admission: compact request JSON <= 256 KiB, request bytes times declared candidate
+budget <= 16 MiB, and materialized occurrence evidence <= 1 MiB. Exceeding these bounds
+rejects atomically through InputLimit; existing cardinality limits still apply.
+
 
 
 `SearchAssessment::COMPLETE` means the explicitly declared search space was fully traversed/exhausted, but no optimization proof is asserted. It is suitable for exhaustive no-solution/conflict analysis or algorithms where traversal completion alone does not prove optimality.

@@ -159,8 +159,10 @@ GitHub Pages deploys that static artifact from `main`; the site build handles th
 
 ## 🎯 Next milestone
 
-**Deterministic Planner:** explicit recurrence/snapshot integration, dependency cycle detection,
-constraint composition and weighted score explanations, with bounded reproducible search.
+**Deterministic Planner release qualification:** independently review the bounded verification
+campaign and tightened resource admission, then qualify release artifacts. Recurrence/snapshot
+integration, dependency diagnostics and deterministic oracle tests are implemented; see the
+[verification report](docs/development/progress/2026-09-21-planner-verification.md).
 
 > Software version, specification revision, CPIR schema, REST version and future model/dataset versions remain separate authorities.
 

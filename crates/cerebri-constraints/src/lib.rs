@@ -99,12 +99,13 @@ pub fn check(
         HardConstraint::ExplicitTime(expected) => {
             (range != *expected).then_some(ViolationReason::OutsideBounds)
         }
-        HardConstraint::ExplicitDate(date) => (range
-            .start()
-            .with_timezone(&candidate.timezone)
-            .date_naive()
-            != *date)
-            .then_some(ViolationReason::OutsideBounds),
+        HardConstraint::ExplicitDate(date) => (cerebri_temporal::ZonedDateTime {
+            instant: range.start(),
+            timezone: candidate.timezone,
+        }
+        .local_date()
+            != Ok(*date))
+        .then_some(ViolationReason::OutsideBounds),
         HardConstraint::EarliestStart(start) => {
             (range.start() < *start).then_some(ViolationReason::OutsideBounds)
         }

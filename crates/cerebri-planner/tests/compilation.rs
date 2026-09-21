@@ -4,6 +4,8 @@ use cerebri_planner::*;
 use cerebri_temporal::*;
 use cerebri_types::*;
 use support::*;
+#[path = "../../../tests/support/generator.rs"]
+mod generator;
 
 fn input() -> PlanningRequest {
     let mut input = request();
@@ -34,6 +36,278 @@ fn input() -> PlanningRequest {
 }
 fn compile(input: &PlanningRequest) -> Result<Option<CompiledContextSnapshot>, CompilationError> {
     compile_snapshot(&input.context, PlanningHorizon(input.scope.time_range))
+}
+
+#[test]
+fn compilation_errors_never_fall_back_to_legacy_planning() {
+    for mode in 0..6 {
+        let mut input = input();
+        let temporal = input.context.temporal.as_mut().unwrap();
+        match mode {
+            0 => temporal.limits.max_dates = 0,
+            1 => temporal.series.push(temporal.series[0].clone()),
+            2 => temporal.series[0].state = SeriesState::Prospective,
+            3 => temporal.series[0].provenance = Provenance::ModelInference,
+            4 => {
+                temporal.horizon =
+                    PlanningHorizon(range("2026-10-01T08:00:00Z", "2026-10-01T12:00:00Z"))
+            }
+            _ => temporal.series[0].id = SeriesId::new("busy").unwrap(),
+        }
+        let error = compile(&input).unwrap_err();
+        let result = BaselinePlanner.plan(input.clone());
+        assert!(
+            result
+                .validation
+                .issues
+                .contains(&ValidationIssue::Compilation(error))
+        );
+        assert_eq!(result.outcome, PlanningOutcome::InsufficientInformation);
+        assert_eq!(result.assessment, SearchAssessment::BestFound);
+        assert_eq!(result.search_space.evaluated, 0);
+        assert!(result.candidates.is_empty());
+        assert!(result.compilation.is_none());
+        input.context.temporal = None;
+        assert_eq!(
+            BaselinePlanner.plan(input).outcome,
+            PlanningOutcome::Solution
+        );
+    }
+}
+
+#[test]
+fn nominal_identity_fields_are_sensitive_but_fold_resolution_is_not_identity() {
+    let mut original = input();
+    original.scope.time_range = range("2026-10-24T00:00:00Z", "2026-10-27T00:00:00Z");
+    let source = original.context.temporal.as_mut().unwrap();
+    source.horizon = PlanningHorizon(original.scope.time_range);
+    let mut rule = source.series[0].rule.definition().clone();
+    rule.start_date = "2026-10-25".parse().unwrap();
+    rule.local_time = "02:30:00".parse().unwrap();
+    rule.count = Some(1.try_into().unwrap());
+    source.series[0].rule = RecurrenceRule::new(rule).unwrap();
+    let first = compile(&original).unwrap().unwrap().occurrences.remove(0);
+    for mode in 0..5 {
+        let mut changed = original.clone();
+        let series = &mut changed.context.temporal.as_mut().unwrap().series[0];
+        let mut rule = series.rule.definition().clone();
+        match mode {
+            0 => series.id = SeriesId::new("other-series").unwrap(),
+            1 => rule.start_date = "2026-10-26".parse().unwrap(),
+            2 => rule.local_time = "02:31:00".parse().unwrap(),
+            3 => rule.timezone = TimeZoneId::UTC,
+            _ => rule.fold_policy = FoldPolicy::Later,
+        }
+        series.rule = RecurrenceRule::new(rule).unwrap();
+        let next = compile(&changed).unwrap().unwrap().occurrences.remove(0);
+        if mode == 4 {
+            assert_eq!(next.id, first.id);
+            assert_eq!(
+                next.occurrence.range.start() - first.occurrence.range.start(),
+                TimeDelta::hours(1)
+            );
+            assert_ne!(next.occurrence.resolution, first.occurrence.resolution);
+        } else {
+            assert_ne!(next.id, first.id, "identity field {mode}");
+        }
+    }
+}
+
+#[test]
+fn seeded_daily_weekly_compilation_matches_day_by_day_oracle() {
+    use generator::Generator;
+    let anchor: Instant = "2026-10-05T00:00:00Z".parse().unwrap(); // Monday
+    for seed in 0..256 {
+        let mut rng = Generator(seed);
+        let every = 1 + rng.pick(3);
+        let weekly = rng.pick(2) == 0;
+        let count = 1 + rng.pick(12);
+        let until = rng.pick(28) as i64;
+        let from = rng.pick(20) as i64;
+        let to = from + 1 + rng.pick(9) as i64;
+        let mut input = input();
+        input.scope.time_range = TimeRange::new(
+            anchor + TimeDelta::days(from) + TimeDelta::minutes(30),
+            anchor + TimeDelta::days(to) + TimeDelta::minutes(30),
+        )
+        .unwrap();
+        let t = input.context.temporal.as_mut().unwrap();
+        t.horizon = PlanningHorizon(input.scope.time_range);
+        t.series[0].rule = serde_json::from_value(serde_json::json!({
+            "start_date":"2026-10-05", "local_time":"00:00:00", "timezone":"UTC", "duration":3600,
+            "pattern": if weekly { serde_json::json!({"frequency":"WEEKLY", "every":every,"weekdays":["Mon","Wed","Sun"]}) } else { serde_json::json!({"frequency":"DAILY","every":every}) },
+            "until":(anchor + TimeDelta::days(until)).date_naive().to_string(), "count":count, "gap_policy":"Reject", "fold_policy":"Reject"
+        })).unwrap();
+        // Enumerate nominal dates from the anchor; do not use sequence/seek/expand helpers.
+        let nominal: Vec<i64> = (0..=until)
+            .filter(|d| {
+                if weekly {
+                    (d / 7) % every as i64 == 0 && [0, 2, 6].contains(&(d % 7))
+                } else {
+                    d % every as i64 == 0
+                }
+            })
+            .take(count as usize)
+            .collect();
+        let expected: Vec<_> = nominal
+            .into_iter()
+            .filter(|d| *d >= from && *d <= to)
+            .map(|d| anchor + TimeDelta::days(d))
+            .collect();
+        let compiled = compile(&input).unwrap().unwrap();
+        let mut actual: Vec<_> = compiled
+            .occurrences
+            .iter()
+            .map(|o| o.occurrence.range.start())
+            .collect();
+        actual.sort();
+        assert_eq!(
+            actual,
+            expected,
+            "seed={seed}; request={}",
+            serde_json::to_string(&input).unwrap()
+        );
+        for occurrence in &compiled.occurrences {
+            assert_eq!(occurrence.occurrence.range.duration(), TimeDelta::hours(1));
+            assert_eq!(
+                occurrence.occurrence.visible_range.start(),
+                occurrence
+                    .occurrence
+                    .range
+                    .start()
+                    .max(input.scope.time_range.start())
+            );
+            assert_eq!(
+                occurrence.occurrence.visible_range.end(),
+                occurrence
+                    .occurrence
+                    .range
+                    .end()
+                    .min(input.scope.time_range.end())
+            );
+        }
+        // Shared date budget: enough for one expansion, insufficient for two identical rules.
+        if seed < 16 && compiled.series[0].expansion.examined_dates > 0 {
+            let used = compiled.series[0].expansion.examined_dates;
+            let t = input.context.temporal.as_mut().unwrap();
+            let mut second = t.series[0].clone();
+            second.id = SeriesId::new("second").unwrap();
+            t.series.push(second);
+            t.limits.max_dates = used;
+            assert!(
+                matches!(
+                    compile(&input),
+                    Err(CompilationError::Temporal(TemporalError::DateLimitExceeded))
+                ),
+                "seed={seed}"
+            );
+        }
+    }
+}
+
+#[test]
+fn timezone_goldens_preserve_rejection_resolution_clipping_and_evidence() {
+    for (zone, date, time, start, end, earlier, later, gap) in [
+        (
+            "Europe/Berlin",
+            "2026-10-25",
+            "02:30:00",
+            "2026-10-25T00:00:00Z",
+            "2026-10-25T04:00:00Z",
+            "2026-10-25T00:30:00Z",
+            "2026-10-25T01:30:00Z",
+            false,
+        ),
+        (
+            "Australia/Lord_Howe",
+            "2026-04-05",
+            "01:45:00",
+            "2026-04-04T14:00:00Z",
+            "2026-04-04T17:00:00Z",
+            "2026-04-04T14:45:00Z",
+            "2026-04-04T15:15:00Z",
+            false,
+        ),
+        (
+            "Europe/Berlin",
+            "2026-03-29",
+            "02:30:00",
+            "2026-03-29T00:00:00Z",
+            "2026-03-29T04:00:00Z",
+            "",
+            "",
+            true,
+        ),
+        (
+            "Pacific/Apia",
+            "2011-12-30",
+            "12:00:00",
+            "2011-12-29T00:00:00Z",
+            "2012-01-01T00:00:00Z",
+            "",
+            "",
+            true,
+        ),
+    ] {
+        let mut input = input();
+        input.scope.time_range = range(start, end);
+        let t = input.context.temporal.as_mut().unwrap();
+        t.horizon = PlanningHorizon(input.scope.time_range);
+        t.series[0].rule=serde_json::from_value(serde_json::json!({"start_date":date,"local_time":time,"timezone":zone,"duration":3600,"pattern":{"frequency":"DAILY","every":1},"count":1,"until":date,"gap_policy":"Reject","fold_policy":"Reject"})).unwrap();
+        assert_eq!(
+            compile(&input),
+            Err(CompilationError::Temporal(if gap {
+                TemporalError::NonexistentLocalTime
+            } else {
+                TemporalError::AmbiguousLocalTime
+            }))
+        );
+        let mut identity = None;
+        for policy in [FoldPolicy::Earlier, FoldPolicy::Later] {
+            let t = input.context.temporal.as_mut().unwrap();
+            let mut definition = t.series[0].rule.definition().clone();
+            definition.fold_policy = policy;
+            definition.gap_policy = GapPolicy::Skip;
+            t.series[0].rule = RecurrenceRule::new(definition).unwrap();
+            let compiled = compile(&input).unwrap().unwrap();
+            if gap {
+                assert!(compiled.occurrences.is_empty());
+                assert_eq!(compiled.series[0].expansion.skipped.len(), 1);
+                continue;
+            }
+            let o = &compiled.occurrences[0];
+            assert_eq!(
+                o.occurrence.range.start(),
+                if policy == FoldPolicy::Earlier {
+                    earlier
+                } else {
+                    later
+                }
+                .parse::<Instant>()
+                .unwrap()
+            );
+            assert_eq!(o.evidence, vec![FactId::new("series-source").unwrap()]);
+            if let Some(id) = &identity {
+                assert_eq!(&o.id, id);
+            } else {
+                identity = Some(o.id.clone());
+            }
+            let mut clipped = input.clone();
+            clipped.scope.time_range = TimeRange::new(
+                o.occurrence.range.start() + TimeDelta::minutes(10),
+                o.occurrence.range.end() - TimeDelta::minutes(10),
+            )
+            .unwrap();
+            clipped.context.temporal.as_mut().unwrap().horizon =
+                PlanningHorizon(clipped.scope.time_range);
+            let c = compile(&clipped).unwrap().unwrap().occurrences.remove(0);
+            assert_eq!(c.id, o.id);
+            assert_eq!(c.occurrence.range, o.occurrence.range);
+            assert_eq!(c.occurrence.visible_range, clipped.scope.time_range);
+            assert_eq!(c.occurrence.resolution, o.occurrence.resolution);
+            assert_eq!(c.evidence, o.evidence);
+        }
+    }
 }
 
 #[test]
