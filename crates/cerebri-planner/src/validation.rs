@@ -54,6 +54,23 @@ pub(crate) fn mutation_kind(object: &PlanningObject) -> MutationKind {
 }
 
 pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
+    validate_and_compile(request).0
+}
+
+// Reuse the immutable compiled view within one planning call. Lifecycle validation
+// still validates/recompiles its supplied current snapshot independently.
+pub(crate) fn validate_and_compile(
+    request: &PlanningRequest,
+) -> (ValidationReport, Option<crate::CompiledContextSnapshot>) {
+    if !metadata_work_admitted(request) {
+        return (
+            ValidationReport {
+                state: ValidationState::InsufficientInformation,
+                issues: vec![ValidationIssue::InputLimit],
+            },
+            None,
+        );
+    }
     let mut issues = Vec::new();
     let mut uncertain = false;
     if !matches!(
@@ -89,10 +106,13 @@ pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
                 + 1)
             > 1_000_000
     {
-        return ValidationReport {
-            state: ValidationState::InsufficientInformation,
-            issues: vec![ValidationIssue::InputLimit],
-        };
+        return (
+            ValidationReport {
+                state: ValidationState::InsufficientInformation,
+                issues: vec![ValidationIssue::InputLimit],
+            },
+            None,
+        );
     }
     if request.budget.max_depth != 0 || request.budget.max_repairs != 0 {
         issues.push(ValidationIssue::UnsupportedSearchBudget);
@@ -191,11 +211,14 @@ pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
             issues.push(ValidationIssue::UnknownObject(constraint.object_id.clone()));
         }
     }
-    match crate::compile_snapshot(
+    let compilation = match crate::compile_snapshot(
         &request.context,
         cerebri_temporal::PlanningHorizon(request.scope.time_range),
     ) {
-        Err(error) => issues.push(ValidationIssue::Compilation(error)),
+        Err(error) => {
+            issues.push(ValidationIssue::Compilation(error));
+            None
+        }
         Ok(Some(compiled)) => {
             if compiled.availability.coverage == cerebri_temporal::Coverage::Incomplete {
                 issues.push(ValidationIssue::IncompleteCoverage);
@@ -209,9 +232,10 @@ pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
             {
                 issues.push(ValidationIssue::InputLimit);
             }
+            Some(compiled)
         }
-        Ok(None) => {}
-    }
+        Ok(None) => None,
+    };
     issues.extend(
         crate::dependency_graph(&request.context.objects, &request.constraints)
             .issues
@@ -227,5 +251,27 @@ pub fn validate_request(request: &PlanningRequest) -> ValidationReport {
     } else {
         ValidationState::Valid
     };
-    ValidationReport { state, issues }
+    (ValidationReport { state, issues }, compilation)
+}
+
+/// Count serialized input without allocating a second copy. This complements the
+/// cardinality bound: evidence, scope/grant lists and strings also cost work when
+/// requests are hashed or constraints cloned for every candidate (ADR-0013).
+fn metadata_work_admitted(request: &PlanningRequest) -> bool {
+    struct Counter(usize);
+    impl std::io::Write for Counter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            if bytes.len() > (256 * 1024) - self.0 {
+                return Err(std::io::Error::other("planner input limit"));
+            }
+            self.0 += bytes.len();
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut counter = Counter(0);
+    serde_json::to_writer(&mut counter, request).is_ok()
+        && (counter.0 as u64) * u64::from(request.budget.max_candidates) <= 16 * 1024 * 1024
 }

@@ -73,7 +73,7 @@ pub struct BaselinePlanner;
 impl Planner for BaselinePlanner {
     #[tracing::instrument(skip_all, fields(trace_id = %request.trace_id.as_str()))]
     fn plan(&self, request: PlanningRequest) -> PlanningResult {
-        let mut validation = validate_request(&request);
+        let (mut validation, compilation) = crate::validation::validate_and_compile(&request);
         // Baseline searches one event; lifecycle validation separately supports explicit batches.
         if request.target_ids.len() != 1
             && validation.state != ValidationState::InsufficientInformation
@@ -91,12 +91,7 @@ impl Planner for BaselinePlanner {
                 &request.context.objects,
                 &request.constraints,
             ),
-            compilation: crate::compile_snapshot(
-                &request.context,
-                cerebri_temporal::PlanningHorizon(request.scope.time_range),
-            )
-            .ok()
-            .flatten(),
+            compilation,
             candidates: vec![],
             conflicts: ConflictSet { rejections: vec![] },
             search_space: SearchSpace {
