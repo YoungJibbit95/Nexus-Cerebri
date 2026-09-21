@@ -32,6 +32,11 @@ test('explanation depth changes visible information and persists', async ({ page
 test('homepage and planning surface meet the serious axe floor', async ({ page }) => {
   for (const route of ['/', '/planning/']) {
     await page.goto(prefix + route);
+    if (route === '/') {
+      await expect(page.getByText('Published release: None', { exact: true })).toBeVisible();
+      await expect(page.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
+      await expect(page.getByText('CPIR 0.2', { exact: true })).toBeVisible();
+    }
     const results = await new AxeBuilder({ page }).analyze();
     const blocking = results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical');
     expect(blocking, JSON.stringify(blocking, null, 2)).toEqual([]);
@@ -49,9 +54,10 @@ for (const width of [1440, 1024, 768, 390]) {
   test('@visual homepage ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(prefix + '/');
-    const screenshot = await page.screenshot({ fullPage: true, animations: 'disabled' });
+    const screenshot = await page.screenshot({ path: test.info().outputPath('homepage-' + width + '.png'), fullPage: true, animations: 'disabled' });
     const hash = createHash('sha256').update(screenshot).digest('hex');
-    const expected = visualBaselines[String(width) as keyof typeof visualBaselines];
+    const expected = visualBaselines[process.platform]?.[String(width)];
+    expect(expected, 'reviewed visual baseline for ' + process.platform + ' at ' + width + 'px').toBeDefined();
     if (hash !== expected) {
       await test.info().attach('homepage-' + width + '.png', { body: screenshot, contentType: 'image/png' });
     }

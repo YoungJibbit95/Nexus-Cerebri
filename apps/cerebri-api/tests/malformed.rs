@@ -77,6 +77,52 @@ async fn malformed_corpus_fails_closed_without_panics_and_with_core_api_agreemen
 }
 
 #[tokio::test]
+async fn quick_start_and_named_legacy_fixtures_keep_their_wire_versions() {
+    for (minor, source) in [
+        (2, include_str!("../../../examples/request.json")),
+        (1, include_str!("../../../examples/legacy-cpir-0.1.json")),
+    ] {
+        let request: PlanningRequest = serde_json::from_str(source).unwrap();
+        assert_eq!(request.schema_version.major, 0);
+        assert_eq!(request.schema_version.minor, minor);
+        let wire = serde_json::to_string(&request).unwrap();
+        let roundtrip: PlanningRequest = serde_json::from_str(&wire).unwrap();
+        assert_eq!(roundtrip, request);
+        let result = cerebri_core::plan(roundtrip);
+        assert_eq!(serde_json::to_value(result.outcome).unwrap(), "Solution");
+        assert_eq!(result.candidates.len(), 7);
+        let (status, body) = post("/v1/plan", wire).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&body).unwrap(),
+            serde_json::to_value(result).unwrap()
+        );
+        for (major, minor) in [(0, 0), (0, 3), (1, 0), (1, 2), (u16::MAX, u16::MAX)] {
+            let mut unsupported = request.clone();
+            unsupported.schema_version.major = major;
+            unsupported.schema_version.minor = minor;
+            let result = cerebri_core::plan(unsupported.clone());
+            assert!(result.candidates.is_empty());
+            assert_eq!(result.search_space.evaluated, 0);
+            assert!(
+                serde_json::to_value(&result.validation.issues)
+                    .unwrap()
+                    .as_array()
+                    .unwrap()
+                    .contains(&serde_json::json!("UnsupportedSchema"))
+            );
+            let (status, body) =
+                post("/v1/plan", serde_json::to_string(&unsupported).unwrap()).await;
+            assert_eq!(status, StatusCode::OK);
+            assert_eq!(
+                serde_json::from_slice::<serde_json::Value>(&body).unwrap(),
+                serde_json::to_value(result).unwrap()
+            );
+        }
+    }
+}
+
+#[tokio::test]
 async fn schema_roundtrip_and_api_compatibility_are_explicit() {
     let base: PlanningRequest = serde_json::from_str(include_str!(
         "../../../examples/planner/recurrence-busy.json"

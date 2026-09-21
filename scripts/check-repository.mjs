@@ -1,8 +1,11 @@
 import { readFile, readdir, access } from 'node:fs/promises';
 import { resolve, dirname, relative, sep } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { readAuthoritySources, checkVersionDeclarations } from './version-authorities.mjs';
 const root = process.cwd();
-const excluded = new Set(['.git','.idea','target','node_modules','site','dist']);
+const authorities = await readAuthoritySources(root);
+const { softwareVersion: version } = checkVersionDeclarations(authorities);
+const excluded = new Set(['.git','.idea','target','node_modules','site','dist','.svelte-kit','test-results','playwright-report']);
 async function files(dir) {
  const out=[];
  for(const entry of await readdir(dir,{withFileTypes:true})) {
@@ -13,6 +16,13 @@ async function files(dir) {
  return out;
 }
 const paths = await files(root);
+for (const path of paths.filter(p=>p.includes(sep+'.github'+sep+'workflows'+sep)&&/\.ya?ml$/.test(p))) {
+ for (const line of (await readFile(path,'utf8')).split(/\r?\n/)) {
+  if (/^\s*(?:-\s*)?uses:/.test(line) && !/^\s*(?:-\s*)?uses: [\w-]+\/[\w-]+@[a-f0-9]{40} # v\d+\.\d+\.\d+$/.test(line)) {
+   throw new Error('workflow action must pin an upstream commit and exact tag: '+line.trim());
+  }
+ }
+}
 for(const path of paths.filter(p=>p.endsWith('.md'))) {
  const source=await readFile(path,'utf8');
  const prose=source.replace(/\x60\x60\x60[^]*?\x60\x60\x60/g,'');
@@ -34,8 +44,7 @@ for(const path of de) {
   }
  }
 }
-const metadata=JSON.parse(execFileSync('cargo',['metadata','--no-deps','--format-version','1'],{encoding:'utf8'}));
-const version=(await readFile('Cargo.toml','utf8')).match(/\[workspace\.package\][\s\S]*?version = "([^"]+)"/)[1];
+const metadata=JSON.parse(execFileSync('cargo',['metadata','--locked','--no-deps','--format-version','1'],{encoding:'utf8'}));
 const packages=new Map(metadata.packages.map(p=>[p.name,p]));
 const allowed={
  'cerebri-types':[], 'cerebri-temporal':[],
@@ -57,10 +66,7 @@ for(const p of packages.values()){
  }
  if(p.name==='cerebri-core'&&p.dependencies.some(d=>['axum','tokio','sqlx','rusqlite','reqwest'].includes(d.name)))throw new Error('core I/O dependency');
 }
-const readme=await readFile('README.md','utf8');
-const changelog=await readFile('CHANGELOG.md','utf8');
-if(!changelog.includes('**Software target:** `'+version+'`'))throw new Error('CHANGELOG software target mismatch');
-for(const text of [version,'0.4','0.1'])if(!readme.includes(text))throw new Error('README version missing');
+
 if(JSON.parse(await readFile('apps/cerebri-lab/package.json','utf8')).version!==version)throw new Error('Lab version mismatch');
 const sitePackage=JSON.parse(await readFile('apps/cerebri-site/package.json','utf8'));
 if(sitePackage.version!==version)throw new Error('Official site version mismatch');
@@ -75,9 +81,8 @@ if(/fonts\.googleapis\.com|@import\s+url\(/i.test(siteCss))throw new Error('offi
 for(const retired of ['scripts/build-docs.mjs','scripts/docs-theme.css','scripts/docs-ui.js']) {
  if(paths.some(p=>relative(root,p).replaceAll('\\','/')===retired))throw new Error('retired docs portal file remains: '+retired);
 }
-const fixture=JSON.parse(await readFile('examples/request.json','utf8'));
-if(fixture.schema_version.major!==0||fixture.schema_version.minor!==1)throw new Error('CPIR fixture version mismatch');
-const master=await readFile('docs/architecture/specifications/master-v0.4.md','utf8');
+
+const master=authorities.master;
 if(master.includes('validated ActionPlan'))throw new Error('stale execution invariant');
 for(const path of paths) {
  const name=relative(root,path).replaceAll('\\','/');
