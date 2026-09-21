@@ -27,6 +27,10 @@ and skipped nominal dates come from ADR-0009. Duplicate series IDs and collision
 ordinary object IDs reject the whole compilation. A caller must use one series identity
 per external series, not resupply its instances as independent objects.
 
+Verification clarification (2026-09-21): Earlier/Later fold selection intentionally retains
+the same occurrence ID for the same nominal local occurrence. The UTC range and explicit
+resolution evidence differ. This follows the identity tuple above; no hash change is made.
+
 Limits: 32 series, at most 1,024 compiled occurrences, 36,600 examined dates shared across
 series; existing planner workload limits also include occurrences. Exhaustion rejects
 atomically. All supplied Event/Task objects and existing occurrences conservatively occupy
