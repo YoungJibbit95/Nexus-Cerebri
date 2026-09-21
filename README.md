@@ -23,7 +23,9 @@
 [![GitHub issues](https://img.shields.io/github/issues/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/issues)
 [![GitHub last commit](https://img.shields.io/github/last-commit/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/commits/main)
 [![GitHub repo size](https://img.shields.io/github/repo-size/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri)
-[![Repo Views](https://hits.sh/github.com/YoungJibbit95/Nexus-Cerebri.svg?style=flat-square&label=views)](https://hits.sh/github.com/YoungJibbit95/Nexus-Cerebri/)
+![Views](https://img.shields.io/endpoint?style=flat-square&url=https://raw.githubusercontent.com/YoungJibbit95/Nexus-Cerebri/_gh_traffic_stats/.github/badges/views.json)
+
+![Clones](https://img.shields.io/endpoint?style=flat-square&url=https://raw.githubusercontent.com/YoungJibbit95/Nexus-Cerebri/_gh_traffic_stats/.github/badges/clones.json)
 
 </div>
 
