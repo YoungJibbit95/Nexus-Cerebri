@@ -23,6 +23,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/issues)
 [![GitHub last commit](https://img.shields.io/github/last-commit/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/commits/main)
 [![GitHub repo size](https://img.shields.io/github/repo-size/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri)
+<img src="https://komarev.com/ghpvc/?username=YoungJibbit95-Nexus-Cerebri&label=repository%20views&color=7aa2f7&style=flat" alt="Repository views" />
 
 </div>
 
