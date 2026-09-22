@@ -1,0 +1,114 @@
+{
+  "schema_version": {
+    "major": 0,
+    "minor": 2
+  },
+  "request_id": "cpir-resource-scope-subset",
+  "trace_id": "cpir-resource-scope-subset-trace",
+  "principal_id": "user-test-001",
+  "operation": "CREATE",
+  "scope": {
+    "time_range": {
+      "start": "2026-10-01T09:00:00Z",
+      "end": "2026-10-01T12:00:00Z"
+    },
+    "calendar_ids": null,
+    "object_ids": null,
+    "resource_ids": [
+      "room-a"
+    ],
+    "integration_ids": null,
+    "movable_object_ids": null,
+    "max_mutations": 3
+  },
+  "context": {
+    "revision": 1,
+    "captured_at": "2026-10-01T08:00:00Z",
+    "objects": [
+      {
+        "id": "new-event",
+        "revision": null,
+        "kind": {
+          "kind": "EVENT"
+        },
+        "calendar_id": "synthetic-calendar",
+        "integration_id": "mock",
+        "resource_ids": [
+          "person-a",
+          "room-a"
+        ],
+        "time": {
+          "value": {
+            "processing": "RESOLVED",
+            "knowledge": {
+              "state": "MISSING"
+            }
+          },
+          "provenance": "USER_EXPLICIT",
+          "confidence": null,
+          "evidence": []
+        },
+        "timezone": "Europe/Berlin",
+        "semantics": null
+      }
+    ],
+    "facts": []
+  },
+  "target_ids": [
+    "new-event"
+  ],
+  "duration": {
+    "value": {
+      "processing": "RESOLVED",
+      "knowledge": {
+        "state": "KNOWN",
+        "data": 1800
+      }
+    },
+    "provenance": "USER_EXPLICIT",
+    "confidence": null,
+    "evidence": []
+  },
+  "constraints": [],
+  "preferences": {
+    "preferences": []
+  },
+  "policy": {
+    "policy_set_id": "local-test-policy",
+    "policy_version": 1,
+    "snapshot": {
+      "allow_uncertain_duration": false,
+      "confirmation": {
+        "all_mutations": true,
+        "deletion": true
+      },
+      "mutation": {
+        "max_mutations": 3,
+        "allowed_actions": [
+          "CREATE_EVENT",
+          "MOVE_EVENT"
+        ]
+      },
+      "mode": "Test"
+    }
+  },
+  "planning_capability": {
+    "read": true,
+    "plan": true,
+    "mutations": [
+      {
+        "object_id": "new-event",
+        "calendar_id": "synthetic-calendar",
+        "integration_id": "mock",
+        "kind": "CREATE_EVENT"
+      }
+    ]
+  },
+  "granularity": 900,
+  "budget": {
+    "max_candidates": 256,
+    "max_repairs": 0,
+    "max_moved_objects": 1,
+    "max_depth": 0
+  }
+}

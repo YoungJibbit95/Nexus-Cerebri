@@ -1,0 +1,142 @@
+{
+  "suite": "Nexus Cerebri CPIR Complexity Scenarios",
+  "based_on": "legacy-cpir-0.1.json",
+  "normal_scenario_schema": {
+    "major": 0,
+    "minor": 2
+  },
+  "notes": [
+    "00 ist absichtlich CPIR 0.1 für Legacy-Kompatibilität.",
+    "01–10 verwenden CPIR 0.2 ohne temporal source state und bleiben beim aktuellen Single-Event-Search-Modell.",
+    "Expected-Werte sind unabhängige Testoracles aus der konstruierten Intervall-/Constraint-Semantik; sie sind noch keine beobachteten Planner-Ergebnisse."
+  ],
+  "scenarios": [
+    {
+      "file": "00-legacy-baseline-0.1.json",
+      "id": "CPIR-LEGACY-001",
+      "difficulty": "Compatibility / Level 1",
+      "purpose": "Unveränderte CPIR-0.1-Baseline als Kompatibilitätskontrolle.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "oracle": "Bekannte Legacy-Baseline; Busy 09:00–10:00, 30-Minuten-Target, 15-Minuten-Grid."
+    },
+    {
+      "file": "01-basic-feasible.json",
+      "id": "CPIR-BASIC-001",
+      "difficulty": "Level 1 — Atomic",
+      "purpose": "Einfache Feasibility: ein Busy-Block, ein Target, normale Dauer.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T10:00:00Z",
+      "expected_candidates": 7,
+      "oracle": "15-Minuten-Grid; zulässige Starts 10:00 bis 11:30."
+    },
+    {
+      "file": "02-ranking-preferred-start.json",
+      "id": "CPIR-RANK-001",
+      "difficulty": "Level 2 — Interaction",
+      "purpose": "Feasibility + expliziter Preferred Start; Ranking muss 10:45 bevorzugen.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T10:45:00Z",
+      "expected_candidates": 7,
+      "oracle": "Alle 7 Kandidaten sind zulässig; 10:45 hat Präferenzdistanz 0."
+    },
+    {
+      "file": "03-halfopen-touching-boundary.json",
+      "id": "CPIR-TEMP-001",
+      "difficulty": "Level 4 — Boundary",
+      "purpose": "Half-open Semantik: Busy endet exakt dort, wo der Target-Kandidat startet.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T10:00:00Z",
+      "expected_candidates": 1,
+      "oracle": "[09:30,10:00) und [10:00,10:30) überlappen nicht."
+    },
+    {
+      "file": "04-halfopen-one-second-overlap.json",
+      "id": "CPIR-TEMP-002",
+      "difficulty": "Level 4 — Boundary / Paired",
+      "purpose": "Gegenstück zu TEMP-001: exakt eine Sekunde Überlappung muss den einzigen Kandidaten verwerfen.",
+      "expected_validation": "Valid",
+      "expected_outcome": "NoSolution",
+      "expected_assessment": "Complete",
+      "expected_candidates": 0,
+      "oracle": "[09:30,10:00:01) überschneidet [10:00,10:30) um genau 1 Sekunde."
+    },
+    {
+      "file": "05-dense-three-exact-gaps.json",
+      "id": "CPIR-DENSE-001",
+      "difficulty": "Level 6 — Dense Planning",
+      "purpose": "Vier Busy-Intervalle lassen genau drei 30-Minuten-Lücken; Ranking soll die mittlere wählen.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T11:00:00Z",
+      "expected_candidates": 3,
+      "oracle": "Exakte freie Fenster: 09:45–10:15, 11:00–11:30, 12:15–12:45."
+    },
+    {
+      "file": "06-constraint-composition.json",
+      "id": "CPIR-CONSTRAINT-001",
+      "difficulty": "Level 3 — Constraint Composition",
+      "purpose": "EarliestStart + LatestEnd + 15-Minuten-Buffer + Timezone + Ranking.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T11:15:00Z",
+      "expected_candidates": 3,
+      "oracle": "Durch Buffer sind Starts vor 10:45 unzulässig; LatestEnd begrenzt auf 11:15."
+    },
+    {
+      "file": "07-dependency-chain.json",
+      "id": "CPIR-DEP-001",
+      "difficulty": "Level 3/4 — Dependency",
+      "purpose": "A → B → Target; Target darf nicht vor Ende von B starten.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T10:15:00Z",
+      "oracle": "prep-a.end=09:30 <= prep-b.start=09:45 und prep-b.end=10:15 <= target.start."
+    },
+    {
+      "file": "08-resource-scope-subset-rejection.json",
+      "id": "CPIR-SCOPE-001",
+      "difficulty": "Level 5 — Scope / Identity",
+      "purpose": "Resource-Filter enthält nur einen Teil des Objekt-Footprints; ALL-containment muss Target ausschließen.",
+      "expected_validation": "InsufficientInformation",
+      "expected_outcome": "InsufficientInformation",
+      "expected_assessment": "BestFound",
+      "expected_candidates": 0,
+      "oracle": "Objekt hat [person-a, room-a], Filter ist nur [room-a]; ALL containment ist nicht erfüllt."
+    },
+    {
+      "file": "09-budget-best-found.json",
+      "id": "CPIR-ADV-001",
+      "difficulty": "Level 7 — Adversarial / SearchAssessment",
+      "purpose": "Budget endet nach drei Positionen, obwohl das Präferenzoptimum viel später liegt.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "BestFound",
+      "expected_first_start": "2026-10-01T09:30:00Z",
+      "expected_candidates": 3,
+      "oracle": "Nur 09:00, 09:15, 09:30 werden evaluiert; Search Space ist nicht erschöpft, also kein ProvenOptimal."
+    },
+    {
+      "file": "10-compound-unique-slot.json",
+      "id": "CPIR-ADV-002",
+      "difficulty": "Level 8 — Compound Scenario",
+      "purpose": "Resource Scope + Dependency + Earliest/Latest + Availability + Buffer + konkurrierende Preference-Quellen.",
+      "expected_validation": "Valid",
+      "expected_outcome": "Solution",
+      "expected_assessment": "ProvenOptimal",
+      "expected_first_start": "2026-10-01T12:15:00Z",
+      "expected_candidates": 1,
+      "oracle": "Nach meeting braucht es 15m Buffer => >=12:15. 45m endet 13:00; danach 15m bis review. Frühere Slots scheitern an Occupancy/Buffer, spätere an LatestEnd."
+    }
+  ]
+}

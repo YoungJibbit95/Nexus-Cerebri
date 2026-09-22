@@ -12,8 +12,14 @@
 </script>
 
 <figure class="visual-frame" data-truth={kind}>
-  <div class="visual-heading"><span class="truth-label" data-kind={kind}>{kind}</span><strong>{label}</strong></div>
+  <div class="visual-space" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
+  <div class="visual-heading">
+    <div><span class="truth-label" data-kind={kind}>{kind}</span><strong>{label}</strong></div>
+    <span class="visual-coordinate" aria-hidden="true">NEXUS CEREBRI / SYSTEM VIEW</span>
+  </div>
   <div class="visual-body">{@render children()}</div>
-  <details class="visual-alt"><summary>Text alternative</summary><p>{textAlternative}</p></details>
-  <figcaption>{caption}</figcaption>
+  <div class="visual-foot">
+    <details class="visual-alt"><summary>Text alternative</summary><p>{textAlternative}</p></details>
+    <figcaption>{caption}</figcaption>
+  </div>
 </figure>

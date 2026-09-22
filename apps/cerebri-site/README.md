@@ -11,6 +11,15 @@
 - Cerebri Lab remains a separate developer/research application.
 - No provider execution, production authentication, durable ledger, learned preference system or neural inference is simulated.
 
+
+## Visual system
+
+The site uses a project-specific **computational coordinate field** language instead of a generic card-first SaaS layout. Reusable visual primitives include coordinate grids, directed traces, scope boundaries, proof seals, authority layers and temporal/search rails. Motion is semantic (trace, search, resolve, boundary) and progressively enhanced; `prefers-reduced-motion` produces a complete static state.
+
+The three truth atmospheres remain explicit: **REAL** is stable and sharply bounded, **EDUCATIONAL** is diagrammatic, and **FUTURE CONCEPT** is deliberately diffuse/dashed. Visualizations never become an alternate source of domain truth.
+
+Responsive layouts are deliberately recomposed for desktop, tablet and mobile rather than simply scaled down. Pointer depth effects are desktop-only and all primary routes remain prerendered.
+
 ## Commands
 
 ```sh
@@ -23,7 +32,7 @@ npm run test:visual
 
 From the repository root, `npm run docs:build` remains the canonical site build command and writes the ignored deployment artifact to `site/`.
 
-The generator `scripts/build-site-data.mjs` runs before check/build, writes ignored typed generated modules, and copies the repository logo into the app's ignored static staging path.
+From the monorepo, the upstream generator `scripts/build-site-data.mjs` still runs before check/build, writes typed generated modules, and copies the repository logo. The site package also includes `scripts/prepare-data.mjs`: when the upstream generator is unavailable (for example in a review-only standalone export), it validates and uses the bundled generated site data instead of silently inventing fixtures.
 
 ## Static hosting
 

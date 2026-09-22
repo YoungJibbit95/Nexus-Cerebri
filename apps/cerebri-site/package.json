@@ -3,9 +3,11 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "prepare:data": "node ../../scripts/build-site-data.mjs",
+    "prepare:data": "node scripts/prepare-data.mjs",
     "dev": "npm run prepare:data && vite dev",
     "check": "npm run prepare:data && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "build": "npm run prepare:data && svelte-kit sync && vite build",

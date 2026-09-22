@@ -78,29 +78,87 @@ See the [AI development policy](docs/en/ai-assisted-development.md) and [license
 ## 🚀 Quick start
 
 Install Rust via rustup. The repository pins Rust 1.97.0 and its formatter/linter.
-Node 22.12+ is needed for the Lab, Node bridge and documentation tooling.
+Node.js **22.12+** is required for Cerebri Lab, the Node bridge, the official site
+and documentation tooling.
+
+Run the following commands from the repository root.
+
+### 1. Setup
+
+Install/build the Rust workspace and JavaScript dependencies first:
 
 ```sh
 cargo build --workspace --locked
+
+npm --prefix apps/cerebri-lab ci
+npm --prefix apps/cerebri-site ci
+npm ci --ignore-scripts
+```
+
+### 2. Run checks
+
+Verify the Rust workspace, Lab, official site and documentation before starting
+the local development servers:
+
+```sh
 cargo test --workspace --locked
 cargo fmt --check
 cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
-cargo run -p cerebri-core --example plan
-npm --prefix apps/cerebri-lab ci
+
+npm --prefix apps/cerebri-lab run check
+npm --prefix apps/cerebri-lab test
 npm --prefix apps/cerebri-lab run build
-npm --prefix apps/cerebri-site ci
+
 npm --prefix apps/cerebri-site run check
+npm run check
 npm run docs:build
+```
+
+To run the deterministic planner example directly:
+
+```sh
+cargo run -p cerebri-core --example plan
+```
+
+### 3. Start the API — Terminal 1
+
+Keep this terminal running:
+
+```sh
 cargo run -p cerebri-api
 ```
 
 > [!TIP]
-> The development server binds only to [localhost:3000](http://127.0.0.1:3000).
+> The API binds only to [localhost:3000](http://127.0.0.1:3000).
+> After a Lab production build, the API also serves that build at
+> [http://127.0.0.1:3000/lab/](http://127.0.0.1:3000/lab/).
 
-Open [Cerebri Lab](http://127.0.0.1:3000/lab/) and load [the current CPIR 0.2 request](examples/request.json).
-[CPIR 0.1](examples/legacy-cpir-0.1.json) is an explicitly supported legacy fixture.
-Temporal diagnostics use [a Berlin DST fixture](examples/temporal-request.json).
-For UI development use `npm --prefix apps/cerebri-lab run dev` alongside the Rust API.
+### 4. Start Cerebri Lab — Terminal 2
+
+Open a **separate terminal**, keep the API from Terminal 1 running, and start the
+Lab development server:
+
+```sh
+npm --prefix apps/cerebri-lab run dev
+```
+
+Open the development Lab at
+[http://127.0.0.1:5173/lab/](http://127.0.0.1:5173/lab/).
+
+Vite proxies `/v1` and `/health` to the Rust API at `http://127.0.0.1:3000`, so
+the Lab remains a frontend inspection workspace while the Rust core stays the
+domain authority for validation, planning and temporal computation.
+
+Load [the current CPIR 0.2 request](examples/request.json) for planner inspection.
+[CPIR 0.1](examples/legacy-cpir-0.1.json) remains an explicitly supported legacy
+fixture. Temporal diagnostics use [the Berlin DST fixture](examples/temporal-request.json).
+
+> [!NOTE]
+> `npm --prefix apps/cerebri-lab run dev` is the recommended workflow for UI
+> development. For a production-build review, first run
+> `npm --prefix apps/cerebri-lab run build`, then use the API-served Lab at
+> `http://127.0.0.1:3000/lab/`. The optional Vite preview only previews frontend
+> assets and is not a substitute for the functional API-backed review.
 
 <details>
 <summary><strong>🛠️ Additional build, bridge and documentation commands</strong></summary>
@@ -110,11 +168,7 @@ For UI development use `npm --prefix apps/cerebri-lab run dev` alongside the Rus
 ```sh
 cargo build -p cerebri-node
 node --test bindings/node/test.mjs
-npm ci --ignore-scripts
-npm run check
 npm run docs:build
-npm --prefix apps/cerebri-lab run check
-npm --prefix apps/cerebri-lab test
 ```
 
 </details>
