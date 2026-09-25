@@ -105,11 +105,30 @@ async fn independent_scenarios_cross_api_core_and_planner_with_exact_parity() {
             );
         }
         // Feasibility and lifecycle proof are checked by the actual core, never fabricated in a fixture.
-        for (wire, candidate) in actual["candidates"].as_array().unwrap().iter().zip(&core.candidates) {
-            assert_eq!(wire["ranking_features"], serde_json::to_value(&candidate.ranking_features).unwrap());
-            assert!(wire["ranking_features"].get("preferred_start_distance_seconds").is_some());
-            assert!(wire["ranking_features"].get("preferred_start_source").is_some());
-            assert_eq!(wire["ranking_features"]["schema_version"], serde_json::json!({"major":0,"minor":1}));
+        for (wire, candidate) in actual["candidates"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(&core.candidates)
+        {
+            assert_eq!(
+                wire["ranking_features"],
+                serde_json::to_value(&candidate.ranking_features).unwrap()
+            );
+            assert!(
+                wire["ranking_features"]
+                    .get("preferred_start_distance_seconds")
+                    .is_some()
+            );
+            assert!(
+                wire["ranking_features"]
+                    .get("preferred_start_source")
+                    .is_some()
+            );
+            assert_eq!(
+                wire["ranking_features"]["schema_version"],
+                serde_json::json!({"major":0,"minor":1})
+            );
         }
         for candidate in core.candidates {
             candidate.proposed.validate(&request.context).unwrap();

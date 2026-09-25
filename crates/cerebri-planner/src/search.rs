@@ -144,7 +144,12 @@ impl Planner for BaselinePlanner {
                 let features = request.preferences.ranking_features(
                     start,
                     if request.analysis_only() { 0 } else { 1 },
-                    object.time.value.required(false).ok().map(|(range, _)| range.start()),
+                    object
+                        .time
+                        .value
+                        .required(false)
+                        .ok()
+                        .map(|(range, _)| range.start()),
                 );
                 let cost = features.preferred_start_distance_seconds().unwrap_or(0);
                 let shift = features.shift_seconds();
@@ -154,10 +159,9 @@ impl Planner for BaselinePlanner {
                         cost: 0,
                     },
                     ScoreComponent {
-                        reason: features.preferred_start_source().map_or(
-                            PlanReason::EarliestTieBreak,
-                            PlanReason::PreferredStart,
-                        ),
+                        reason: features
+                            .preferred_start_source()
+                            .map_or(PlanReason::EarliestTieBreak, PlanReason::PreferredStart),
                         cost,
                     },
                 ];

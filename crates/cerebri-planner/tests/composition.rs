@@ -21,22 +21,44 @@ fn at(time: &str) -> Instant {
 #[test]
 fn complexity_manifest_oracles_and_legacy_full_order_regression() {
     let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples");
-    let manifest: serde_json::Value = serde_json::from_str(
-        &std::fs::read_to_string(directory.join("manifest.json")).unwrap(),
-    ).unwrap();
+    let manifest: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(directory.join("manifest.json")).unwrap())
+            .unwrap();
     // Recorded baseline at 6aae6d9; separate from the unchanged, independently
     // constructed manifest oracles. These snapshots are compatibility evidence.
     let legacy = [
-        (11, true, vec!["10:00","10:15","10:30","10:45","11:00","11:15","11:30"]),
-        (11, true, vec!["10:00","10:15","10:30","10:45","11:00","11:15","11:30"]),
-        (11, true, vec!["10:45","10:30","11:00","10:15","11:15","10:00","11:30"]),
+        (
+            11,
+            true,
+            vec![
+                "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30",
+            ],
+        ),
+        (
+            11,
+            true,
+            vec![
+                "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30",
+            ],
+        ),
+        (
+            11,
+            true,
+            vec![
+                "10:45", "10:30", "11:00", "10:15", "11:15", "10:00", "11:30",
+            ],
+        ),
         (2, true, vec!["10:00"]),
         (2, true, vec![]),
-        (15, true, vec!["11:00","09:45","12:15"]),
-        (14, true, vec!["11:15","11:00","10:45"]),
-        (11, true, vec!["10:15","10:30","10:45","11:00","11:15","11:30"]),
+        (15, true, vec!["11:00", "09:45", "12:15"]),
+        (14, true, vec!["11:15", "11:00", "10:45"]),
+        (
+            11,
+            true,
+            vec!["10:15", "10:30", "10:45", "11:00", "11:15", "11:30"],
+        ),
         (0, false, vec![]),
-        (3, false, vec!["09:30","09:15","09:00"]),
+        (3, false, vec!["09:30", "09:15", "09:00"]),
         (18, true, vec!["12:15"]),
     ];
     let cases = manifest["scenarios"].as_array().unwrap();
@@ -44,18 +66,34 @@ fn complexity_manifest_oracles_and_legacy_full_order_regression() {
     for (case, (evaluated, exhausted, order)) in cases.iter().zip(legacy) {
         let input: PlanningRequest = serde_json::from_str(
             &std::fs::read_to_string(directory.join(case["file"].as_str().unwrap())).unwrap(),
-        ).unwrap();
+        )
+        .unwrap();
         let result = BaselinePlanner.plan(input.clone());
         let wire = serde_json::to_value(&result).unwrap();
         assert_eq!(wire["validation"]["state"], case["expected_validation"]);
         assert_eq!(wire["outcome"], case["expected_outcome"]);
         assert_eq!(wire["assessment"], case["expected_assessment"]);
-        if let Some(count) = case.get("expected_candidates") { assert_eq!(result.candidates.len() as u64, count.as_u64().unwrap()); }
-        if let Some(start) = case.get("expected_first_start") { assert_eq!(wire["candidates"][0]["start"], *start); }
+        if let Some(count) = case.get("expected_candidates") {
+            assert_eq!(result.candidates.len() as u64, count.as_u64().unwrap());
+        }
+        if let Some(start) = case.get("expected_first_start") {
+            assert_eq!(wire["candidates"][0]["start"], *start);
+        }
         assert_eq!(result.search_space.evaluated, evaluated, "{}", case["file"]);
         assert_eq!(result.search_space.exhausted, exhausted, "{}", case["file"]);
-        assert_eq!(result.candidates.iter().map(|c| c.start).collect::<Vec<_>>(), order.into_iter().map(at).collect::<Vec<_>>(), "{}", case["file"]);
-        for candidate in result.candidates { candidate.proposed.validate(&input.context).unwrap(); }
+        assert_eq!(
+            result
+                .candidates
+                .iter()
+                .map(|c| c.start)
+                .collect::<Vec<_>>(),
+            order.into_iter().map(at).collect::<Vec<_>>(),
+            "{}",
+            case["file"]
+        );
+        for candidate in result.candidates {
+            candidate.proposed.validate(&input.context).unwrap();
+        }
     }
 }
 
@@ -176,8 +214,16 @@ fn golden_preference_order_exposes_complete_tuple_and_explicit_precedence() {
     for (candidate, (start, cost)) in result.candidates.iter().zip(expected) {
         assert_eq!(candidate.start, at(start));
         assert_eq!(candidate.cost, cost);
-        assert_eq!(candidate.ranking_features.preferred_start_distance_seconds(), Some(cost));
-        assert_eq!(candidate.ranking_features.preferred_start_source(), Some(PreferenceSource::ExplicitCurrentRequest));
+        assert_eq!(
+            candidate
+                .ranking_features
+                .preferred_start_distance_seconds(),
+            Some(cost)
+        );
+        assert_eq!(
+            candidate.ranking_features.preferred_start_source(),
+            Some(PreferenceSource::ExplicitCurrentRequest)
+        );
         assert_eq!(candidate.ranking_features.mutation_count(), 1);
         assert_eq!(candidate.ranking_features.shift_seconds(), 0);
         assert_eq!(

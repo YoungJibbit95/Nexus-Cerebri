@@ -76,8 +76,11 @@ impl TryFrom<RankingFeatureSetWire> for RankingFeatureSet {
         if wire.schema_version != RANKING_FEATURE_SCHEMA_V0_1 {
             return Err("unsupported ranking feature schema version");
         }
-        if wire.preferred_start_distance_seconds.is_none() != wire.preferred_start_source.is_none() {
-            return Err("preferred-start distance and source must both be null or both have values");
+        if wire.preferred_start_distance_seconds.is_none() != wire.preferred_start_source.is_none()
+        {
+            return Err(
+                "preferred-start distance and source must both be null or both have values",
+            );
         }
         Ok(Self {
             schema_version: wire.schema_version,
@@ -135,9 +138,8 @@ impl PreferenceProfile {
         let preferred = self.preferred_start();
         RankingFeatureSet {
             schema_version: RANKING_FEATURE_SCHEMA_V0_1,
-            preferred_start_distance_seconds: preferred.map(|p| {
-                (start - p.preferred_start).num_seconds().unsigned_abs()
-            }),
+            preferred_start_distance_seconds: preferred
+                .map(|p| (start - p.preferred_start).num_seconds().unsigned_abs()),
             preferred_start_source: preferred.map(|p| p.source),
             mutation_count,
             shift_seconds: original_start.map_or(0, |original| {
