@@ -10,6 +10,9 @@
   {#if candidate}<div class="candidate-time">{time(candidate.start)}<span>UTC</span></div><div class="detail-metrics"><div><strong>{candidate.cost}<small> s</small></strong><span>Objective cost</span></div><div><strong>{candidate.mutation_count}</strong><span>Proposed mutations</span></div></div><ul class="reason-list">{#each candidate.explanation as component}<li><Icon name="check" size={15} /><span>{reasonLabel(component.reason)}</span><strong>{component.cost} s</strong></li>{/each}</ul><p class="fine-print">This is a proposal. Request validation and placement checks do not authorize execution.</p>{#if mode !== 'Simple'}<JsonPanel title="ProposedPlan + score" value={candidate} open={mode === 'Research'} />{/if}
   {:else}<div class="detail-placeholder"><Icon name="code" size={30} /><p>See the evidence behind every placement.</p><small>Costs, provenance and structured reasons come directly from the core.</small></div>{/if}
   {#if candidate}
+    <h3 class="subheading">Ranking observations · v0.1</h3>
+    <p class="fine-print">Preferred-start distance: {candidate.ranking_features.preferred_start_distance_seconds === null ? 'No preference evidence' : `${candidate.ranking_features.preferred_start_distance_seconds} whole seconds`}. Source: {candidate.ranking_features.preferred_start_source ?? 'None'}.</p>
+    <p class="fine-print">Zero seconds may include a subsecond distance. Source records provenance and does not decide rank.</p>
     <h3 class="subheading">Ordering key · ascending</h3>
     <ol class="ordering-key">
       <li><span>Preferred-start distance</span><strong>{candidate.ordering_key.preference_distance_seconds} s</strong></li>

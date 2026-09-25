@@ -42,6 +42,16 @@ export interface CandidateOrderingKey {
   preference_distance_seconds: number; mutation_count: number; shifted_seconds: number;
   start: string; object_id: string;
 }
+export type PreferenceSource = 'ExplicitCurrentRequest' | 'SessionContext' | 'PersonalLearned' | 'GlobalLearned' | 'Default';
+/** Core-produced observations; source is provenance, never an ordering term. */
+export type RankingFeatureSet = {
+  schema_version: { major: 0; minor: 1 };
+  mutation_count: number;
+  shift_seconds: number;
+} & (
+  | { preferred_start_distance_seconds: null; preferred_start_source: null }
+  | { preferred_start_distance_seconds: number; preferred_start_source: PreferenceSource }
+);
 export interface RankedCandidate {
   proposed: { id: string; source_revision: number; placements: { object_id: string; range: TimeRange }[] };
   cost: number;
@@ -51,6 +61,7 @@ export interface RankedCandidate {
   object_id: string;
   explanation: ScoreComponent[];
   ordering_key: CandidateOrderingKey;
+  ranking_features: RankingFeatureSet;
 }
 export interface ConstraintViolation {
   constraint: Json;
