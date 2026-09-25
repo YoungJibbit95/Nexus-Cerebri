@@ -20,5 +20,6 @@ Historical release statements retain their original date and do not set current 
 | [ADR-0011](ADR-0011-official-site.md) | Repository-backed SvelteKit official site | Accepted | Official static SvelteKit site and build-time repository authority |
 | [ADR-0012](ADR-0012-planner-snapshot-compilation.md) | Bounded planner snapshot compilation and dependency evidence | Accepted | CPIR 0.2, snapshot compilation, occurrences and dependency graphs |
 | [ADR-0013](ADR-0013-planner-resource-admission.md) | Bound planner metadata work and materialized evidence | Accepted | Planner admission limits and materialized evidence budgets |
+| [ADR-0014](ADR-0014-ranking-feature-contract.md) | Versioned deterministic ranking observations | Accepted | Ranking feature schema 0.1, required-nullable output and provenance; extends ADR-0012 |
 
 [Decision template](ADR-TEMPLATE.md) · [Documentation authority](../../README.md)

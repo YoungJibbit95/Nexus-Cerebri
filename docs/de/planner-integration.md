@@ -50,6 +50,59 @@ Raster und Ziel**; vollständige Ablehnung => Complete; Budgetabbruch => BestFou
 
 ## Forschung und Grenzen
 
+### Ranking Feature Contract v0.1
+
+Jeder Kandidat enthält `ranking_features`: einen versionierten deterministischen
+Beobachtungsvertrag für Inspektion und Parität, keinen endgültigen Merkmalsraum für
+Präferenzlernen. Er enthält genau `schema_version: {major: 0, minor: 1}`,
+`preferred_start_distance_seconds`, `preferred_start_source`, `mutation_count` und
+`shift_seconds`. Die Version ist unabhängig von CPIR, Software, API, Modell, Datensatz
+und Spezifikation; keine dieser anderen Versionen wird angehoben.
+
+Die Präferenzauflösung wählt das Minimum von `(source_rank, preferred_start)` mit
+ExplicitCurrentRequest=0, SessionContext=1, PersonalLearned=2, GlobalLearned=3, Default=4.
+Innerhalb einer Quelle gewinnt der frühere Zeitpunkt; exakte Duplikate sind ranggleich.
+Eingabereihenfolge und Inhalt des Evidenzvektors beeinflussen die Auflösung nicht.
+Ein leeres Profil liefert keine Evidenz. Die Quelle dokumentiert die Herkunft derselben
+aufgelösten Präferenz und ist kein Bestandteil der Sortierung.
+
+Alle Felder sind Pflichtfelder. Für **beide** nullable Felder gilt: fehlend => abgelehnt,
+explizites `null` => None, typkorrekter Wert => Some(value). Distanz ist genau dann None,
+wenn die Quelle None ist. Unbekannte Versionen/Felder und widersprüchliche Nullbarkeit
+werden abgelehnt. Der private Rust-Wire-Typ erzwingt Feldpräsenz durch `deserialize_with`
+ohne Defaults und prüft anschließend Version und Konsistenz vor Erzeugung des Domänentyps.
+Gewöhnliche Serde-Option-Felder würden fehlend und null zusammenführen; die vollständige
+Präsenztabelle ist mit echtem JSON getestet. Serialisierung gibt beide Felder auch als null
+aus; Roundtrips erhalten None.
+
+Die Distanz bleibt `(candidate_start - resolved_start).num_seconds().unsigned_abs()`.
+None unterscheidet sich von Some(0): Some(0) bedeutet vorhandene Evidenz mit auf ganze
+Sekunden quantisiertem Nullabstand, nicht zwingend Zeitpunktgleichheit. Gleichheit und
+Abstände von +/-0,8 Sekunden ergeben null; +/-1 Sekunde ergibt eins. Die bestehende
+chrono-Arithmetik benötigt weder Clamping noch Sättigung.
+
+Änderungszahl ist `m(candidate, request_context)`: analysis-only (FindSlot, Analyze oder
+max_mutations=0) => 0; aktueller mutierender Einzelzielpfad => 1. Verschiebung ist
+`(original_start - candidate_start).num_seconds().unsigned_abs()` oder null ohne bestehende
+Platzierung. Prospektive, unveränderte und nicht-null Subsekundenverschiebungen erhalten
+absichtlich denselben numerischen Wert null.
+
+Der vollständige Schlüssel bleibt `(distance.unwrap_or(0), mutation_count, shift_seconds,
+start, object_id)` und verwendet dieselben Beobachtungswerte. Die bisherige None-zu-null-
+Projektion der Sortierung löscht damit nicht die Domänenbedeutung. Kompatibilitätsziel ist
+identische Reihenfolge für alle unterstützten gültigen Eingaben einschließlich Subsekunden.
+Begrenzte Regressionstests liefern Evidenz, keinen universellen Beweis. Generierung,
+Validierung, SearchAssessment und Ausführung bleiben unverändert.
+
+REST und Node transportieren Core-Ausgaben; Lab prüft und zeigt sie ohne Neuberechnung.
+Alte importierte Lab-Ergebnisse ohne `ranking_features` werden abgelehnt. Bisherige numerische
+Kandidatenfelder und der Rust-Kompatibilitätshelfer `RankingFeatures` bleiben erhalten.
+Strikte Konsumenten müssen diese additive vorläufige Ausgabeerweiterung berücksichtigen.
+JavaScript-Guards behalten ihre Safe-Integer-Anzeigegrenze; tatsächliche Core-Zeitabstände
+passen hinein, während Rust den vollständigen u64-Wertebereich akzeptiert. Kein ML, Training,
+Telemetrie, EvaluationEpisode, Nexus, gelernte Suche oder Provider-Arbeit. Rohinhalte und
+Identifikatoren sind keine Features. Siehe [ADR-0014](../architecture/decisions/ADR-0014-ranking-feature-contract.md).
+
 Maximal 32 Serien, 1.024 Vorkommen, 36.600 gemeinsam geprüfte Tage, 256 Graphknoten und
 1.024 Constraints. Die vorhandene kombinierte Arbeitsgrenze von 1.000.000 schließt Vorkommen
 ein. Limits brechen vollständig ab und kürzen keine Abdeckung. Der Graph benötigt höchstens

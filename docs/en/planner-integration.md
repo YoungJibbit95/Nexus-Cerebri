@@ -52,6 +52,52 @@ exhaustive rejection => Complete; budget exhaustion => BestFound.
 
 ## Research and limits
 
+### Ranking Feature Contract v0.1
+
+Each candidate exposes `ranking_features`, a versioned deterministic observation contract
+for inspection and parity, not a final preference-learning feature space. It contains exactly
+`schema_version: {major: 0, minor: 1}`, `preferred_start_distance_seconds`,
+`preferred_start_source`, `mutation_count` and `shift_seconds`. Its version is independent
+of CPIR, software, API, model, dataset and specification versions; none is bumped here.
+
+Resolve the preferred evidence by minimum `(source_rank, preferred_start)` with
+ExplicitCurrentRequest=0, SessionContext=1, PersonalLearned=2, GlobalLearned=3, Default=4.
+The earlier instant wins within one source; exact duplicates are ranking-equivalent.
+Input order and evidence-vector contents do not affect resolution. An empty profile yields
+no evidence. Source records provenance of this same resolution, never an ordering term.
+
+Every field is required. For **both** nullable fields: missing => rejected, explicit
+`null` => None, typed value => Some(value). Distance is None iff source is None.
+Unsupported schema versions, mismatched nullability and unknown fields reject.
+The private Rust wire type uses `deserialize_with` without defaults on both nullable fields,
+then validates version and consistency before constructing the domain type. Ordinary
+Serde-derived Option fields would merge missing and null; the presence truth table is tested
+with actual JSON. Serialization emits both fields even when null; roundtrips preserve None.
+
+Distance is `(candidate_start - resolved_start).num_seconds().unsigned_abs()`, preserving
+the existing whole-second projection. None differs from Some(0): Some(0) means evidence
+exists with quantized zero, not necessarily instant equality. Equality and +/-0.8 seconds
+yield zero; +/-1 second yield one. Current chrono arithmetic needs no clamp or saturation.
+
+Mutation count is `m(candidate, request_context)`: analysis-only (FindSlot, Analyze or
+max_mutations=0) => 0; the current mutating single-target path => 1. Shift is
+`(original_start - candidate_start).num_seconds().unsigned_abs()` or zero with no original
+placement. Prospective, unchanged and nonzero subsecond shifts intentionally alias to zero.
+
+The ordering key still is `(distance.unwrap_or(0), mutation_count, shift_seconds, start,
+object_id)`, reusing the observation values. This preserves the legacy None-to-zero ordering
+projection without erasing domain missingness. The semantic target is identical ordering for
+every supported valid input, including subseconds; bounded regression tests are evidence,
+not a universal proof. Generation, validation, SearchAssessment and execution stay unchanged.
+
+REST and Node transport core output; Lab checks and displays it without recomputing features.
+Old imported Lab outputs lacking `ranking_features` reject. Existing numeric candidate fields
+and the Rust `RankingFeatures` compatibility helper remain. This is an additive provisional
+output change; strict consumers must update. JavaScript guards retain their safe-integer
+display limit; actual core time distances fit it, while Rust accepts the full u64 wire domain.
+There is no ML, training, telemetry, EvaluationEpisode, Nexus, learned search or provider work.
+No raw content/identifiers are features. See [ADR-0014](../architecture/decisions/ADR-0014-ranking-feature-contract.md).
+
 At most 32 series, 1,024 occurrences, 36,600 examined dates shared across series, 256 graph
 nodes and 1,024 constraints. Combined planner work must stay within the existing 1,000,000
 bound with occurrences included. Limits reject whole compilation, never truncate coverage.

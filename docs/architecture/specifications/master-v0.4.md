@@ -313,6 +313,29 @@ Keep multiple ranked candidates.
 Preference precedence follows section 2: explicit current request \>
 session context \> personal learned \> global learned \> default.
 
+### Deterministic ranking observations (ADR-0014)
+
+`RankingFeatureSet` v0.1 is an observation contract, not a learning/training schema.
+Resolve preferred evidence by minimum `(source_rank, preferred_start)` using section 2's
+five-source precedence; equal-source ties use the earlier instant, independent of input
+order and evidence-vector contents. Empty preferences resolve to None.
+Required fields are `schema_version`, `preferred_start_distance_seconds`,
+`preferred_start_source`, `mutation_count`, and `shift_seconds`.
+Both nullable fields must be present: missing rejects, null means None, value means Some.
+Distance is None iff source is None; source is provenance only. The validated wire boundary
+rejects incompatible versions and invalid nullability; ordinary derived Serde Option fields
+cannot enforce missing-vs-null. Serialization always includes explicit nulls.
+Preferred distance preserves `(candidate_start - preferred_start).num_seconds().unsigned_abs()`:
+None differs from Some(0), and zero includes nonzero subsecond differences. Contextual
+mutation count is zero for analysis-only/FindSlot and one for the current mutating path.
+Shift uses `(original_start - candidate_start).num_seconds().unsigned_abs()` or zero without
+original placement: missing, unchanged and subsecond shifts intentionally share zero.
+The complete key is `(distance.unwrap_or(0), mutation_count, shift_seconds, start, object_id)`.
+Compatibility requires identical ordering for all currently supported valid inputs, including
+subseconds; generation, hard validity, proof, authorization and execution do not change.
+No ML, EvaluationEpisode, telemetry, Nexus integration or learned search is introduced.
+See [ADR-0014](../decisions/ADR-0014-ranking-feature-contract.md) for the validated wire contract.
+
 ## 10. Candidate generation and repair
 
 Tiers:
@@ -559,6 +582,9 @@ One core, multiple interfaces:
 
 Transport contains no planning logic.
 
+Candidate output includes the Rust-produced `ranking_features` observation contract
+(ADR-0014); REST, Node and Lab expose it without recomputing ranking semantics.
+
 Adapters declare capabilities: read
 events/availability/tasks/resources/participants and
 create/update/move/delete where supported.
@@ -680,6 +706,7 @@ Canonical authorities:
 - **API version:** route/protocol declaration (initially `v1` only when the public API is intentionally declared).
 - **CPIR schema version:** serialized CPIR `schema_version` plus schema documentation; initial implementation started at `0.1`; ADR-0012 adds `0.2` with legacy `0.1` support, not “v1”.
 - **Model version:** immutable ModelRegistry metadata/artifact ID.
+- **Ranking feature schema:** `RankingFeatureSchemaVersion` / `RANKING_FEATURE_SCHEMA_V0_1` in cerebri-preferences; serialized as candidate `ranking_features.schema_version`, independent of CPIR/software/API/model/dataset/specification versions.
 - **Dataset version:** dataset manifest metadata/checksum.
 - **Specification revision:** document front matter/header, e.g. `0.2`; no software compatibility guarantee is implied.
 

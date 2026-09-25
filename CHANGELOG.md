@@ -39,6 +39,20 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
+### 2026-09-25 — Ranking observations (Slice 1)
+
+- Add `RankingFeatureSet` schema 0.1 to candidate output with required-nullable
+  preferred-start distance/source, contextual mutation count and legacy shift seconds.
+- Validate missing vs null, paired nullability and schema compatibility at the Rust wire
+  boundary. Preserve whole-second quantization and the complete deterministic ordering key.
+- Carry core-produced features through REST, Node and Lab; add presence, subsecond,
+  generated-mode/permutation and full scenario-order regression coverage.
+- Document [ADR-0014](docs/architecture/decisions/ADR-0014-ranking-feature-contract.md)
+  and synchronized Master/DE/EN references. No CPIR/software/API version bump or release.
+- Independent implementation review remains required; see the
+  [verification record](docs/development/progress/2026-09-25-ranking-feature-contract.md)
+  for actual gates and any baseline/environment blockers.
+
 > [!WARNING]
 > No software release or tag has been created yet.
 
