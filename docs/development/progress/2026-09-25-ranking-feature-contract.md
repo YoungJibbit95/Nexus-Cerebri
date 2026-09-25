@@ -45,16 +45,63 @@ Software remains 0.2.0 unreleased; CPIR 0.1/0.2 and REST /v1 are unchanged.
 - Actual JSON truth table, malformed/missing/duplicate/unknown fields, all five sources,
   u32/u64 wire limits, chrono extremes, deterministic roundtrips, and None vs Some(0).
 
-## Verification (in progress)
+## Local verification
 
-Local Windows / pinned Rust 1.97.0 / Node 26.3.1. Final command outcomes and remote CI are
-recorded below after verification; unexecuted or blocked gates are never implied to pass.
+Local Windows / pinned Rust 1.97.0 / Node 26.3.1. Site build/browser gates use
+`CEREBRI_BASE_PATH=/Nexus-Cerebri`; rustdoc uses `RUSTDOCFLAGS=-D warnings`.
+
+| Command | Result |
+| --- | --- |
+| `cargo test -p cerebri-preferences --locked` | PASS, focused wire/projection tests |
+| `cargo test -p cerebri-planner --test randomized ranking_observations --locked` | PASS, 384 cases and reversed permutations |
+| `cargo test -p cerebri-planner --test composition --locked` | PASS, 6 tests |
+| `cargo test -p cerebri-preferences -p cerebri-planner --locked` | PASS before formatting; post-format local rerun blocked at composition by Windows 4551; corrected code passes full Linux workspace tests |
+| `cargo fmt --check` | PASS in Linux CI after applying its formatter diff; BLOCKED locally by Windows application control (4551) |
+| `cargo build --workspace --locked` | PASS |
+| `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | PASS after replacing a test-only unnecessary vec with an array |
+| `cargo test --workspace --locked` | PASS, 120 tests including doctests |
+| `cargo doc --workspace --no-deps --locked` | PASS, warnings denied |
+| `cargo build -p cerebri-node --locked` | PASS |
+| `node --test bindings/node/test.mjs` | PASS, 4 tests |
+| `npm run check` | FAIL: pre-existing unpinned traffic action; all 22 authority tests pass |
+| `npm run docs:check` | FAIL: pre-existing figcaption-parent warning, 0 errors / 1 warning |
+| `npm run docs:build` | PASS; existing figcaption warning remains |
+| `npm --prefix apps/cerebri-lab run check` | PASS, 0 errors / 0 warnings |
+| `npm --prefix apps/cerebri-lab run test` | PASS, 24 tests including real REST/Node/Lab comparison |
+| `npm --prefix apps/cerebri-lab run build` | PASS |
+| `npm --prefix apps/cerebri-site run test:e2e` | FAIL, 6/7 pass; existing qualification-status locator matches two elements |
+| `npm --prefix apps/cerebri-site run test:visual` | FAIL, 4/4 homepage hashes differ from stored references |
+| `npm audit --audit-level=high` | PASS, no findings |
+| `npm --prefix apps/cerebri-lab audit --audit-level=high` | PASS, no findings |
+| `npm --prefix apps/cerebri-site audit --audit-level=high` | PASS threshold, existing 3 low entries for cookie advisory |
+| `cargo audit --file Cargo.lock --deny warnings --json` | PASS, 101 dependencies, zero vulnerabilities/warnings; advisory DB e2111519ba6d14a5da59a7b2e5c8083ae8a37c01 |
 
 Initial findings: Windows application control blocked one freshly compiled composition
 test executable (4551); later rebuilt subsystem tests ran successfully. The pinned rustfmt
-executable is also blocked. No application-control setting was changed. Two existing baseline
-gate failures are unrelated to this slice: the unpinned gh-traffic-stats@v1 action and a
-nested figcaption in the official site. Minimal corrections require the maintainer's scope decision.
+executable is also blocked. No application-control setting was changed. The first e2e attempt
+collided with the visual test's server port; the sequential rerun produced the 6/7 result above.
+No test, threshold, lint or security gate was weakened.
+
+## Remaining baseline gates and remote verification
+
+The starting commit already includes `.github/workflows/gh-traffic-stats.yml` with mutable
+`gtapps/gh-traffic-stats@v1` and the nested figcaption in VisualizationFrame.svelte. Upstream
+v1 and v1.0.0 both resolved to `f05c995b41d817087f7f728dd1794af559d81471` on this date.
+Minimal pin/markup corrections were proposed to the maintainer as a separate scope decision;
+no such corrections are included without approval. The homepage duplicates qualification
+text, invalidating the old strict Playwright locator. Its visual references predate the
+baseline's `32fa8c7` site changes. This slice changes no official-site source or visual hashes.
+The existing cookie finding and its retained high-severity gate are discussed in the
+[prior qualification report](2026-09-22-release-qualification-corrections.md); no dependencies changed.
+
+Implementation commit `ab8971b` and contract/docs commit `38360b6` were pushed for remote
+verification. [First CI run](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36192618668)
+reported formatting differences; the pinned Linux formatter's exact output was applied in
+`5b3e292` without changing semantic tokens. The
+[subsequent run](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36192804975)
+passes formatting, workspace build, Clippy, workspace tests, Node build and Node tests, then
+fails at the existing unpinned action in `npm run check`. Final pushed-head CI is inspected separately and reported at
+session completion. This record does not claim all gates or independent qualification passed.
 
 ## Documentation, limitations and next step
 

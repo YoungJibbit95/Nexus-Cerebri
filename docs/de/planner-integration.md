@@ -83,12 +83,12 @@ chrono-Arithmetik benötigt weder Clamping noch Sättigung.
 
 Änderungszahl ist `m(candidate, request_context)`: analysis-only (FindSlot, Analyze oder
 max_mutations=0) => 0; aktueller mutierender Einzelzielpfad => 1. Verschiebung ist
-`(original_start - candidate_start).num_seconds().unsigned_abs()` oder null ohne bestehende
-Platzierung. Prospektive, unveränderte und nicht-null Subsekundenverschiebungen erhalten
-absichtlich denselben numerischen Wert null.
+`(original_start - candidate_start).num_seconds().unsigned_abs()` oder `0` ohne bestehende
+Platzierung. Prospektive, unveränderte und von null verschiedene Subsekundenverschiebungen
+erhalten absichtlich denselben numerischen Wert `0`.
 
 Der vollständige Schlüssel bleibt `(distance.unwrap_or(0), mutation_count, shift_seconds,
-start, object_id)` und verwendet dieselben Beobachtungswerte. Die bisherige None-zu-null-
+start, object_id)` und verwendet dieselben Beobachtungswerte. Die bisherige None-zu-0-
 Projektion der Sortierung löscht damit nicht die Domänenbedeutung. Kompatibilitätsziel ist
 identische Reihenfolge für alle unterstützten gültigen Eingaben einschließlich Subsekunden.
 Begrenzte Regressionstests liefern Evidenz, keinen universellen Beweis. Generierung,
