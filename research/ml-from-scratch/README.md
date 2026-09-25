@@ -3,7 +3,7 @@
 This directory is intentionally outside the production Rust workspace.
 No production crate may import research code.
 
-Future lessons, implemented by the human learning path:
+Future lessons, implemented by the learning path:
 1. Vectors and matrices
 2. Tensor operations
 3. Linear layer
