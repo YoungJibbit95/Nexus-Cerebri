@@ -56,10 +56,21 @@ test('real Rust API responses satisfy Lab contracts and retain independent scena
     assert.deepEqual(result.dependency_graph.issues, []);
     const candidate = result.candidates[0];
     assert.equal(candidate.ordering_key.preference_distance_seconds, candidate.cost);
+    assert.deepEqual(candidate.ranking_features, {
+      schema_version: { major: 0, minor: 1 }, preferred_start_distance_seconds: null,
+      preferred_start_source: null, mutation_count: 1, shift_seconds: 0,
+    });
     for (const mutate of [
       (value: any) => { delete value.compilation; },
       (value: any) => { delete value.dependency_graph; },
       (value: any) => { delete value.candidates[0].ordering_key; },
+      (value: any) => { delete value.candidates[0].ranking_features; },
+      (value: any) => { delete value.candidates[0].ranking_features.preferred_start_distance_seconds; },
+      (value: any) => { delete value.candidates[0].ranking_features.preferred_start_source; },
+      (value: any) => { value.candidates[0].ranking_features.preferred_start_distance_seconds = 0; },
+      (value: any) => { value.candidates[0].ranking_features.preferred_start_source = 'ExplicitCurrentRequest'; },
+      (value: any) => { value.candidates[0].ranking_features.schema_version.minor = 2; },
+      (value: any) => { value.candidates[0].ranking_features.extra = 0; },
       (value: any) => { value.candidates[0].ordering_key.shifted_seconds = '0'; },
       (value: any) => { value.dependency_graph.edges = [{ predecessor: 'a' }]; },
       (value: any) => { value.dependency_graph.issues = [{ Cycle: { members: [], edges: [{}] } }]; },
@@ -72,6 +83,21 @@ test('real Rust API responses satisfy Lab contracts and retain independent scena
     ]) {
       const changed = structuredClone(result); mutate(changed);
       assert.throws(() => parseResult(changed));
+    }
+  });
+
+  await t.test('preferred-start provenance and whole-second zero survive core/API/Lab/Node transport', async () => {
+    const { plan } = await import('../../../bindings/node/index.mjs');
+    for (const source of ['ExplicitCurrentRequest', 'SessionContext', 'PersonalLearned', 'GlobalLearned', 'Default']) {
+      const request = parseRequest(fixture('legacy-cpir-0.1.json'));
+      request.preferences.preferences = [{ source, preferred_start: '2026-10-01T10:00:00.800Z', evidence: [] }];
+      const result = parseResult(await post('/v1/plan', request));
+      assert.deepEqual(result, parseResult(await plan(request)));
+      assert.equal(result.candidates[0].ranking_features.preferred_start_source, source);
+      assert.equal(result.candidates[0].ranking_features.preferred_start_distance_seconds, 0);
+      const malformed = structuredClone(result) as any;
+      malformed.candidates[0].ranking_features.preferred_start_source = 'Unknown';
+      assert.throws(() => parseResult(malformed));
     }
   });
 

@@ -34,6 +34,7 @@ pub struct RankedCandidate {
     pub object_id: PlanningObjectId,
     pub explanation: Vec<ScoreComponent>,
     pub ordering_key: CandidateOrderingKey,
+    pub ranking_features: cerebri_preferences::RankingFeatureSet,
 }
 /// Lexicographic ranking; each component participates in precisely this order.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -140,25 +141,23 @@ impl Planner for BaselinePlanner {
                 result.compilation.as_ref(),
             );
             if reasons.is_empty() {
-                let cost = request
-                    .preferences
-                    .features(start)
-                    .distance_from_preferred_start_seconds;
-                let shift = object.time.value.required(false).map_or(0, |(range, _)| {
-                    (range.start() - start).num_seconds().unsigned_abs()
-                });
+                let features = request.preferences.ranking_features(
+                    start,
+                    if request.analysis_only() { 0 } else { 1 },
+                    object.time.value.required(false).ok().map(|(range, _)| range.start()),
+                );
+                let cost = features.preferred_start_distance_seconds().unwrap_or(0);
+                let shift = features.shift_seconds();
                 let mut explanation = vec![
                     ScoreComponent {
                         reason: PlanReason::FeasibleWithinScope,
                         cost: 0,
                     },
                     ScoreComponent {
-                        reason: request
-                            .preferences
-                            .preferred_start()
-                            .map_or(PlanReason::EarliestTieBreak, |p| {
-                                PlanReason::PreferredStart(p.source)
-                            }),
+                        reason: features.preferred_start_source().map_or(
+                            PlanReason::EarliestTieBreak,
+                            PlanReason::PreferredStart,
+                        ),
                         cost,
                     },
                 ];
@@ -177,18 +176,19 @@ impl Planner for BaselinePlanner {
                 result.candidates.push(RankedCandidate {
                     proposed: ProposedPlan::from_shared(request.clone(), vec![placement]),
                     cost,
-                    mutation_count: if request.analysis_only() { 0 } else { 1 },
+                    mutation_count: features.mutation_count(),
                     shifted_seconds: shift,
                     start,
                     object_id: object.id.clone(),
                     explanation,
                     ordering_key: CandidateOrderingKey {
                         preference_distance_seconds: cost,
-                        mutation_count: if request.analysis_only() { 0 } else { 1 },
+                        mutation_count: features.mutation_count(),
                         shifted_seconds: shift,
                         start,
                         object_id: object.id.clone(),
                     },
+                    ranking_features: features,
                 });
             } else {
                 result

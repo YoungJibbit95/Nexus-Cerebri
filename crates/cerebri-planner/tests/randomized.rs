@@ -29,6 +29,90 @@ fn constraint(rule: HardConstraint) -> ConstraintSpec {
 }
 
 #[test]
+fn ranking_observations_match_independent_millisecond_oracle_across_modes_and_permutations() {
+    use PreferenceSource::*;
+    for seed in 0..32_i64 {
+        for fractional_ms in [0, 200, 800] {
+            for mode in 0..4 {
+                let mut input = support::request();
+                let epoch = at(0) + TimeDelta::milliseconds(fractional_ms);
+                let instant = |ms| epoch + TimeDelta::milliseconds(ms);
+                let span = |a, b| TimeRange::new(instant(a), instant(b)).unwrap();
+                input.scope.time_range = span(0, 8000);
+                input.duration.value = FieldState::known(Duration::seconds(1).unwrap());
+                input.granularity = Duration::seconds(1).unwrap();
+                input.budget.max_candidates = if seed % 3 == 0 { 5 } else { 8 };
+                input.context.objects[1].time.value = FieldState::known(span(3000, 4000));
+                let original = if seed % 3 == 0 { None } else { Some([0, 800, 1000, 5200][seed as usize % 4]) };
+                if let Some(original) = original {
+                    input.context.objects[0].revision = Some(Revision(1));
+                    input.context.objects[0].time.value = FieldState::known(span(original, original + 1000));
+                    input.context.objects[0].time.provenance = Provenance::IntegrationFact;
+                    input.operation = Operation::Move;
+                    input.planning_capability.mutations[0].kind = MutationKind::MoveEvent;
+                }
+                match mode {
+                    1 => input.operation = Operation::FindSlot,
+                    2 => input.operation = Operation::Analyze,
+                    3 => input.scope.max_mutations = 0,
+                    _ => (),
+                }
+                input.constraints = vec![
+                    constraint(HardConstraint::EarliestStart(instant(1000))),
+                    constraint(HardConstraint::LatestEnd(instant(7000))),
+                ];
+                let source = [ExplicitCurrentRequest,SessionContext,PersonalLearned,GlobalLearned,Default][seed as usize % 5];
+                let preferred = (seed % 9) * 800 - 800;
+                if seed % 2 == 0 {
+                    input.preferences.preferences = [preferred, preferred + 1000, preferred].map(|ms| PreferenceEvidence {
+                        source, preferred_start: instant(ms), evidence: evidence(),
+                    }).to_vec();
+                    if source != Default {
+                        input.preferences.preferences.push(PreferenceEvidence { source: Default, preferred_start: instant(0), evidence: vec![] });
+                    }
+                }
+                let result = BaselinePlanner.plan(input.clone());
+                assert_eq!(result.validation.state, ValidationState::Valid, "seed={seed}, mode={mode}");
+                let mutations = if mode == 0 { 1 } else { 0 };
+                // Independent integer oracle; no production feature/preference/ordering helper.
+                let key = |ms: i64| (
+                    if seed % 2 == 0 { ((ms - preferred) / 1000).unsigned_abs() } else { 0 },
+                    mutations,
+                    original.map_or(0, |original| ((original - ms) / 1000).unsigned_abs()),
+                    ms,
+                );
+                let mut expected: Vec<i64> = (0..i64::from(input.budget.max_candidates))
+                    .map(|s| s * 1000).filter(|s| *s >= 1000 && *s <= 6000 && *s != 3000).collect();
+                expected.sort_by_key(|s| key(*s));
+                assert_eq!(result.candidates.iter().map(|c| (c.start - epoch).num_milliseconds()).collect::<Vec<_>>(), expected);
+                assert_eq!(result.search_space.evaluated, input.budget.max_candidates);
+                assert_eq!(result.search_space.exhausted, input.budget.max_candidates == 8);
+                assert_eq!(result.assessment, if input.budget.max_candidates == 8 { SearchAssessment::ProvenOptimal } else { SearchAssessment::BestFound });
+                assert_eq!(result.outcome, PlanningOutcome::Solution);
+                for candidate in &result.candidates {
+                    let (distance, mutations, shift, _) = key((candidate.start - epoch).num_milliseconds());
+                    let feature = &candidate.ranking_features;
+                    assert_eq!(feature.preferred_start_distance_seconds(), (seed % 2 == 0).then_some(distance));
+                    assert_eq!(feature.preferred_start_source(), (seed % 2 == 0).then_some(source));
+                    assert_eq!(feature.mutation_count(), mutations);
+                    assert_eq!(feature.shift_seconds(), shift);
+                    assert_eq!(candidate.ordering_key, CandidateOrderingKey {
+                        preference_distance_seconds: distance, mutation_count: mutations, shifted_seconds: shift,
+                        start: candidate.start, object_id: input.target_ids[0].clone(),
+                    });
+                    assert_eq!((candidate.cost, candidate.mutation_count, candidate.shifted_seconds), (distance, mutations, shift));
+                    candidate.proposed.clone().validate(&input.context).unwrap();
+                }
+                input.preferences.preferences.reverse();
+                input.context.objects.reverse();
+                input.constraints.reverse();
+                assert_eq!(serde_json::to_value(&result).unwrap(), serde_json::to_value(BaselinePlanner.plan(input)).unwrap());
+            }
+        }
+    }
+}
+
+#[test]
 fn seeded_conjunction_oracle_and_complete_observable_permutation_campaign() {
     // Each seed creates one complete case, so replay does not depend on earlier cases.
     for seed in 0..512 {

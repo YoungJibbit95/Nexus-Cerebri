@@ -62,6 +62,19 @@ function checkEvidence(value: unknown, path: string, checkData: (value: unknown,
     if (knowledge.state === 'AMBIGUOUS') array(knowledge.data, `${path}.data`).forEach((v) => checkData(v, `${path}.candidate`));
   }
 }
+/** Inspect the wire contract only; never recompute features or rank in the client. */
+function parseRankingFeatures(value: unknown): void {
+  const item = object(value, 'ranking_features');
+  const fields = ['schema_version', 'preferred_start_distance_seconds', 'preferred_start_source', 'mutation_count', 'shift_seconds'];
+  if (Object.keys(item).length !== fields.length || !fields.every((key) => Object.hasOwn(item, key))) throw new Error('ranking_features: expected every v0.1 field, without extras.');
+  const version = object(item.schema_version, 'ranking_features.schema_version');
+  if (Object.keys(version).length !== 2 || version.major !== 0 || version.minor !== 1) throw new Error('ranking_features: unsupported schema version.');
+  if (item.preferred_start_distance_seconds !== null) number(item.preferred_start_distance_seconds, 'ranking_features.preferred_start_distance_seconds');
+  if (item.preferred_start_source !== null) member(item.preferred_start_source, ['ExplicitCurrentRequest', 'SessionContext', 'PersonalLearned', 'GlobalLearned', 'Default'], 'ranking_features.preferred_start_source');
+  if ((item.preferred_start_distance_seconds === null) !== (item.preferred_start_source === null)) throw new Error('ranking_features: distance and source must both be null or both have values.');
+  if (number(item.mutation_count, 'ranking_features.mutation_count') > 0xffffffff) throw new Error('ranking_features.mutation_count: exceeds u32.');
+  number(item.shift_seconds, 'ranking_features.shift_seconds');
+}
 export function parseResult(value: unknown): PlanningResult {
   const item = object(value, 'result');
   member(item.outcome, ['Solution', 'NoSolution', 'NeedsRelaxation', 'InsufficientInformation'], 'outcome');
@@ -80,6 +93,7 @@ export function parseResult(value: unknown): PlanningResult {
   if (typeof search.exhausted !== 'boolean') throw new Error('search_space.exhausted: expected a boolean.');
   for (const raw of array(item.candidates, 'candidates')) {
     const candidate = object(raw, 'candidate');
+    parseRankingFeatures(candidate.ranking_features);
     instant(candidate.start, 'candidate.start');
     string(candidate.object_id, 'candidate.object_id');
     for (const key of ['cost', 'mutation_count', 'shifted_seconds']) number(candidate[key], `candidate.${key}`);

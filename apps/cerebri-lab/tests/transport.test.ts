@@ -13,7 +13,7 @@ function resultFixture(): PlanningResult {
   return {
     compilation: null, dependency_graph: { nodes: ['busy', 'new-event'], edges: [], order: ['busy', 'new-event'], issues: [] },
     outcome: 'Solution', assessment: 'BestFound', validation: { state: 'Valid', issues: [] },
-    candidates: [{ proposed: { id: 'transport-fixture', source_revision: 1, placements: [{ object_id: 'new-event', range: { start: '2026-10-01T10:00:00Z', end: '2026-10-01T10:30:00Z' } }] }, cost: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event', explanation: [{ reason: 'EarliestTieBreak', cost: 0 }], ordering_key: { preference_distance_seconds: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event' } }],
+    candidates: [{ ranking_features: { schema_version: { major: 0, minor: 1 }, preferred_start_distance_seconds: null, preferred_start_source: null, mutation_count: 1, shift_seconds: 0 }, proposed: { id: 'transport-fixture', source_revision: 1, placements: [{ object_id: 'new-event', range: { start: '2026-10-01T10:00:00Z', end: '2026-10-01T10:30:00Z' } }] }, cost: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event', explanation: [{ reason: 'EarliestTieBreak', cost: 0 }], ordering_key: { preference_distance_seconds: 0, mutation_count: 1, shifted_seconds: 0, start: '2026-10-01T10:00:00Z', object_id: 'new-event' } }],
     conflicts: { rejections: [{ start: horizon.start, reasons: [{ HardConstraint: { constraint: { kind: 'NO_OVERLAP' }, object_id: 'new-event', reason: 'Overlap', evidence: { facts: [], blocking_objects: ['busy'], blocking_occurrences: [] } } }] }] },
     search_space: { horizon: { ...horizon }, granularity: 900, objective: 'transport fixture', evaluated: 2, exhausted: false },
   };
@@ -52,6 +52,38 @@ test('result guard retains separate outcome and search proof with structured rej
   assert.equal(fixture.assessment, 'BestFound');
   assert.equal(rejectionLabel(fixture.conflicts.rejections[0].reasons[0]), 'Overlap · busy');
   assert.deepEqual(parseValidation({ state: 'InsufficientInformation', issues: [{ RequiredDuration: 'Unknown' }] }).issues, [{ RequiredDuration: 'Unknown' }]);
+});
+
+test('ranking wire guards distinguish absent, null and value and reject incompatible imports', () => {
+  for (const distance of [undefined, null, 0]) {
+    for (const source of [undefined, null, 'ExplicitCurrentRequest']) {
+      const result = resultFixture();
+      const features = result.candidates[0].ranking_features as unknown as Record<string, unknown>;
+      delete features.preferred_start_distance_seconds;
+      delete features.preferred_start_source;
+      if (distance !== undefined) features.preferred_start_distance_seconds = distance;
+      if (source !== undefined) features.preferred_start_source = source;
+      const wire: unknown = JSON.parse(JSON.stringify(result));
+      if (distance !== undefined && source !== undefined && (distance === null) === (source === null)) assert.deepEqual(parseResult(wire), result);
+      else assert.throws(() => parseResult(wire));
+    }
+  }
+  for (const [key, value] of [
+    ['schema_version', { major: 1, minor: 1 }], ['schema_version', { major: 0, minor: 2 }],
+    ['schema_version', { major: 0, minor: 1, extra: 0 }], ['schema_version', null],
+    ['preferred_start_distance_seconds', -1], ['preferred_start_distance_seconds', 0.5],
+    ['preferred_start_distance_seconds', '0'], ['preferred_start_source', 'Unknown'],
+    ['mutation_count', 0x100000000], ['shift_seconds', -1], ['extra', 0],
+  ] as const) {
+    const result = resultFixture();
+    (result.candidates[0].ranking_features as unknown as Record<string, unknown>)[key] = value;
+    assert.throws(() => parseResult(result), key);
+  }
+  for (const key of Object.keys(resultFixture().candidates[0].ranking_features)) {
+    const result = resultFixture();
+    delete (result.candidates[0].ranking_features as unknown as Record<string, unknown>)[key];
+    assert.throws(() => parseResult(result), key);
+  }
 });
 
 test('malformed imported results fail before visualization', () => {
