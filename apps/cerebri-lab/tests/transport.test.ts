@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { intervalStyle, known, knowledgeLabel, rejectionLabel } from '../src/lib/presentation.ts';
 import { parseRequest, parseResult, parseValidation, postJson } from '../src/lib/transport.ts';
 import { parseTemporalRequest, parseTemporalResult } from '../src/lib/temporal.ts';
-import type { EvidenceField, PlanningResult } from '../src/lib/contracts.ts';
+import type { EvidenceField, PlanningResult, RankedCandidate } from '../src/lib/contracts.ts';
 
 const readFixture = (name: string): unknown => JSON.parse(readFileSync(new URL(`../../../examples/${name}.json`, import.meta.url), 'utf8'));
 const horizon = { start: '2026-10-01T09:00:00Z', end: '2026-10-01T12:00:00Z' };
@@ -83,6 +83,45 @@ test('ranking wire guards distinguish absent, null and value and reject incompat
     const result = resultFixture();
     delete (result.candidates[0].ranking_features as unknown as Record<string, unknown>)[key];
     assert.throws(() => parseResult(result), key);
+  }
+});
+
+test('ranking imports reject cross-field disagreements without changing consistent observations', () => {
+  for (const distance of [null, 0, 3600]) {
+    for (const mutationCount of [0, 1]) {
+      const result = resultFixture();
+      const candidate = result.candidates[0];
+      candidate.ranking_features = {
+        schema_version: { major: 0, minor: 1 }, mutation_count: mutationCount, shift_seconds: 900,
+        ...(distance === null
+          ? { preferred_start_distance_seconds: null, preferred_start_source: null }
+          : { preferred_start_distance_seconds: distance, preferred_start_source: 'ExplicitCurrentRequest' as const }),
+      };
+      candidate.mutation_count = candidate.ordering_key.mutation_count = mutationCount;
+      candidate.shifted_seconds = candidate.ordering_key.shifted_seconds = 900;
+      candidate.cost = candidate.ordering_key.preference_distance_seconds = distance ?? 0;
+      // An additional candidate ensures the guard checks every entry, not only the first.
+      result.candidates.push(structuredClone(candidate));
+      const wire: unknown = JSON.parse(JSON.stringify(result));
+      assert.strictEqual(parseResult(wire), wire);
+      assert.deepEqual(wire, result);
+      const mutations: [string, (value: RankedCandidate) => void][] = [
+        ['feature mutation count', (value) => { value.ranking_features.mutation_count += 1; }],
+        ['candidate mutation count', (value) => { value.mutation_count += 1; }],
+        ['ordering mutation count', (value) => { value.ordering_key.mutation_count += 1; }],
+        ['feature shift', (value) => { value.ranking_features.shift_seconds += 1; }],
+        ['candidate shift', (value) => { value.shifted_seconds += 1; }],
+        ['ordering shift', (value) => { value.ordering_key.shifted_seconds += 1; }],
+        ['candidate distance projection', (value) => { value.cost += 1; }],
+        ['ordering distance projection', (value) => { value.ordering_key.preference_distance_seconds += 1; }],
+      ];
+      if (distance !== null) mutations.push(['feature distance', (value) => { value.ranking_features.preferred_start_distance_seconds = distance + 1; }]);
+      for (const [label, mutate] of mutations) {
+        const changed = structuredClone(result);
+        mutate(changed.candidates[1]);
+        assert.throws(() => parseResult(JSON.parse(JSON.stringify(changed))), /ranking_features\..*: inconsistent/, `${label}, distance=${distance}, mutations=${mutationCount}`);
+      }
+    }
   }
 });
 

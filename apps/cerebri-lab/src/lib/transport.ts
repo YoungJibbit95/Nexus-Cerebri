@@ -1,4 +1,4 @@
-import type { PlanningRequest, PlanningResult, ValidationReport } from './contracts.ts';
+import type { PlanningRequest, PlanningResult, RankingFeatureSet, ValidationReport } from './contracts.ts';
 import { parseCompiledContext, parseTemporalContext } from './compilation.ts';
 import { parseValidationIssue, parseDependencyIssue, parseEdge } from './validation.ts';
 
@@ -63,7 +63,7 @@ function checkEvidence(value: unknown, path: string, checkData: (value: unknown,
   }
 }
 /** Inspect the wire contract only; never recompute features or rank in the client. */
-function parseRankingFeatures(value: unknown): void {
+function parseRankingFeatures(value: unknown): RankingFeatureSet {
   const item = object(value, 'ranking_features');
   const fields = ['schema_version', 'preferred_start_distance_seconds', 'preferred_start_source', 'mutation_count', 'shift_seconds'];
   if (Object.keys(item).length !== fields.length || !fields.every((key) => Object.hasOwn(item, key))) throw new Error('ranking_features: expected every v0.1 field, without extras.');
@@ -74,6 +74,7 @@ function parseRankingFeatures(value: unknown): void {
   if ((item.preferred_start_distance_seconds === null) !== (item.preferred_start_source === null)) throw new Error('ranking_features: distance and source must both be null or both have values.');
   if (number(item.mutation_count, 'ranking_features.mutation_count') > 0xffffffff) throw new Error('ranking_features.mutation_count: exceeds u32.');
   number(item.shift_seconds, 'ranking_features.shift_seconds');
+  return value as RankingFeatureSet;
 }
 export function parseResult(value: unknown): PlanningResult {
   const item = object(value, 'result');
@@ -93,12 +94,17 @@ export function parseResult(value: unknown): PlanningResult {
   if (typeof search.exhausted !== 'boolean') throw new Error('search_space.exhausted: expected a boolean.');
   for (const raw of array(item.candidates, 'candidates')) {
     const candidate = object(raw, 'candidate');
-    parseRankingFeatures(candidate.ranking_features);
+    const features = parseRankingFeatures(candidate.ranking_features);
     instant(candidate.start, 'candidate.start');
     string(candidate.object_id, 'candidate.object_id');
     for (const key of ['cost', 'mutation_count', 'shifted_seconds']) number(candidate[key], `candidate.${key}`);
     const ordering = object(candidate.ordering_key, 'candidate.ordering_key');
     for (const key of ['preference_distance_seconds', 'mutation_count', 'shifted_seconds']) number(ordering[key], `ordering_key.${key}`);
+    // Compare repeated core observations only; null retains the legacy zero projection.
+    if (features.mutation_count !== candidate.mutation_count || features.mutation_count !== ordering.mutation_count) throw new Error('ranking_features.mutation_count: inconsistent candidate or ordering_key value.');
+    if (features.shift_seconds !== candidate.shifted_seconds || features.shift_seconds !== ordering.shifted_seconds) throw new Error('ranking_features.shift_seconds: inconsistent candidate or ordering_key value.');
+    const preferredDistance = features.preferred_start_distance_seconds ?? 0;
+    if (preferredDistance !== candidate.cost || preferredDistance !== ordering.preference_distance_seconds) throw new Error('ranking_features.preferred_start_distance_seconds: inconsistent candidate or ordering_key value.');
     instant(ordering.start, 'ordering_key.start');
     shape.identifier(ordering.object_id, 'ordering_key.object_id');
     const proposed = object(candidate.proposed, 'candidate.proposed');

@@ -39,6 +39,13 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
+### 2026-09-26 — Ranking import parity correction (Slice 1)
+
+- Reject imported Lab candidates whose ranking observations disagree with their candidate
+  fields or ordering key, including the existing zero projection for missing preference.
+- Add negative JSON import coverage without changing Rust ranking or schema 0.1;
+  see the [correction verification record](docs/development/progress/2026-09-26-ranking-import-parity-correction.md).
+
 ### 2026-09-25 — Ranking observations (Slice 1)
 
 - Add `RankingFeatureSet` schema 0.1 to candidate output with required-nullable
