@@ -49,6 +49,7 @@
 
 <div class="planning-instrument" data-exhausted={exhausted}>
   <div class="instrument-meta" aria-hidden="true">
+    <span class="candidate-summary">{validStarts.size} valid / {rejectedStarts.size} rejected</span>
     <span><i></i> HARD CONSTRAINT / KNOWN BUSY</span>
     <span><b></b> VALID CANDIDATE</span>
     <span><em></em> SELECTED PROPOSAL</span>
@@ -135,7 +136,7 @@
 
 <style>
   .planning-instrument{position:relative;display:grid;gap:24px;padding-top:6px;--constraint:#ff8795;--valid:#60e6b8;--selected:#20d8ff;--line:rgba(91,151,216,.2)}
-  .instrument-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px 20px;color:#758aa7;font:700 9px var(--mono);letter-spacing:.06em}.instrument-meta span{display:inline-flex;align-items:center;gap:7px}.instrument-meta i,.instrument-meta b,.instrument-meta em{width:10px;height:10px;display:inline-block}.instrument-meta i{border-left:2px solid var(--constraint);transform:skewX(-18deg)}.instrument-meta b{border-radius:50%;background:var(--valid);box-shadow:0 0 8px rgba(96,230,184,.18)}.instrument-meta em{border:1px solid var(--selected);border-radius:50%;box-shadow:inset 0 0 0 2px rgba(32,216,255,.08)}.preference-none{margin-left:auto;color:#607895}
+  .instrument-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px 20px;color:#758aa7;font:700 9px var(--mono);letter-spacing:.06em}.candidate-summary{color:#b6c9de;font-size:10px}.instrument-meta span{display:inline-flex;align-items:center;gap:7px}.instrument-meta i,.instrument-meta b,.instrument-meta em{width:10px;height:10px;display:inline-block}.instrument-meta i{border-left:2px solid var(--constraint);transform:skewX(-18deg)}.instrument-meta b{border-radius:50%;background:var(--valid);box-shadow:0 0 8px rgba(96,230,184,.18)}.instrument-meta em{border:1px solid var(--selected);border-radius:50%;box-shadow:inset 0 0 0 2px rgba(32,216,255,.08)}.preference-none{margin-left:auto;color:#607895}
   .desktop-plane{position:relative;min-height:500px;padding:70px 78px 30px 70px;border:1px solid rgba(70,136,204,.16);border-radius:20px;background:linear-gradient(180deg,rgba(4,15,39,.76),rgba(3,10,29,.62));overflow:hidden}
   .desktop-plane::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 32.9%,rgba(255,135,149,.025) 33% 33.5%,transparent 33.6% 100%);pointer-events:none}
   .verification-contour{position:absolute;inset:18px;border:1px solid rgba(66,232,224,.16);border-radius:16px;pointer-events:none}.verification-contour::before,.verification-contour::after{content:"";position:absolute;width:18px;height:18px}.verification-contour::before{left:-1px;top:-1px;border-left:2px solid rgba(66,232,224,.45);border-top:2px solid rgba(66,232,224,.45);border-radius:4px 0 0}.verification-contour::after{right:-1px;bottom:-1px;border-right:2px solid rgba(66,232,224,.45);border-bottom:2px solid rgba(66,232,224,.45);border-radius:0 0 4px}.verification-contour span{position:absolute;right:12px;top:8px;color:#6d9d98;font:700 9px var(--mono);letter-spacing:.08em}
