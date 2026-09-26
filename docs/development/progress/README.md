@@ -8,3 +8,4 @@ Create dated/monthly development logs for meaningful implementation, experiment,
 - [2026-09-22 — Release qualification corrections](2026-09-22-release-qualification-corrections.md)
 - [2026-09-25 — Ranking Feature Contract v0.1](2026-09-25-ranking-feature-contract.md)
 - [2026-09-26 — Ranking import parity correction](2026-09-26-ranking-import-parity-correction.md)
+- [2026-09-26 — Repository hardening](2026-09-26-repository-hardening.md)
