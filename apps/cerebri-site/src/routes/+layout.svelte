@@ -66,8 +66,8 @@
   <div class="footer-orbit" aria-hidden="true"><span></span><i></i><b></b></div>
   <div class="footer-statement">
     <small>NEXUS CEREBRI / VERIFIED FOUNDATION</small>
-    <strong>Neural intuition. Symbolic verification.</strong>
-    <span>Facts, constraints, permissions and proofs remain explicit.</span>
+    <strong>Structured evidence. Bounded search. Explicit authority.</strong>
+    <span>Learned or neural layers remain future research; current planning stays deterministic.</span>
   </div>
   <div class="footer-links">
     <a href={href('/docs/project/')}>Project <span>↗</span></a>

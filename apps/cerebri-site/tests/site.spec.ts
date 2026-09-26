@@ -29,6 +29,17 @@ test('explanation depth changes visible information and persists', async ({ page
   await expect(research).toBeVisible();
 });
 
+test('homepage reflects the current structured deterministic planning boundary', async ({ page }) => {
+  await page.goto(prefix + '/');
+  await expect(page.getByRole('heading', { name: /Bound the problem\. Verify the plan\./ })).toBeVisible();
+  await expect(page.getByText('Current CPIR planning fixture', { exact: true })).toBeVisible();
+  await expect(page.getByText('11 evaluated positions', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('7 valid / 4 rejected', { exact: true })).toBeVisible();
+  await expect(page.getByText('Structured evidence. Bounded search. Explicit authority.', { exact: true })).toBeVisible();
+  await expect(page.getByText(/It can explore meaning and ambiguity/i)).toHaveCount(0);
+  await expect(page.getByText(/HUMAN \/ PROBABILISTIC/i)).toHaveCount(0);
+});
+
 test('homepage and planning surface meet the serious axe floor', async ({ page }) => {
   for (const route of ['/', '/planning/']) {
     await page.goto(prefix + route);
