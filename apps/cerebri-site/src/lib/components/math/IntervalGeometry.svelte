@@ -46,9 +46,9 @@
   <div class="notation-workspace">
     <button class="notation-toggle" aria-pressed={compressed} onclick={() => compressed = !compressed}>{compressed ? 'Expand interval geometry' : 'Compress geometry to notation'}</button>
     <div class="boundary-compression" aria-hidden="true">
-      <div class="compression-start"><i class="closed"></i><b>[</b><span>start</span></div>
+      <div class="compression-start"><i class="closed"></i><span>start</span></div>
       <div class="compression-extent"><i></i><b>,</b></div>
-      <div class="compression-end"><span>end</span><i class="open"></i><b>)</b></div>
+      <div class="compression-end"><span>end</span><i class="open"></i></div>
     </div>
     <p class="notation-equivalent"><code>[start, end)</code> — filled start ↔ inclusive <code>[</code> · open end ↔ exclusive <code>)</code></p>
   </div>

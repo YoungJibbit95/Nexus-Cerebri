@@ -46,7 +46,10 @@
         <div class="ghost-placement"><i></i><span>ORIGINAL START</span></div>
         <div class="shift-trace" style:width={shift.actual_delta_ms / 12345 * 66 + '%'}></div>
         <div class="shift-candidate" style:left={12 + shift.actual_delta_ms / 12345 * 66 + '%'}><i class="closed"></i><span>CANDIDATE START</span></div>
-      {:else}<div class="absent-origin">∅<span>Original placement absent</span></div>{/if}
+      {:else}
+        <div class="absent-origin"><i></i><span>Original placement absent</span><b>∅</b></div>
+        <div class="shift-candidate unanchored"><i class="closed"></i><span>CANDIDATE START</span></div>
+      {/if}
     </div>
     <div class="shift-reading"><small>shift_seconds</small><strong>{shift?.ranking_features.shift_seconds ?? mathData.measurement.absent.ranking_features.shift_seconds} s</strong>
       <p>{shift ? 'Actual displacement: ' + secondsLabel(shift.actual_delta_ms) + ' seconds. Dashed geometry records the original start.' : 'Original placement = absent. Numeric zero is the legacy observation; it does not establish an unchanged placement.'}</p>

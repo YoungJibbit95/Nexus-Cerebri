@@ -51,9 +51,9 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
 
   const candidates = page.locator('ol[aria-label="Evaluated candidate intervals"] > li');
   await expect(candidates).toHaveCount(11);
-  await expect(page.locator('.candidate-lanes li[data-state="rejected"]')).toHaveCount(4);
-  await expect(page.locator('.candidate-lanes li[data-state="valid"]')).toHaveCount(6);
-  await expect(page.locator('.candidate-lanes li[data-state="selected"]')).toHaveCount(1);
+  await expect(page.locator('.planning-instrument .candidate-lanes li[data-state="rejected"]')).toHaveCount(4);
+  await expect(page.locator('.planning-instrument .candidate-lanes li[data-state="valid"]')).toHaveCount(6);
+  await expect(page.locator('.planning-instrument .candidate-lanes li[data-state="selected"]')).toHaveCount(1);
 
   const authorityBoundary = page.locator('.proposal-boundary');
   await expect(authorityBoundary).toHaveAttribute('aria-label', /Selected proposal at 10:00 UTC stops before a separate authority gate/);
@@ -91,7 +91,7 @@ test('reduced motion resolves the hero directly to an equivalent semantic state'
   await page.goto(prefix + '/');
   const observatory = page.locator('.observatory');
   await expect(observatory).toHaveAttribute('data-motion', 'reduced');
-  await expect(observatory).toHaveClass(/proposed/);
+  await expect(observatory).toHaveClass(/calibrated/);
 
   const instrument = page.locator('.planning-instrument');
   await expect(instrument).toHaveAttribute('data-motion', 'reduced');
@@ -128,7 +128,7 @@ for (const width of [1440, 1280, 1024, 768, 430, 390, 375, 320]) {
   test('responsive layout has no horizontal overflow at ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(prefix + '/');
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const overflow = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
   });
 }
@@ -146,6 +146,9 @@ for (const width of [1440, 1024, 768, 390]) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(prefix + '/');
+    await expect(page.locator('.observatory')).toHaveAttribute('data-motion', 'reduced');
+    await expect(page.locator('.observatory')).toHaveAttribute('data-scene', '6');
+    await page.evaluate(() => document.fonts.ready);
     const screenshot = await page.screenshot({ path: test.info().outputPath('homepage-' + width + '.png'), fullPage: true, animations: 'disabled' });
     const hash = createHash('sha256').update(screenshot).digest('hex');
     const expected = visualBaselines[process.platform]?.[String(width)];
