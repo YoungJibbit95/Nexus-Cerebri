@@ -125,7 +125,7 @@
         <div class="comparator-table">
           {#each keyFields as field, index}
             <div class:decisive={field.key === decisiveField} class="comparator-row" data-key-field={field.key}>
-              <span><b>{String(index + 1).padStart(2, '0)}</b>{field.label}</span>
+              <span><b>{String(index + 1).padStart(2, '0')}</b>{field.label}</span>
               <strong>{field.render(winner.ordering_key?.[field.key])}</strong>
               <strong>{field.render(runnerUp.ordering_key?.[field.key])}</strong>
             </div>
