@@ -49,14 +49,14 @@
   const rejected = rejections.length;
 </script>
 
-<section class="planning-workbench" aria-labelledby="planning-workbench-title">
+<section class="planning-workbench" aria-label="Planning workbench" aria-labelledby="planning-workbench-title">
   <header class="workbench-header">
     <div>
       <small>PLANNING WORKBENCH / RUST-GENERATED FIXTURE</small>
       <h3 id="planning-workbench-title">From evidence to one deterministic first proposal.</h3>
       <p>Every validity and ordering state below comes from the generated planner result. The browser formats that evidence; it does not decide which candidate wins.</p>
     </div>
-    <div class="workbench-counts"><span class="workbench-coordinate" aria-hidden="true">{evaluated} POSITIONS · {feasible} VALID · {rejected} REJECTED</span><span class="workbench-summary">{feasible} valid / {rejected} rejected</span></div>
+    <div class="workbench-counts"><span class="workbench-coordinate">{evaluated} evaluated positions</span><span class="workbench-summary">{feasible} valid / {rejected} rejected</span></div>
   </header>
 
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
