@@ -5,8 +5,7 @@ on:
     - cron: "30 0 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: gh-traffic-stats
@@ -14,8 +13,10 @@ concurrency:
 
 jobs:
   update:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: gtapps/gh-traffic-stats@v1
+      - uses: gtapps/gh-traffic-stats@f05c995b41d817087f7f728dd1794af559d81471 # v1.0.0
         with:
           token: ${{ secrets.GH_TRAFFIC_STATS_TOKEN }}

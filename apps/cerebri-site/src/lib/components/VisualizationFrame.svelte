@@ -18,8 +18,8 @@
     <span class="visual-coordinate" aria-hidden="true">NEXUS CEREBRI / SYSTEM VIEW</span>
   </div>
   <div class="visual-body">{@render children()}</div>
-  <div class="visual-foot">
+  <figcaption class="visual-foot">
     <details class="visual-alt"><summary>Text alternative</summary><p>{textAlternative}</p></details>
-    <figcaption>{caption}</figcaption>
-  </div>
+    <span class="visual-caption">{caption}</span>
+  </figcaption>
 </figure>

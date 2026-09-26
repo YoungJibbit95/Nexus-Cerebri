@@ -2,8 +2,10 @@ name: Cerebri CI
 on:
   push:
   pull_request:
+
 permissions:
   contents: read
+
 jobs:
   rust-advisories:
     name: Rust dependency advisories
@@ -18,7 +20,27 @@ jobs:
         run: cargo install cargo-audit --version 0.22.2 --locked
       - name: Audit committed lockfile (vulnerabilities and warnings fail)
         run: cargo audit --file Cargo.lock --deny warnings
-  foundation:
+
+  repository-policy:
+    name: Repository policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install repository tooling
+        run: npm ci --ignore-scripts
+      - run: npm run check
+
+  rust-workspace:
+    name: Rust workspace
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,26 +51,168 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            apps/cerebri-site/package-lock.json
-            apps/cerebri-lab/package-lock.json
       - run: cargo fmt --check
       - run: cargo build --workspace --locked
       - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
       - run: cargo test --workspace --locked
       - run: cargo build -p cerebri-node --locked
       - run: node --test bindings/node/test.mjs
-      - name: Install repository tooling
-        run: npm ci --ignore-scripts
-      - run: npm run check
-      - name: Install official site dependencies
-        run: npm --prefix apps/cerebri-site ci --ignore-scripts
-      - name: Typecheck official site
-        run: npm --prefix apps/cerebri-site run check
+
+  rustdoc:
+    name: Rustdoc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  lab-check:
+    name: Lab check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-lab/package-lock.json
+      - run: npm --prefix apps/cerebri-lab ci
+      - run: npm --prefix apps/cerebri-lab run check
+
+  lab-test:
+    name: Lab test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-lab/package-lock.json
+      - run: cargo build -p cerebri-node --locked
+      - run: npm --prefix apps/cerebri-lab ci
+      - run: npm --prefix apps/cerebri-lab run test
+
+  lab-build:
+    name: Lab build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-lab/package-lock.json
+      - run: npm --prefix apps/cerebri-lab ci
+      - run: npm --prefix apps/cerebri-lab run build
+
+  npm-audit:
+    name: npm audit (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: root
+            directory: .
+          - name: lab
+            directory: apps/cerebri-lab
+          - name: site
+            directory: apps/cerebri-site
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - run: npm audit --audit-level=high
+        working-directory: ${{ matrix.directory }}
+
+  documentation:
+    name: Documentation check / build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-site/package-lock.json
+      - run: npm --prefix apps/cerebri-site ci --ignore-scripts
+      - run: npm run docs:check
+      - run: npm run docs:build
+
+  site-check:
+    name: Site typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-site/package-lock.json
+      - run: npm --prefix apps/cerebri-site ci --ignore-scripts
+      - run: npm --prefix apps/cerebri-site run check
         env:
           CEREBRI_BASE_PATH: /Nexus-Cerebri
+
+  site-build:
+    name: Site build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-site/package-lock.json
+      - run: npm --prefix apps/cerebri-site ci --ignore-scripts
+      - run: npm --prefix apps/cerebri-site run build
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+
+  browser-e2e:
+    name: Browser / E2E
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-site/package-lock.json
+      - run: npm --prefix apps/cerebri-site ci --ignore-scripts
       - name: Build official site with GitHub Pages base path
         run: npm --prefix apps/cerebri-site run build
         env:
@@ -59,26 +223,47 @@ jobs:
         run: npm --prefix apps/cerebri-site run test:e2e
         env:
           CEREBRI_BASE_PATH: /Nexus-Cerebri
-      - name: Verify visual regression hashes
-        run: npm --prefix apps/cerebri-site run test:visual
-        env:
-          CEREBRI_BASE_PATH: /Nexus-Cerebri
-      - name: Install Lab dependencies
-        run: npm --prefix apps/cerebri-lab ci
-      - run: npm --prefix apps/cerebri-lab run check
-      - run: npm --prefix apps/cerebri-lab test
-      - run: npm --prefix apps/cerebri-lab run build
-      - run: npm audit --audit-level=high
-      - run: npm --prefix apps/cerebri-site audit --audit-level=high
-      - run: npm --prefix apps/cerebri-lab audit --audit-level=high
-      - run: cargo doc --workspace --no-deps --locked
-        env:
-          RUSTDOCFLAGS: -D warnings
       - name: Preserve browser failure evidence
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: browser-failure-evidence
+          path: |
+            apps/cerebri-site/test-results/
+            apps/cerebri-site/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  visual:
+    name: Visual verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/cerebri-site/package-lock.json
+      - run: npm --prefix apps/cerebri-site ci --ignore-scripts
+      - name: Build official site with GitHub Pages base path
+        run: npm --prefix apps/cerebri-site run build
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Install Playwright Chromium
+        run: npm --prefix apps/cerebri-site exec -- playwright install --with-deps chromium
+      - name: Verify visual regression hashes
+        run: npm --prefix apps/cerebri-site run test:visual
+        env:
+          CEREBRI_BASE_PATH: /Nexus-Cerebri
+      - name: Preserve visual failure evidence
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-failure-evidence
           path: |
             apps/cerebri-site/test-results/
             apps/cerebri-site/playwright-report/

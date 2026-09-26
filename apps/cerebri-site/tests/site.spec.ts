@@ -33,9 +33,10 @@ test('homepage and planning surface meet the serious axe floor', async ({ page }
   for (const route of ['/', '/planning/']) {
     await page.goto(prefix + route);
     if (route === '/') {
-      await expect(page.getByText('Published release: None', { exact: true })).toBeVisible();
-      await expect(page.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
-      await expect(page.getByText('CPIR 0.2', { exact: true })).toBeVisible();
+      const releaseStatus = page.getByRole('group', { name: 'Release status' });
+      await expect(releaseStatus.getByText('Published release: None', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('CPIR 0.2', { exact: true })).toBeVisible();
     }
     const results = await new AxeBuilder({ page }).analyze();
     const blocking = results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical');
@@ -52,6 +53,7 @@ for (const width of [1440, 1024, 768, 390]) {
   });
 
   test('@visual homepage ' + width + 'px', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(prefix + '/');
     const screenshot = await page.screenshot({ path: test.info().outputPath('homepage-' + width + '.png'), fullPage: true, animations: 'disabled' });
