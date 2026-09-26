@@ -92,7 +92,8 @@ const runtimeData = {
   request,
   temporalRequest,
   plannerResult: runCoreExample('plan'),
-  temporalResult: runCoreExample('temporal')
+  temporalResult: runCoreExample('temporal'),
+  mathInspection: runCoreExample('math_inspection')
 };
 
 await mkdir(generatedDir, { recursive: true });
