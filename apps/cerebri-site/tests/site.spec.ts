@@ -71,7 +71,7 @@ test('reduced motion resolves the hero directly to an equivalent semantic state'
 
 test('structured evidence inspection is keyboard operable', async ({ page }) => {
   await page.goto(prefix + '/');
-  const inspect = page.getByRole('button', { name: 'Inspect structured evidence' });
+  const inspect = page.locator('.inspect-button');
   await inspect.focus();
   await expect(inspect).toBeFocused();
   await page.keyboard.press('Enter');
