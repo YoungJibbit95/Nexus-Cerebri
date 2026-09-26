@@ -70,7 +70,7 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   const comparator = instrument.getByRole('region', { name: /Deterministic comparator/i });
   await expect(comparator).toBeVisible();
   await expect(comparator.locator('.comparator-row.decisive')).toHaveAttribute('data-key-field', 'start');
-  await expect(comparator.getByText('First differing key:', { exact: true })).toBeVisible();
+  await expect(comparator.locator('.comparator-resolution')).toContainText('First differing key:');
 
   const lifecycle = instrument.getByRole('region', { name: /Planner authority boundary/i });
   await expect(lifecycle).toBeVisible();
