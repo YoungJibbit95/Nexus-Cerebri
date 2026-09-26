@@ -1,6 +1,7 @@
 <script lang="ts">
   import { runtimeData } from '$lib/generated/runtime-data';
   import VisualizationFrame from './VisualizationFrame.svelte';
+  import PlanningInstrument from './PlanningInstrument.svelte';
 
   const planner = runtimeData.plannerResult as any;
   const request = runtimeData.request as any;
@@ -11,18 +12,9 @@
   const feasibleCount = planner.candidates?.length ?? 0;
   const scopeStart = new Date(request.scope.time_range.start).getTime();
   const scopeEnd = new Date(request.scope.time_range.end).getTime();
-  const granularityMs = Number(request.granularity ?? 0) * 1000;
-  const rejectedStarts = new Set((planner.conflicts?.rejections ?? []).map((entry: any) => new Date(entry.start).getTime()));
-  const validStarts = new Set((planner.candidates ?? []).map((candidate: any) => new Date(candidate.start).getTime()));
-  const selectedStart = winner ? new Date(winner.start).getTime() : null;
   const formatTime = (instant: number) => new Date(instant).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
-  const positions = Array.from({ length: evaluated }, (_, index) => {
-    const instant = scopeStart + index * granularityMs;
-    const state = instant === selectedStart ? 'selected' : rejectedStarts.has(instant) ? 'rejected' : validStarts.has(instant) ? 'valid' : 'unseen';
-    return { instant, state, label: formatTime(instant) };
-  });
   const preferenceSource = winnerFeatures?.preferred_start_source ?? null;
-  const visualAlternative = 'A four-stage chain shows the structured CPIR request, ' + evaluated + ' evaluated grid positions, ' + feasibleCount + ' valid candidates and the first proposed time.';
+  const visualAlternative = 'A bounded temporal coordinate shows the structured CPIR request, ' + evaluated + ' evaluated candidate intervals, ' + rejectedCount + ' overlap rejections, ' + feasibleCount + ' valid candidates and the selected proposal stopping before a separate authority gate.';
   let expanded = $state(false);
 </script>
 
@@ -86,26 +78,7 @@
         </article>
       </div>
 
-      <div class="fixture-grid-wrap">
-        <div class="fixture-grid-heading">
-          <div><small>EVALUATED STARTS</small><strong>Every position in the exhausted grid</strong></div>
-          <span>{feasibleCount} valid / {rejectedCount} rejected</span>
-        </div>
-        <ol class="fixture-grid" aria-label="Evaluated candidate start positions">
-          {#each positions as position}
-            <li data-state={position.state}>
-              <i aria-hidden="true"></i>
-              <span>{position.label}</span>
-              <small>{position.state === 'selected' ? 'first' : position.state}</small>
-            </li>
-          {/each}
-        </ol>
-        <div class="intent-legend" aria-label="Candidate grid legend">
-          <span><i class="legend-rejected"></i>rejected by validity checks</span>
-          <span><i class="legend-valid"></i>valid candidate</span>
-          <span><i class="legend-proof"></i>first candidate after deterministic ordering</span>
-        </div>
-      </div>
+      <PlanningInstrument />
 
       <div class="intent-boundary-note">
         <span>{planner.assessment ?? 'SEARCH ASSESSMENT'}</span>
