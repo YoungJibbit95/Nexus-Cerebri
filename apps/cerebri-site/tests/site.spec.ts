@@ -67,6 +67,14 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   await expect(instrument.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
   await expect(instrument.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
 
+  const semanticFlow = instrument.getByRole('region', { name: /Candidate to authority flow/i });
+  await expect(semanticFlow).toBeVisible();
+  await expect(semanticFlow.locator('[data-flow-node]')).toHaveCount(4);
+  await expect(semanticFlow.locator('[data-flow-node="candidates"]')).toContainText('7 valid after hard-rule checks');
+  await expect(semanticFlow.locator('[data-flow-node="comparator"]')).toContainText('Rust-produced order');
+  await expect(semanticFlow.locator('[data-flow-node="proposal"]')).toContainText('10:00 UTC remains a proposal');
+  await expect(semanticFlow.locator('[data-flow-node="authority"]')).toContainText('authorization stay separate');
+
   const comparator = instrument.getByRole('region', { name: /Deterministic comparator/i });
   await expect(comparator).toBeVisible();
   await expect(comparator.locator('.comparator-row.decisive')).toHaveAttribute('data-key-field', 'start');
@@ -84,6 +92,11 @@ test('reduced motion resolves the hero directly to an equivalent semantic state'
   const observatory = page.locator('.observatory');
   await expect(observatory).toHaveAttribute('data-motion', 'reduced');
   await expect(observatory).toHaveClass(/proposed/);
+
+  const instrument = page.locator('.planning-instrument');
+  await expect(instrument).toHaveAttribute('data-motion', 'reduced');
+  await expect(instrument).toHaveAttribute('data-flow-stage', '3');
+  await expect(instrument.locator('[data-flow-node="authority"]')).toHaveClass(/current/);
 });
 
 test('structured evidence inspection is keyboard operable', async ({ page }) => {
