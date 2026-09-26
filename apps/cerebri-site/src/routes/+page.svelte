@@ -1,6 +1,7 @@
 <script lang="ts">
   import { base } from '$app/paths';
   import IntentPlan from '$lib/components/IntentPlan.svelte';
+  import BoundedSearchObservatory from '$lib/components/BoundedSearchObservatory.svelte';
   import CerebriExplainer from '$lib/components/CerebriExplainer.svelte';
   import SourceLink from '$lib/components/SourceLink.svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
@@ -42,20 +43,6 @@
 <section class="hero cosmic-hero" use:pointerField>
   <div class="hero-nebula hero-nebula-a" aria-hidden="true"></div>
   <div class="hero-nebula hero-nebula-b" aria-hidden="true"></div>
-  <div class="hero-constellation" aria-hidden="true">
-    <svg viewBox="0 0 900 560" preserveAspectRatio="none">
-      <path d="M90 380 C210 260 290 318 390 214 S610 118 785 205" />
-      <path d="M250 94 C350 175 440 180 512 300 S650 430 822 396" />
-      <circle cx="90" cy="380" r="4"/><circle cx="390" cy="214" r="4"/><circle cx="785" cy="205" r="4"/>
-      <circle cx="250" cy="94" r="3"/><circle cx="512" cy="300" r="5"/><circle cx="822" cy="396" r="3"/>
-    </svg>
-  </div>
-
-  <div class="hero-space-object hero-planet" aria-hidden="true"><span></span><i></i></div>
-  <div class="hero-space-object hero-moon" aria-hidden="true"></div>
-  <div class="hero-space-object hero-satellite" aria-hidden="true"><i></i><span></span><b></b></div>
-  <div class="hero-space-object hero-probe" aria-hidden="true"><i></i><span></span></div>
-
   <div class="hero-copy">
     <div class="hero-badge"><span class="badge-orbit" aria-hidden="true"></span><b>NEXUS CEREBRI</b><span>DETERMINISTIC PLANNING FOUNDATION</span><i aria-hidden="true"></i></div>
     <h1><span>Bound the problem.</span><em>Verify the plan.</em></h1>
@@ -74,40 +61,7 @@
     </div>
   </div>
 
-  <div class="hero-field orbital-intelligence" aria-hidden="true">
-    <div class="orbital-halo halo-one" aria-hidden="true"></div>
-    <div class="orbital-halo halo-two" aria-hidden="true"></div>
-    <div class="orbital-halo halo-three" aria-hidden="true"></div>
-    <svg class="field-links" viewBox="0 0 700 700" role="presentation">
-      <defs>
-        <linearGradient id="orbital-trace" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#20d8ff" stop-opacity="0"/>
-          <stop offset=".44" stop-color="#20d8ff" stop-opacity=".8"/>
-          <stop offset=".7" stop-color="#9b8cff" stop-opacity=".72"/>
-          <stop offset="1" stop-color="#a147ff" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <ellipse cx="350" cy="350" rx="240" ry="124" transform="rotate(-14 350 350)" />
-      <ellipse cx="350" cy="350" rx="265" ry="170" transform="rotate(38 350 350)" />
-      <ellipse cx="350" cy="350" rx="195" ry="282" transform="rotate(12 350 350)" />
-      <path class="trace trace-a" d="M96 340 C210 205 300 204 350 350 C420 500 532 530 626 388" />
-      <path class="trace trace-b" d="M160 180 C275 285 298 402 350 350 C435 266 510 215 584 198" />
-    </svg>
-    <div class="field-core">
-      <span class="core-glow" aria-hidden="true"></span>
-      <img src={base + '/nexus-cerebri-logo.png'} alt="" />
-      <b>CEREBRI CORE</b>
-      <small>bounded grid search</small>
-      <i aria-hidden="true"></i>
-    </div>
-    <div class="field-node f1"><i></i><span>TIME</span><small>typed domain</small></div>
-    <div class="field-node f2"><i></i><span>SCOPE</span><small>orbital envelope</small></div>
-    <div class="field-node f3"><i></i><span>RULES</span><small>hard validity</small></div>
-    <div class="field-node f4"><i></i><span>SEARCH</span><small>trajectory grid</small></div>
-    <div class="field-node f5"><i></i><span>ORDER</span><small>deterministic ranking</small></div>
-    <div class="field-node f6"><i></i><span>AUTHORITY</span><small>separate lifecycle</small></div>
-    <span class="field-readout">STRUCTURED CPIR · DETERMINISTIC SEARCH · EXPLICIT AUTHORITY</span>
-  </div>
+  <BoundedSearchObservatory />
 
   <div class="hero-scroll-cue" aria-hidden="true"><span>FOLLOW THE SEARCH</span><i></i><b></b></div>
 </section>
