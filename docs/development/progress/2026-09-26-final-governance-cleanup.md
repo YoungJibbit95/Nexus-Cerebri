@@ -9,11 +9,23 @@ version authority. It does not implement Slice 2 or ML and creates no release or
 
 ## Branch protection status
 
-At starting `main` `35a7cf9b949041da54cf68409a8650c49fceda37`, GitHub reports
-`protected: false` and no active repository rulesets. The connected GitHub integration receives
-`403 Resource not accessible by integration` for branch-protection configuration and exposes no
-Rules administration action. No indirect repository-setting change is attempted; branch
-protection remains a manual maintainer task.
+At starting `main` `35a7cf9b949041da54cf68409a8650c49fceda37`, GitHub initially
+reported `protected: false` and no active repository rulesets. During PR #12 the maintainer
+configured active repository ruleset `main qualification` for the default branch. The verified
+rules require a pull request, zero approvals, review-thread resolution and strict successful status
+checks for all 15 qualification gates; deletion and non-fast-forward updates are blocked.
+`bypass_actors` is empty and `current_user_can_bypass` is `never`. There is no merge-queue,
+linear-history, signed-commit or required-deployment rule. Documentation Pages and Traffic Stats
+are not required checks. The connected integration still receives `403 Resource not accessible by
+integration` for the legacy branch-protection endpoint, and no repository-setting change was made
+by this session.
+
+## Qualification status alignment
+
+The maintainer-confirmed current state after separate independent review is that deterministic
+Slice 1 has completed Math and Security qualification. The older dated implementation/progress
+records are not rewritten because their pre-qualification statements were accurate when recorded.
+This status correction changes no Ranking Feature Contract or planner/ranking semantics.
 
 ## Governance/documentation corrections
 
