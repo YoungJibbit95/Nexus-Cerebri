@@ -33,9 +33,10 @@ test('homepage and planning surface meet the serious axe floor', async ({ page }
   for (const route of ['/', '/planning/']) {
     await page.goto(prefix + route);
     if (route === '/') {
-      await expect(page.getByText('Published release: None', { exact: true })).toBeVisible();
-      await expect(page.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
-      await expect(page.getByText('CPIR 0.2', { exact: true })).toBeVisible();
+      const releaseStatus = page.getByRole('group', { name: 'Release status' });
+      await expect(releaseStatus.getByText('Published release: None', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('CPIR 0.2', { exact: true })).toBeVisible();
     }
     const results = await new AxeBuilder({ page }).analyze();
     const blocking = results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical');

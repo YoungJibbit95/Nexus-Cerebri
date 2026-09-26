@@ -68,7 +68,7 @@
       <a class="primary-action" href={base + '/explore/'}><span>Explore Cerebri</span><b aria-hidden="true">↗</b></a>
       <a class="secondary-action" href={base + '/docs/'}><span>Read the Specification</span><b aria-hidden="true">→</b></a>
     </div>
-    <div class="hero-release-row">
+    <div class="hero-release-row" role="group" aria-label="Release status">
       <span>Published release: {runtimeData.metadata.publishedRelease}</span>
       <span>Unreleased · qualification in progress</span>
       <span>CPIR {runtimeData.metadata.cpirVersion}</span>
