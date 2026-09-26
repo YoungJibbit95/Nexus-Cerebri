@@ -3,6 +3,7 @@
   import IntentPlan from '$lib/components/IntentPlan.svelte';
   import BoundedSearchObservatory from '$lib/components/BoundedSearchObservatory.svelte';
   import CerebriExplainer from '$lib/components/CerebriExplainer.svelte';
+  import MathematicalInspection from '$lib/components/math/MathematicalInspection.svelte';
   import SourceLink from '$lib/components/SourceLink.svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
 
@@ -84,6 +85,7 @@
 
 <CerebriExplainer />
 <IntentPlan />
+<MathematicalInspection />
 </div>
 
 <section class="domain-journey cosmic-section" aria-labelledby="journey-title">
