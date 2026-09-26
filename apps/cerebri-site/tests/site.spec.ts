@@ -59,6 +59,23 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   await expect(authorityBoundary).toHaveAttribute('aria-label', /Selected proposal at 10:00 UTC stops before a separate authority gate/);
   await expect(authorityBoundary.getByText('AUTHORITY GATE', { exact: true })).toBeVisible();
   await expect(authorityBoundary.getByText('EXECUTION', { exact: true })).toBeVisible();
+
+  const instrument = page.locator('.planning-instrument');
+  await expect(instrument.locator('[aria-label="Planning visual grammar"]')).toBeVisible();
+  await expect(instrument.locator('[data-semantic-kind="scope"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="fact"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
+
+  const comparator = instrument.getByRole('region', { name: /Deterministic comparator/i });
+  await expect(comparator).toBeVisible();
+  await expect(comparator.locator('.comparator-row.decisive')).toHaveAttribute('data-key-field', 'start');
+  await expect(comparator.getByText('First differing key:', { exact: true })).toBeVisible();
+
+  const lifecycle = instrument.getByRole('region', { name: /Planner authority boundary/i });
+  await expect(lifecycle).toBeVisible();
+  await expect(lifecycle.locator('[data-authority-stage="proposal"]')).toHaveClass(/current/);
+  await expect(lifecycle.locator('[data-authority-stage="authorized"]')).not.toHaveClass(/reached/);
 });
 
 test('reduced motion resolves the hero directly to an equivalent semantic state', async ({ page }) => {
