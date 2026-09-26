@@ -1,6 +1,12 @@
 // Exact hashes are renderer/platform dependent. Keep each platform independently reviewed.
 export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, string>>> = {
   linux: {
+    'architecture-mobile': '6651197f36989ba9814497211f3997560dc33e735550113d4c940d171219deb5',
+    'architecture-technical': '886d4c3ba1eef2b974849ae71fda333d7727e3d234e0a0c18427260ec24cf07e',
+    'architecture-concept': '9e61a7ca992271534a299daaa3339e61a4e864df8ee8b8659b199030f804c37f',
+    'cpir-mobile': '1939f8459f253a18af8c0e02aba5e736af09776766d673122c5678be6b9e963b',
+    'cpir-technical': '3ed740b95a02d35f562b881ef6e450e544ac3133a390acfa4e152e49c436fd47',
+    'cpir-concept': '2e16881c5d41f9af4f595d413f5e557b20d21adb0a9d2d400377bfeb4b0ae1d4',
     '1024': '76eeab72611cf8f18cee611a782facaebb196aca5bf7f32d89901816a93a8393',
     '1440': '1cdd91ca7a5837b73c7277bf1063875c2e39f0b6e7b7a1a873f3e8c509ac52a8',
     '390': 'e8f40f496bfdaf92b78ad2bb902c3b445427f36ebab00c6976ef23a000edba57',
@@ -16,9 +22,9 @@ export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, str
     'math-768': 'dd9552142417d4edc3a964fc01a43cdcb3b99cbcd35002f39724f925fef21f36',
     'proposal-1440': '8e4bcca7f66a6b44aa696fd66e9a7337ad0c9370c6aedd7901d2e016de2eacb1',
     'proposal-390': 'abbef488c3955964570d439d82f73de9b8cdafa97671827e6e5f6bf82f74ce1f',
-    'technical-1440': '010134e832408faeafd164869d1d49a849750d59c36ee806c62e23abd71f66f8',
-    'technical-390': '02ebbeac661163ea0f2b631e9039da9015abc3337591a451dd30b54cfcf9309c',
-    'technical-768': '20e85dd4976a52bd5df09c3c9a4df60466726efab07c03c61f4205f727f89317'
+    'technical-1440': '847a102b238ca62b5200eccb71ac8a8c8f954907583afcfa0b7747af92f49a0a',
+    'technical-390': 'de1f37a5a0f06dd178b8f396615b2129194d7acfce5bbeca07d50809468e523a',
+    'technical-768': 'd87a0c74a05df91a0f7089b0c8fa662743e677444c3a22bcd6cc96a114a1236d'
   },
   win32: {
     'architecture-mobile': 'd1094fafc7b319bc2f19b304158741cd0534ff63ea636e28f88515e422fd758e',
