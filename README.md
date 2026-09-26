@@ -15,7 +15,7 @@
 [![Rust](https://img.shields.io/badge/Rust-1.97.0-000000?style=flat-square\&logo=rust\&logoColor=white)](https://www.rust-lang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22.12%2B-339933?style=flat-square\&logo=nodedotjs\&logoColor=white)](https://nodejs.org/)
 [![Svelte](https://img.shields.io/badge/Svelte-Lab-FF3E00?style=flat-square\&logo=svelte\&logoColor=white)](https://svelte.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 
 [![CI](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/workflows/ci.yml/badge.svg)](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/workflows/ci.yml)
 [![GitHub stars](https://img.shields.io/github/stars/YoungJibbit95/Nexus-Cerebri?style=flat-square\&logo=github)](https://github.com/YoungJibbit95/Nexus-Cerebri/stargazers)
@@ -69,7 +69,7 @@ The current implementation is deterministic; neural inference is a future milest
 > [!IMPORTANT]
 > No provider integration, production authentication, durable ledger, advanced repair, learning or autonomous calendar mutation is implemented. Existing recurrence occupancy compiles into bounded planner snapshots; recurrence constraints and prospective series remain unsupported.
 
-This MIT-licensed open-source project also uses AI development tools. Assisted contributions
+This Apache-2.0-licensed open-source project also uses AI development tools. Assisted contributions
 must pass the same review, tests, safety, documentation and CI gates as every other contribution.
 See the [AI development policy](docs/en/ai-assisted-development.md) and [license](LICENSE).
 
@@ -247,7 +247,7 @@ integration, dependency diagnostics and deterministic oracle tests are implement
 <br>
 
 [![Made with Rust](https://img.shields.io/badge/Made%20with-Rust-000000?style=flat-square\&logo=rust)](https://www.rust-lang.org/)
-[![Open Source](https://img.shields.io/badge/Open%20Source-MIT-1f883d?style=flat-square\&logo=opensourceinitiative\&logoColor=white)](LICENSE)
+[![Open Source](https://img.shields.io/badge/Open%20Source-Apache--2.0-1f883d?style=flat-square\&logo=opensourceinitiative\&logoColor=white)](LICENSE)
 
 <sub>Software 0.2.0 · Specification 0.4 · CPIR 0.2 (legacy 0.1) · REST /v1 · Unreleased</sub>
 
