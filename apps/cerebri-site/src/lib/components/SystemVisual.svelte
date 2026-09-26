@@ -1,5 +1,8 @@
 <script lang="ts">
   import { runtimeData } from '$lib/generated/runtime-data';
+  import { plannerSemanticLegend } from '$lib/visual-grammar';
+  import AuthorityRail from './AuthorityRail.svelte';
+  import SemanticLegend from './SemanticLegend.svelte';
 
   let { visual }: { visual: string } = $props();
   const request = runtimeData.request as any;
@@ -16,6 +19,7 @@
   const pct = (value: string) => Math.max(0, Math.min(100, ((new Date(value).getTime() - scopeStart) / scopeSpan) * 100));
   const widthPct = (start: string, end: string) => Math.max(1, ((new Date(end).getTime() - new Date(start).getTime()) / scopeSpan) * 100);
   const time = (value: string) => new Date(value).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+  const planningLegend = plannerSemanticLegend.filter((item) => ['fact', 'candidate', 'violation', 'result'].includes(item.kind));
 </script>
 
 {#if visual === 'atlas'}
@@ -76,7 +80,7 @@
 {:else if visual === 'planning'}
   <div class="planning-field">
     <div class="planning-header"><div><small>SEARCH SPACE</small><strong>{time(request.scope.time_range.start)} → {time(request.scope.time_range.end)} UTC</strong><span>The planner may only choose inside this window.</span></div><div><small>ASSESSMENT</small><strong>{planner.assessment ?? 'Assessment'}</strong><span class="technical-only">Rust planner claim for this bounded run</span></div></div>
-    <div class="planning-legend" aria-label="Planning field legend"><span><i class="legend-busy"></i>blocked</span><span><i class="legend-candidate"></i>feasible candidate</span><span><i class="legend-selected"></i>selected result</span><span class="technical-only"><i class="legend-grid"></i>discrete grid</span></div>
+    <SemanticLegend items={planningLegend} compact label="Planning field semantic legend" />
     <div class="search-ruler"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
     <div class="search-grid">
       <div class="grid-lines"></div>
@@ -117,15 +121,7 @@
 {:else if visual === 'safety'}
   <div class="proof-pipeline">
     <div class="proof-axis"><span>LESS BOUND</span><i></i><span>MORE BOUND</span></div>
-    <div class="proof-chain">
-      {#each ['PlanningRequest', 'ProposedPlan', 'ValidatedPlan', 'ActionPlan', 'AuthorizedActionPlan', 'ExecutionResult'] as step, index}
-        <div class:authorized={step === 'AuthorizedActionPlan'} class:execution={step === 'ExecutionResult'} class="proof-node">
-          <small>{String(index + 1).padStart(2, '0')}</small><span class="seal"></span><strong>{step}</strong>
-          <em>{step === 'ValidatedPlan' ? 'valid ≠ permitted' : step === 'AuthorizedActionPlan' ? 'permission bound' : step === 'ExecutionResult' ? 'provider outcome' : 'typed state'}</em>
-        </div>
-        {#if index < 5}<span class="proof-arrow" aria-hidden="true"><i></i></span>{/if}
-      {/each}
-    </div>
+    <AuthorityRail label="Typed lifecycle from proposal through execution result" />
     <div class="executor-boundary"><span>PLANNER</span><i></i><b>EXECUTOR BOUNDARY</b><i></i><span>EXECUTION</span></div>
   </div>
 {:else if visual === 'architecture'}
