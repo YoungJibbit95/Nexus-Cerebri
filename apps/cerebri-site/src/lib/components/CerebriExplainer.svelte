@@ -1,5 +1,8 @@
 <script lang="ts">
   import { base } from '$app/paths';
+  import { plannerSemanticLegend } from '$lib/visual-grammar';
+  import AuthorityRail from './AuthorityRail.svelte';
+  import SemanticLegend from './SemanticLegend.svelte';
 </script>
 
 <section class="cerebri-explainer cosmic-section" aria-labelledby="cerebri-explainer-title">
@@ -41,7 +44,12 @@
   </div>
 
   <div class="explainer-stage" aria-label="How structured planning state becomes a bounded deterministic result">
-    <div class="stage-caption stage-caption-left"><small>STRUCTURED PLANNING CONTEXT</small><span>known state · scope · rules · preferences</span></div>
+    <div class="stage-caption stage-caption-left"><small>CEREBRI INSTRUMENT / CURRENT PLANNER</small><span>structured state · validity · ordering · authority</span></div>
+
+    <div class="explainer-semantic-key">
+      <SemanticLegend items={plannerSemanticLegend} compact label="Semantic visual grammar for the current planner" />
+    </div>
+
     <div class="interpretation-cloud" aria-hidden="true">
       <i class="cloud-node c1"></i><i class="cloud-node c2"></i><i class="cloud-node c3"></i><i class="cloud-node c4"></i>
       <span class="cloud-path p1"></span><span class="cloud-path p2"></span><span class="cloud-path p3"></span>
@@ -65,10 +73,8 @@
     </div>
 
     <div class="authority-rail">
-      <small>AUTHORITY INCREASES EXPLICITLY</small>
-      <div class="authority-steps">
-        <span><i></i><b>Proposed</b></span><span><i></i><b>Validated</b></span><span><i></i><b>Authorized</b></span><span><i></i><b>Executed</b></span>
-      </div>
+      <small>AUTHORITY STATES STAY SEPARATE</small>
+      <AuthorityRail compact label="Proposal, validation, action planning, authorization and execution are separate states" />
       <p class="technical-only">PlanningRequest → ProposedPlan → ValidatedPlan → ActionPlan → AuthorizedActionPlan → ExecutionResult</p>
     </div>
 
