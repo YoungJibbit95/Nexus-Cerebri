@@ -132,9 +132,10 @@ test('semantic visual grammar keeps candidates, constraints, preferences and aut
   await page.goto(prefix + '/');
   const workbench = page.getByRole('region', { name: /Planning workbench/i });
   await expect(workbench).toBeVisible();
-  await expect(workbench.locator('[data-semantic-kind="fact"]')).toHaveCount(1);
-  await expect(workbench.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
-  await expect(workbench.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
+  const evidence = workbench.locator('.workbench-inputs');
+  await expect(evidence.locator('[data-semantic-kind="fact"]')).toHaveCount(1);
+  await expect(evidence.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
+  await expect(evidence.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
   await expect(workbench.locator('[data-candidate-state="rejected"]')).toHaveCount(4);
   await expect(workbench.locator('[data-candidate-state="valid"]')).toHaveCount(6);
   await expect(workbench.locator('[data-candidate-state="selected"]')).toHaveCount(1);
