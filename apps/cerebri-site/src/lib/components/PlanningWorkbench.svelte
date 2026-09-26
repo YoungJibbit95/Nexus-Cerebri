@@ -49,7 +49,7 @@
   const rejected = rejections.length;
 </script>
 
-<section class="planning-workbench" role="region" aria-labelledby="planning-workbench-title">
+<section class="planning-workbench" aria-labelledby="planning-workbench-title">
   <header class="workbench-header">
     <div>
       <small>PLANNING WORKBENCH / RUST-GENERATED FIXTURE</small>
