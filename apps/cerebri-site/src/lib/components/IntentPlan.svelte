@@ -18,7 +18,7 @@
   let expanded = $state(false);
 </script>
 
-<section class="intent-section cosmic-section" aria-labelledby="intent-title">
+<section data-world="planning" class="intent-section cosmic-section" aria-labelledby="intent-title">
   <div class="intent-nebula" aria-hidden="true"></div>
   <div class="section-copy intent-copy">
     <span class="section-index">ACT 03 / REAL FIXTURE → PLAN</span>

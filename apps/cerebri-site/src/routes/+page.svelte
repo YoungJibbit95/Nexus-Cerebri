@@ -1,4 +1,7 @@
 <script lang="ts">
+  import '$lib/creative-fidelity.css';
+  import { instrumentEnvironment } from '$lib/instrument-environment';
+  import { ranked, candidateIdentity, timeLabel } from '$lib/planning-display';
   import { base } from '$app/paths';
   import IntentPlan from '$lib/components/IntentPlan.svelte';
   import BoundedSearchObservatory from '$lib/components/BoundedSearchObservatory.svelte';
@@ -41,7 +44,8 @@
   />
 </svelte:head>
 
-<section class="hero cosmic-hero" use:pointerField>
+<div class="instrument-story" use:instrumentEnvironment>
+<section class="hero cosmic-hero" data-world="space" use:pointerField>
   <div class="hero-nebula hero-nebula-a" aria-hidden="true"></div>
   <div class="hero-nebula hero-nebula-b" aria-hidden="true"></div>
   <div class="hero-copy">
@@ -68,6 +72,7 @@
 </section>
 
 <div class="home-story">
+  <div class="coordinate-relay" aria-hidden="true"><span><i></i>{candidateIdentity(ranked[0].start)} · {timeLabel(ranked[0].start)}</span></div>
   <div class="story-spine" aria-hidden="true"><span></span><i></i><b></b></div>
 
 <section class="metrics" aria-label="Repository authority">
@@ -88,7 +93,7 @@
 <MathematicalInspection />
 </div>
 
-<section class="domain-journey cosmic-section" aria-labelledby="journey-title">
+<section data-world="horizon" class="domain-journey cosmic-section" aria-labelledby="journey-title">
   <div class="section-copy journey-copy">
     <span class="section-index">ACT 04–09 / CEREBRI UNIVERSE</span>
     <span class="kicker">ONE SYSTEM · EXPLICIT BOUNDARIES</span>
@@ -156,3 +161,5 @@
     </div>
   </div>
 </section>
+
+</div>
