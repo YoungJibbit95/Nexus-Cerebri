@@ -6,6 +6,8 @@
 
   const planner = runtimeData.plannerResult as any;
   const request = runtimeData.request as any;
+  const winner = planner.candidates?.[0]?.proposed?.placements?.[0]?.range;
+  const winnerFeatures = planner.candidates?.[0]?.ranking_features;
   const evaluated = Number(planner.search_space?.evaluated ?? 0);
   const rejectedCount = planner.conflicts?.rejections?.length ?? 0;
   const feasibleCount = planner.candidates?.length ?? 0;
