@@ -4,12 +4,28 @@
 
 The roadmap is target-based, not calendar-driven. Candidate software versions ship only when their acceptance criteria and Definition of Done are satisfied.
 
-## Current status — 2026-09-22
+## Current status — 2026-09-26
 
 Workspace/software version: **0.2.0**. **Unreleased; undergoing release qualification.**
-**Published release: none.** This correction pass does not create a tag, formal release candidate
-or software release. Independent review and a subsequent explicit maintainer decision are required.
-[The current Changelog header](../../../CHANGELOG.md) is the release-status record;
+Specification remains **0.4**. Current CPIR remains **0.2** with **0.1** retained as the
+legacy compatibility schema. **Published release: none.** No version bump, tag or release is
+created by this governance/documentation closure.
+
+Ranking Feature Contract v0.1 / deterministic Intelligence Slice 1 is implemented and has
+completed independent Math and Security qualification. Repository hardening is complete:
+the retained Traffic Stats action is immutable-SHA pinned, workflow permissions are
+least-privilege, `AGENTS.md` governance is hardened, and qualification runs as independent CI
+gates. The hardening merge's CI gates and Documentation Pages were observed green.
+
+Branch protection is still not configured as of 2026-09-26: GitHub reports `main` as
+`protected: false` with no active repository rulesets. The connected GitHub integration cannot
+read or write branch-protection configuration (`403 Resource not accessible by integration`),
+so protection remains a manual maintainer task.
+
+The next Intelligence step is bounded architecture/contract work for Slice 2. Slice 2, ML,
+learned ranking/search and EvaluationEpisode implementation are not part of the current state
+and must not be inferred from the completed deterministic Slice 1.
+[The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
 the dated entries below preserve earlier milestone context.
 
 ## 2026-09-20 status

@@ -39,6 +39,21 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
+### 2026-09-26 — Repository hardening and governance closure
+
+- Pin the retained GitHub Traffic Stats action to immutable commit
+  `f05c995b41d817087f7f728dd1794af559d81471` (`v1.0.0`) and apply least-privilege
+  workflow permissions, with `contents: write` limited to the traffic update job.
+- Split repository qualification into independent CI gates so one policy failure no longer
+  suppresses unrelated evidence; harden `AGENTS.md` scope, Git safety, qualification and
+  release-authorization rules.
+- Repair the site/docs qualification baseline with semantic `figcaption` markup, a scoped
+  `Release status` E2E locator, deterministic Reduced Motion visual verification and reviewed
+  Linux visual baselines.
+- Remote Cerebri CI and Documentation Pages completed successfully on hardening merge
+  `968f8a427f02bef8ed9036c56baecd9bf217ca69`.
+- Software remains unreleased `0.2.0`; no version bump, tag or GitHub Release was created.
+
 ### 2026-09-26 — Ranking import parity correction (Slice 1)
 
 - Reject imported Lab candidates whose ranking observations disagree with their candidate
