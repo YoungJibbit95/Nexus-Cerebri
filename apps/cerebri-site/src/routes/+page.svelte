@@ -3,7 +3,6 @@
   import IntentPlan from '$lib/components/IntentPlan.svelte';
   import CerebriExplainer from '$lib/components/CerebriExplainer.svelte';
   import SourceLink from '$lib/components/SourceLink.svelte';
-  import StatusBadge from '$lib/components/StatusBadge.svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
 
   function pointerField(node: HTMLElement) {
@@ -33,7 +32,7 @@
 </script>
 
 <svelte:head>
-  <title>Nexus Cerebri · Reason freely. Verify everything.</title>
+  <title>Nexus Cerebri · Deterministic temporal planning</title>
   <meta
     name="description"
     content="The official Nexus Cerebri knowledge surface for deterministic temporal planning, CPIR, lifecycle safety and research boundaries."
@@ -59,10 +58,10 @@
 
   <div class="hero-copy">
     <div class="hero-badge"><span class="badge-orbit" aria-hidden="true"></span><b>NEXUS CEREBRI</b><span>DETERMINISTIC PLANNING FOUNDATION</span><i aria-hidden="true"></i></div>
-    <h1><span>Reason freely.</span><em>Verify everything.</em></h1>
+    <h1><span>Bound the problem.</span><em>Verify the plan.</em></h1>
     <p class="hero-lede">
-      Cerebri separates flexible interpretation from binding action. Explicit evidence, time, scope and constraints
-      become deterministic, inspectable plans — without treating a model's guess as permission.
+      Nexus Cerebri turns structured temporal context into a bounded search. Known state and hard rules reject invalid
+      candidates, deterministic ordering compares what remains, and a proposal never becomes execution authority by itself.
     </p>
     <div class="hero-actions">
       <a class="primary-action" href={base + '/explore/'}><span>Explore Cerebri</span><b aria-hidden="true">↗</b></a>
@@ -98,19 +97,19 @@
       <span class="core-glow" aria-hidden="true"></span>
       <img src={base + '/nexus-cerebri-logo.png'} alt="" />
       <b>CEREBRI CORE</b>
-      <small>proof-bound planning</small>
+      <small>bounded grid search</small>
       <i aria-hidden="true"></i>
     </div>
     <div class="field-node f1"><i></i><span>TIME</span><small>typed domain</small></div>
     <div class="field-node f2"><i></i><span>SCOPE</span><small>orbital envelope</small></div>
-    <div class="field-node f3"><i></i><span>POLICY</span><small>declared rules</small></div>
+    <div class="field-node f3"><i></i><span>RULES</span><small>hard validity</small></div>
     <div class="field-node f4"><i></i><span>SEARCH</span><small>trajectory grid</small></div>
-    <div class="field-node f5"><i></i><span>PROOF</span><small>locked result</small></div>
-    <div class="field-node f6"><i></i><span>TRACE</span><small>evidence path</small></div>
-    <span class="field-readout">ORBITAL INTELLIGENCE SYSTEM · AUTHORITY FLOWS DIRECTIONALLY</span>
+    <div class="field-node f5"><i></i><span>ORDER</span><small>deterministic ranking</small></div>
+    <div class="field-node f6"><i></i><span>AUTHORITY</span><small>separate lifecycle</small></div>
+    <span class="field-readout">STRUCTURED CPIR · DETERMINISTIC SEARCH · EXPLICIT AUTHORITY</span>
   </div>
 
-  <div class="hero-scroll-cue" aria-hidden="true"><span>ENTER THE FIELD</span><i></i><b></b></div>
+  <div class="hero-scroll-cue" aria-hidden="true"><span>FOLLOW THE SEARCH</span><i></i><b></b></div>
 </section>
 
 <div class="home-story">
@@ -118,13 +117,13 @@
 
 <section class="metrics" aria-label="Repository authority">
   <div class="metrics-intro">
-    <span class="kicker">LIVE REPOSITORY TRUTH</span>
-    <h2>Built from what exists.<br /><em>Not what demos well.</em></h2>
+    <span class="kicker">CURRENT REPOSITORY STATE</span>
+    <h2>The system you can inspect.<br /><em>Today.</em></h2>
   </div>
   <div class="metric-orbit" aria-hidden="true"><i></i><span></span></div>
   <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>{runtimeData.metadata.releaseStatus} · qualification in progress</span></article>
   <article><small>SPECIFICATION</small><strong>{runtimeData.metadata.specVersion}</strong><span>Current Master baseline</span></article>
-  <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Internal serialized schema</span></article>
+  <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Structured planning schema</span></article>
   <article><small>RUST</small><strong>{runtimeData.metadata.rustVersion}</strong><span>Pinned workspace language floor</span></article>
   <SourceLink path="docs/architecture/specifications/master-v0.4.md" label="Master Specification 0.4" />
 </section>
@@ -136,9 +135,9 @@
 <section class="domain-journey cosmic-section" aria-labelledby="journey-title">
   <div class="section-copy journey-copy">
     <span class="section-index">ACT 04–09 / CEREBRI UNIVERSE</span>
-    <span class="kicker">ONE SYSTEM · DISTINCT DOMAINS</span>
-    <h2 id="journey-title">Travel the system.<br /><em>Keep the boundaries.</em></h2>
-    <p>Each domain gets its own visual atmosphere while remaining part of the same Nexus deep-space language.</p>
+    <span class="kicker">ONE SYSTEM · EXPLICIT BOUNDARIES</span>
+    <h2 id="journey-title">Follow the system.<br /><em>Keep authority explicit.</em></h2>
+    <p>Move from typed time and CPIR through bounded search, lifecycle safety, architecture and future research.</p>
   </div>
 
   <div class="journey-grid">
@@ -165,9 +164,9 @@
 
 <section class="home-grid cosmic-section" aria-label="Truth surfaces">
   <div class="home-grid-intro">
-    <p class="kicker">THREE TRUTH ATMOSPHERES</p>
-    <h2>Beautiful does not mean ambiguous.</h2>
-    <p>Implemented facts, explanatory models and future research share one visual universe without sharing one level of authority.</p>
+    <p class="kicker">CURRENT · EXPLANATORY · FUTURE</p>
+    <h2>Current behavior stays separate from future research.</h2>
+    <p>Repository-backed outputs, explanatory diagrams and future concepts are labeled separately so their authority is never interchangeable.</p>
   </div>
   <article class="feature-card real-surface">
     <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="REAL">REAL</span>
@@ -177,14 +176,14 @@
   </article>
   <article class="feature-card educational-surface">
     <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="EDUCATIONAL">EDUCATIONAL</span>
-    <h3>Architecture you can read visually</h3>
-    <p>Diagrams explain ownership and lifecycle boundaries without pretending that an animation is a runtime trace.</p>
+    <h3>Architecture shown as explanation</h3>
+    <p>Diagrams explain ownership and lifecycle boundaries without presenting educational motion as runtime behavior.</p>
     <a href={base + '/architecture/'}>See the constellation <span>→</span></a>
   </article>
   <article class="feature-card future-surface">
     <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="FUTURE CONCEPT">FUTURE CONCEPT</span>
-    <h3>Research without product theater</h3>
-    <p>Learning, neural planning, advanced repair and real provider execution stay visibly future until repository truth says otherwise.</p>
+    <h3>Research stays visibly future</h3>
+    <p>Learning, neural planning, advanced repair and production provider execution remain future work until implementation exists.</p>
     <a href={base + '/roadmap/'}>Read roadmap strata <span>→</span></a>
   </article>
 </section>
@@ -193,8 +192,8 @@
   <div class="finale-planet" aria-hidden="true"><span></span><i></i></div>
   <div class="finale-copy">
     <span class="kicker">ACT 10 / ENTER THE SYSTEM</span>
-    <h2>Explore the known.<br /><em>Keep the unknown visible.</em></h2>
-    <p>Start with the Atlas for the system map, or go straight to the canonical repository documentation.</p>
+    <h2>Inspect what exists.<br /><em>See what comes later.</em></h2>
+    <p>Start with the system map, inspect the real planning fixture, or go straight to the repository documentation.</p>
     <div class="hero-actions">
       <a class="primary-action" href={base + '/explore/'}><span>Enter the Atlas</span><b>↗</b></a>
       <a class="secondary-action" href={base + '/docs/'}><span>Canonical Docs</span><b>→</b></a>
