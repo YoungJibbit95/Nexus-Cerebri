@@ -12,15 +12,19 @@ legacy compatibility schema. **Published release: none.** No version bump, tag o
 created by this governance/documentation closure.
 
 Ranking Feature Contract v0.1 / deterministic Intelligence Slice 1 is implemented and has
-completed independent Math and Security qualification. Repository hardening is complete:
+completed independent Math and Security qualification after the Slice-1 parity correction. This is
+a qualification-status update only; the contract and ranking/planner semantics are unchanged.
+Repository hardening is complete:
 the retained Traffic Stats action is immutable-SHA pinned, workflow permissions are
 least-privilege, `AGENTS.md` governance is hardened, and qualification runs as independent CI
 gates. The hardening merge's CI gates and Documentation Pages were observed green.
 
-Branch protection is still not configured as of 2026-09-26: GitHub reports `main` as
-`protected: false` with no active repository rulesets. The connected GitHub integration cannot
-read or write branch-protection configuration (`403 Resource not accessible by integration`),
-so protection remains a manual maintainer task.
+Branch protection is active as of 2026-09-26 through repository ruleset
+`main qualification`, targeting the default branch. It requires pull requests, zero approvals,
+resolved review threads and strict successful status checks for all 15 qualification gates; branch
+deletion and non-fast-forward updates are blocked. No bypass actors are configured, and the current
+integration reports `current_user_can_bypass: never`. Documentation Pages and Traffic Stats are
+not required qualification checks.
 
 The next Intelligence step is bounded architecture/contract work for Slice 2. Slice 2, ML,
 learned ranking/search and EvaluationEpisode implementation are not part of the current state

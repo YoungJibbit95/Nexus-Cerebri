@@ -71,9 +71,9 @@ This changelog maintains two independent histories:
   generated-mode/permutation and full scenario-order regression coverage.
 - Document [ADR-0014](docs/architecture/decisions/ADR-0014-ranking-feature-contract.md)
   and synchronized Master/DE/EN references. No CPIR/software/API version bump or release.
-- Independent implementation review remains required; see the
-  [verification record](docs/development/progress/2026-09-25-ranking-feature-contract.md)
-  for actual gates and any baseline/environment blockers.
+- Independent Math and Security qualification completed after the Slice-1 parity correction.
+  The dated implementation verification records preserve their contemporaneous pre-qualification
+  state and limitations; no ranking/planner semantics or schema version changed.
 
 > [!WARNING]
 > No software release or tag has been created yet.
