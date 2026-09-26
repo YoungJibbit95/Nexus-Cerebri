@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
   import { plannerSemanticLegend } from '$lib/visual-grammar';
   import AuthorityRail from './AuthorityRail.svelte';
@@ -62,9 +63,58 @@
     : null;
 
   const selectedLabel = selectedStart !== null ? formatTime(selectedStart) : '—';
+
+  let flowStage = 3;
+  let reducedMotion = true;
+
+  onMount(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+
+    const updateFlow = () => {
+      if (motion.matches) {
+        reducedMotion = true;
+        flowStage = 3;
+        return;
+      }
+
+      reducedMotion = false;
+      const root = document.querySelector<HTMLElement>('[data-flow-root="planning"]');
+      if (!root) return;
+
+      const rect = root.getBoundingClientRect();
+      const viewport = Math.max(window.innerHeight, 1);
+      const progress = (viewport * 0.78 - rect.top) / Math.max(rect.height + viewport * 0.2, 1);
+
+      flowStage = progress < 0.2 ? 0 : progress < 0.45 ? 1 : progress < 0.7 ? 2 : 3;
+    };
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateFlow);
+    };
+
+    updateFlow();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    motion.addEventListener('change', scheduleUpdate);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      motion.removeEventListener('change', scheduleUpdate);
+    };
+  });
 </script>
 
-<div class="planning-instrument" data-exhausted={exhausted}>
+<div
+  class="planning-instrument"
+  data-exhausted={exhausted}
+  data-flow-root="planning"
+  data-flow-stage={flowStage}
+  data-motion={reducedMotion ? 'reduced' : 'full'}
+>
   <div class="instrument-meta" aria-hidden="true">
     <span class="candidate-summary">{validStarts.size} valid / {rejectedStarts.size} rejected</span>
     <span><i></i> HARD CONSTRAINT / KNOWN BUSY</span>
@@ -75,7 +125,7 @@
 
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
 
-  <div class="desktop-plane" aria-hidden="true">
+  <div class:flow-current={flowStage === 0} class="desktop-plane" aria-hidden="true">
     <div class="verification-contour"><span>{exhausted ? 'VERIFIED BOUNDED TRAVERSAL' : 'OPEN TRAVERSAL'}</span></div>
     <div class="desktop-coordinate">
       {#if busy}
@@ -143,7 +193,42 @@
     {/each}
   </ol>
 
-  <section class="deterministic-comparator" aria-label="Deterministic comparator">
+  <section class="semantic-flow" aria-label="Candidate to authority flow">
+    <div class:reached={flowStage >= 0} class:current={flowStage === 0} class="flow-node candidates" data-flow-node="candidates">
+      <span class="flow-index">01</span>
+      <i aria-hidden="true"></i>
+      <strong>Feasible candidates</strong>
+      <small>{validStarts.size} valid after hard-rule checks</small>
+    </div>
+    <div class:reached={flowStage >= 1} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 1} class:current={flowStage === 1} class="flow-node comparator" data-flow-node="comparator">
+      <span class="flow-index">02</span>
+      <i aria-hidden="true"></i>
+      <strong>Compare ordering keys</strong>
+      <small>Inspect the Rust-produced order</small>
+    </div>
+    <div class:reached={flowStage >= 2} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 2} class:current={flowStage === 2} class="flow-node proposal" data-flow-node="proposal">
+      <span class="flow-index">03</span>
+      <i aria-hidden="true"></i>
+      <strong>First proposal</strong>
+      <small>{selectedLabel} UTC remains a proposal</small>
+    </div>
+    <div class:reached={flowStage >= 3} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 3} class:current={flowStage === 3} class="flow-node authority" data-flow-node="authority">
+      <span class="flow-index">04</span>
+      <i aria-hidden="true"></i>
+      <strong>Authority boundary</strong>
+      <small>Validation and authorization stay separate</small>
+    </div>
+  </section>
+
+  <section
+    class:flow-reached={flowStage >= 1}
+    class:flow-current={flowStage === 1}
+    class="deterministic-comparator"
+    aria-label="Deterministic comparator"
+  >
     <header>
       <small>DETERMINISTIC COMPARATOR</small>
       <strong>First two Rust-ranked candidates</strong>
@@ -174,7 +259,12 @@
     {/if}
   </section>
 
-  <div class="proposal-boundary" aria-label={"Selected proposal at " + selectedLabel + " UTC stops before a separate authority gate."}>
+  <div
+    class:flow-reached={flowStage >= 2}
+    class:flow-current={flowStage === 2}
+    class="proposal-boundary"
+    aria-label={"Selected proposal at " + selectedLabel + " UTC stops before a separate authority gate."}
+  >
     <div class="proposal-object"><span></span><strong>{selectedLabel} UTC</strong><small>SELECTED PROPOSAL</small></div>
     <div class="proposal-trace" aria-hidden="true"><i></i></div>
     <div class="authority-gate">
@@ -183,7 +273,12 @@
     <div class="execution-side"><strong>EXECUTION</strong><small>not implied by planning</small></div>
   </div>
 
-  <section class="authority-lifecycle" aria-label="Planner authority boundary">
+  <section
+    class:flow-reached={flowStage >= 3}
+    class:flow-current={flowStage === 3}
+    class="authority-lifecycle"
+    aria-label="Planner authority boundary"
+  >
     <div>
       <small>AUTHORITY LIFECYCLE</small>
       <strong>The current planning fixture stops at ProposedPlan.</strong>
@@ -195,6 +290,19 @@
 
 <style>
   .planning-instrument{position:relative;display:grid;gap:24px;padding-top:6px;--constraint:#ff8795;--valid:#60e6b8;--selected:#20d8ff;--line:rgba(91,151,216,.2)}
+  .semantic-flow{display:grid;grid-template-columns:minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr);gap:10px;align-items:center;padding:4px 2px}
+  .flow-node{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;align-items:center;min-height:62px;padding:10px 11px;border:1px solid rgba(76,134,199,.13);border-radius:14px;background:rgba(4,14,36,.38);opacity:.42;transform:translateY(5px) scale(.985);transition:opacity 320ms ease,transform 460ms cubic-bezier(.16,1,.3,1),border-color 320ms ease,background 320ms ease,box-shadow 320ms ease}
+  .flow-node>i{grid-row:1/3;grid-column:1;width:24px;height:24px;border:1px solid rgba(103,164,221,.35);border-radius:50%;background:radial-gradient(circle,rgba(93,215,241,.18),rgba(12,30,61,.25));box-shadow:inset 0 0 0 4px rgba(9,27,55,.55)}
+  .flow-node strong{grid-column:2;color:#afc3d9;font-size:10px}.flow-node small{grid-column:2;color:#637c9b;font-size:9px;line-height:1.35}
+  .flow-index{position:absolute;right:8px;top:6px;color:#405a78;font:700 7px var(--mono);letter-spacing:.08em}
+  .flow-node.reached{opacity:.82;transform:none;border-color:rgba(71,179,215,.22)}
+  .flow-node.current{opacity:1;transform:translateY(-2px) scale(1);border-color:rgba(44,218,245,.44);background:linear-gradient(135deg,rgba(32,216,255,.085),rgba(13,28,61,.42));box-shadow:0 12px 34px rgba(1,10,28,.18),inset 0 0 24px rgba(32,216,255,.025)}
+  .flow-node.current>i{border-color:rgba(86,225,245,.68);box-shadow:inset 0 0 0 4px rgba(9,27,55,.55),0 0 18px rgba(32,216,255,.12)}
+  .flow-node.proposal>i{border-radius:999px;width:27px;height:12px}.flow-node.authority>i{border-radius:3px;width:3px;height:28px;margin-left:10px;background:linear-gradient(rgba(255,199,102,.18),rgba(255,199,102,.8),rgba(255,199,102,.18));border:0;box-shadow:0 0 12px rgba(255,199,102,.15)}
+  .flow-link{position:relative;height:18px}.flow-link span{position:absolute;left:0;right:0;top:8px;height:1px;background:linear-gradient(90deg,rgba(32,216,255,.48),rgba(79,120,190,.24));transform:scaleX(0);transform-origin:left;transition:transform 520ms cubic-bezier(.16,1,.3,1)}.flow-link>i{position:absolute;right:-1px;top:5px;width:7px;height:7px;border-radius:50%;border:1px solid rgba(60,199,228,.45);background:#07172f;opacity:0;transform:scale(.5);transition:opacity 220ms ease 180ms,transform 360ms cubic-bezier(.16,1,.3,1) 180ms}.flow-link.reached span{transform:scaleX(1)}.flow-link.reached>i{opacity:1;transform:scale(1)}
+  .desktop-plane,.deterministic-comparator,.proposal-boundary,.authority-lifecycle{transition:border-color 420ms ease,box-shadow 420ms ease,transform 520ms cubic-bezier(.16,1,.3,1),opacity 360ms ease}
+  .desktop-plane.flow-current,.deterministic-comparator.flow-current,.proposal-boundary.flow-current,.authority-lifecycle.flow-current{border-color:rgba(42,211,239,.33);box-shadow:0 16px 42px rgba(0,8,25,.18),inset 0 0 34px rgba(32,216,255,.022);transform:translateY(-2px)}
+  .deterministic-comparator:not(.flow-reached),.proposal-boundary:not(.flow-reached),.authority-lifecycle:not(.flow-reached){opacity:.62}
   .deterministic-comparator,.authority-lifecycle{border:1px solid rgba(82,140,207,.16);border-radius:18px;background:rgba(4,14,36,.56)}
   .deterministic-comparator>header{display:grid;gap:5px;padding:18px 20px;border-bottom:1px solid rgba(78,139,208,.12)}
   .deterministic-comparator>header small,.authority-lifecycle>div>small{color:#67ddeb;font:750 9px var(--mono);letter-spacing:.09em}
