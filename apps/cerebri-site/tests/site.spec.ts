@@ -42,6 +42,43 @@ test('homepage reflects the current structured deterministic planning boundary',
   await expect(page.getByText(/HUMAN \/ PROBABILISTIC/i)).toHaveCount(0);
 });
 
+test('semantic planning visuals preserve candidate and authority distinctions', async ({ page }) => {
+  await page.goto(prefix + '/');
+
+  const observatory = page.locator('.observatory');
+  await expect(observatory).toBeVisible();
+  await expect(observatory).toHaveAttribute('aria-label', /Bounded search observatory/);
+
+  const candidates = page.locator('ol[aria-label="Evaluated candidate intervals"] > li');
+  await expect(candidates).toHaveCount(11);
+  await expect(page.locator('.candidate-lanes li[data-state="rejected"]')).toHaveCount(4);
+  await expect(page.locator('.candidate-lanes li[data-state="valid"]')).toHaveCount(6);
+  await expect(page.locator('.candidate-lanes li[data-state="selected"]')).toHaveCount(1);
+
+  const authorityBoundary = page.locator('.proposal-boundary');
+  await expect(authorityBoundary).toHaveAttribute('aria-label', /Selected proposal at 10:00 UTC stops before a separate authority gate/);
+  await expect(authorityBoundary.getByText('AUTHORITY GATE', { exact: true })).toBeVisible();
+  await expect(authorityBoundary.getByText('EXECUTION', { exact: true })).toBeVisible();
+});
+
+test('reduced motion resolves the hero directly to an equivalent semantic state', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(prefix + '/');
+  const observatory = page.locator('.observatory');
+  await expect(observatory).toHaveAttribute('data-motion', 'reduced');
+  await expect(observatory).toHaveClass(/proposed/);
+});
+
+test('structured evidence inspection is keyboard operable', async ({ page }) => {
+  await page.goto(prefix + '/');
+  const inspect = page.getByRole('button', { name: 'Inspect structured evidence' });
+  await inspect.focus();
+  await expect(inspect).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(inspect).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByText('SCOPE / CANONICAL INPUT', { exact: true })).toBeVisible();
+});
+
 test('homepage and planning surface meet the serious axe floor', async ({ page }) => {
   for (const route of ['/', '/planning/']) {
     await page.goto(prefix + route);
@@ -57,14 +94,24 @@ test('homepage and planning surface meet the serious axe floor', async ({ page }
   }
 });
 
-for (const width of [1440, 1024, 768, 390]) {
+for (const width of [1440, 1280, 1024, 768, 430, 390, 375, 320]) {
   test('responsive layout has no horizontal overflow at ' + width + 'px', async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(prefix + '/');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
   });
+}
 
+test('homepage remains overflow-safe with enlarged root text', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto(prefix + '/');
+  await page.evaluate(() => document.documentElement.style.fontSize = '200%');
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
+for (const width of [1440, 1024, 768, 390]) {
   test('@visual homepage ' + width + 'px', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 1000 });
