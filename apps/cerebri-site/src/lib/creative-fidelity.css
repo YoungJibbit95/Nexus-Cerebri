@@ -1,0 +1,68 @@
+/* Homepage instrument composition. Existing narrative and semantic tokens are retained. */
+.instrument-story { overflow-x:clip; overflow-y:visible; }
+body[data-instrument-world] .site-footer { overflow:clip; }
+.instrument-story .hero { min-height:0; overflow-x:clip; overflow-y:visible; padding-bottom:0; }
+.instrument-story .hero-scroll-cue { display:none; }
+.instrument-story .hero-nebula { pointer-events:none; max-width:100%; }
+.instrument-story .hero-copy { z-index:3; }
+.instrument-story .home-story { margin-top:60px; }
+.instrument-story .coordinate-relay { position:sticky; top:122px; z-index:4; height:0; margin-left:auto; margin-right:5%; width:150px; pointer-events:none; }
+.instrument-story .coordinate-relay>span { display:flex; gap:10px; align-items:center; padding:8px 0; font:10px var(--mono); color:var(--text-3); background:linear-gradient(90deg,transparent,var(--space-1)); }
+.instrument-story .coordinate-relay i { width:28px; height:5px; border-block:1px solid var(--cyan); position:relative; }
+.instrument-story .coordinate-relay i::before { content:''; position:absolute; width:6px; height:6px; background:var(--cyan); border-radius:50%; left:0; top:-1px; }
+body:is([data-instrument-world='measurement'],[data-instrument-world='technical']) .coordinate-relay { visibility:hidden; }
+.instrument-story .metrics { border:0; border-top:1px solid var(--line); border-radius:0; box-shadow:none; background:linear-gradient(90deg,rgba(32,216,255,.025),transparent); }
+.instrument-story .intent-section { padding-bottom:50px; }
+.instrument-story .intent-section .visual-frame { border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; overflow:visible; }
+.instrument-story .intent-section .visual-frame::before { display:none; }
+.instrument-story .intent-section .visual-space { overflow:hidden; }
+.instrument-story .intent-section .visual-heading { border-block:1px solid var(--line); }
+.instrument-story .intent-section .visual-body { padding:32px 0; }
+.instrument-story .intent-field { padding-inline:0; }
+.instrument-story .intent-stage-summary>div { border:0; border-left:2px solid var(--line-strong); border-radius:0; background:none; }
+.instrument-story .intent-flow { margin:36px 0; grid-template-columns:1fr 30px 1fr 30px 1fr 30px 1fr; }
+.instrument-story .intent-node { min-height:160px; padding:34px 12px 16px 0; border:0; border-top:1px solid var(--line); border-radius:0; background:none; box-shadow:none; }
+.instrument-story .intent-planet { width:8px; height:8px; top:-4px; left:0; border-radius:50%; background:var(--cyan); box-shadow:none; }
+.instrument-story .intent-node::before { display:none; }
+.instrument-story .intent-node strong { font-variant-numeric:tabular-nums; font-size:17px; }
+.instrument-story .intent-node small { font-size:10px; }
+.instrument-story .intent-trace i::after { animation:none; }
+.instrument-story .intent-trace span { display:none; }
+.instrument-story .node-state { position:static; display:block; margin-top:16px; font-size:10px; }
+.instrument-story .intent-boundary-note { border:0; border-left:2px solid var(--cerebri); border-radius:0; background:none; }
+.instrument-story .math-inspection { margin-top:0; padding-top:130px; }
+.instrument-story .math-inspection::before { content:''; position:absolute; top:0; left:7%; height:110px; width:86%; border-left:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong); transform:perspective(600px) rotateX(50deg) skewX(-12deg) scaleX(.6); transform-origin:top left; transition:transform 1100ms var(--ease-resolve); }
+body:is([data-instrument-world='measurement'],[data-instrument-world='technical']) .instrument-story .math-inspection::before { transform:none; }
+.instrument-story .math-heading { position:relative; }
+.instrument-story .math-heading::before { content:''; position:absolute; left:0; top:-25px; width:8px; height:8px; border:1px solid var(--cyan); }
+.instrument-story .math-inspection .math-chapter { border-top:0; border-left:1px solid var(--line); padding-left:28px; margin-left:8px; position:relative; }
+.instrument-story .math-chapter .chapter-number { background:var(--space-1); margin-left:-39px; padding:4px; color:var(--cyan); }
+.instrument-story .chapter-heading { align-items:center; }
+.instrument-story .math-disclosure { border-top:1px dotted var(--line); }
+.instrument-story .math-inspection button { border:0; border-bottom:1px solid var(--line); border-radius:0; background:none; }
+.instrument-story .math-inspection button[aria-pressed=true] { border-bottom-color:var(--cyan); background:rgba(32,216,255,.03); }
+.instrument-story .math-inspection .endpoint-lens { border-inline:1px solid var(--line); border-top:0; background:linear-gradient(180deg,rgba(32,216,255,.025),transparent); }
+.instrument-story .domain-journey .journey-grid { gap:0 40px; }
+.instrument-story .journey-card { border:0; border-top:1px solid var(--line); border-radius:0; box-shadow:none; background:none; padding-inline:0; }
+.instrument-story .journey-card::before { display:none; }
+.instrument-story .journey-card>strong { left:0; }
+.instrument-story .journey-card:hover { transform:translateY(-4px); background:linear-gradient(120deg,rgba(32,216,255,.025),transparent); }
+.instrument-story .journey-card.future { border-top-style:dashed; }
+.instrument-story .feature-card { border:0; border-left:1px solid var(--line); border-radius:0; background:none; box-shadow:none; }
+.instrument-story .feature-card.future-surface { border-left-style:dashed; }
+.instrument-story .feature-orb { opacity:.35; }
+body[data-instrument-world] .space-environment .atmosphere,body[data-instrument-world] .space-environment .spatial-light { animation:none; will-change:auto; transition:opacity 1100ms,transform 1400ms var(--ease-space); }
+body[data-instrument-world] .space-environment .structural-field { transition:transform 1400ms var(--ease-space),border-radius 1100ms,opacity 1100ms; }
+body[data-instrument-world='planning'] .space-environment .structural-field { transform:rotate(0) scaleY(.4); border-radius:0; opacity:.7; }
+body[data-instrument-world='planning'] .space-environment .atmosphere { opacity:.12; }
+body[data-instrument-world='measurement'] .space-environment .structural-field,body[data-instrument-world='technical'] .space-environment .structural-field { transform:rotate(90deg); border-radius:0; opacity:.5; }
+body[data-instrument-world='measurement'] .space-environment .atmosphere,body[data-instrument-world='technical'] .space-environment .atmosphere { opacity:.035; }
+body[data-instrument-world='measurement'] .space-environment .spatial-light,body[data-instrument-world='technical'] .space-environment .spatial-light { opacity:.035; transform:scale(.6); }
+body[data-instrument-world='horizon'] .space-environment .structural-field { transform:rotate(-20deg) scale(1.3); opacity:.7; }
+@media(max-width:760px) {
+  .instrument-story .coordinate-relay { top:128px; width:115px; margin-right:16px; }.instrument-story .coordinate-relay>span { font-size:8px; }
+  .instrument-story .intent-flow { grid-template-columns:1fr 1fr; gap:24px; }.instrument-story .intent-trace { display:none; }.instrument-story .intent-node { min-height:0; }.instrument-story .intent-node strong { font-size:15px; }
+  .instrument-story .intent-section .visual-body { padding:24px 0; }.instrument-story .math-inspection .math-chapter { padding-left:16px; margin-left:4px; }.instrument-story .math-chapter .chapter-number { margin-left:-27px; }.instrument-story .math-inspection { padding-top:100px; }.instrument-story .math-inspection::before { height:75px; }
+  .instrument-story .journey-card { padding-inline:0; }.instrument-story .domain-journey .journey-grid { gap:16px; }
+}
+@media(prefers-reduced-motion:reduce) { body[data-instrument-world] .space-environment * { transition:none!important; }.instrument-story .coordinate-relay { position:relative; top:0; height:auto; }.instrument-story .math-inspection::before { transition:none;transform:none; } }

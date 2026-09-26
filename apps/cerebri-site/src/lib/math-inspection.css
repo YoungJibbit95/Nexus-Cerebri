@@ -46,16 +46,19 @@
 .math-inspection .compression-start, .math-inspection .compression-end { position:absolute; top:35px; display:flex; align-items:center; gap:.5rem; transition:left 650ms var(--ease-resolve),right 650ms var(--ease-resolve); }
 .math-inspection .compression-start { left:5%; }
 .math-inspection .compression-end { right:5%; }
-.math-inspection .compression-start i { left:0; top:-10px; }
+.math-inspection .compression-start i { left:0; top:-10px; border:2px solid var(--cyan); }
 .math-inspection .compression-end i { left:100%; top:-10px; }
+.math-inspection .boundary-compression i { transition:top 650ms var(--ease-resolve),left 650ms var(--ease-resolve),width 650ms var(--ease-resolve),height 650ms var(--ease-resolve),border-radius 650ms var(--ease-resolve),background 450ms,opacity 350ms; }
 .math-inspection .compression-extent { position:absolute; top:25px; left:5%; width:85%; text-align:center; transition:width 650ms var(--ease-resolve),left 650ms var(--ease-resolve); }
 .math-inspection .compression-extent i { display:block; height:2px; background:var(--cyan); transition:opacity 350ms ease; }
 .math-inspection .boundary-compression b { opacity:0; transition:opacity 350ms ease; }
-.math-inspection [data-compressed=true] .compression-start { left:27%; }
-.math-inspection [data-compressed=true] .compression-end { right:27%; }
-.math-inspection [data-compressed=true] .compression-extent { left:48%; width:4%; top:35px; }
+.math-inspection [data-compressed=true] .compression-start { left:calc(50% - 5.5ch); }
+.math-inspection [data-compressed=true] .compression-end { right:calc(50% - 4.5ch); }
+.math-inspection [data-compressed=true] .compression-extent { left:calc(50% - .5ch); width:1ch; top:35px; }
 .math-inspection [data-compressed=true] .boundary-compression b { opacity:1; }
-.math-inspection [data-compressed=true] .boundary-compression i { opacity:0; }
+.math-inspection [data-compressed=true] .compression-extent i { opacity:0; }
+.math-inspection [data-compressed=true] .compression-start i { left:-.6ch; top:50%; width:7px; height:22px; border-radius:0; border-right-color:transparent; background:transparent; }
+.math-inspection [data-compressed=true] .compression-end i { left:calc(100% + .6ch); top:50%; width:9px; height:22px; border-radius:0 100% 100% 0; border-left-color:transparent; border-block-color:transparent; background:transparent; }
 .math-inspection .notation-equivalent { text-align:center; color:var(--text-3); }
 .math-inspection .math-disclosure { border-top:1px solid var(--line); margin-top:1rem; }
 .math-inspection summary { cursor:pointer; padding:1rem .2rem; font-size:.85rem; color:var(--text-1); }
@@ -75,16 +78,16 @@
 .math-inspection .distance-limits { position:absolute; bottom:0; display:flex; justify-content:space-between; width:100%; font:.65rem var(--mono); color:var(--text-3); }
 .math-inspection .measurement-reading small, .math-inspection .probe-caption { color:var(--text-3); }
 .math-inspection .measurement-composition, .math-inspection .shift-composition { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:2.5rem; align-items:center; }
-.math-inspection .measurement-world { position:relative; height:210px; }
+.math-inspection .measurement-world { position:relative; height:210px; perspective:600px; }
 .math-inspection .measurement-axis { position:absolute; top:85px; left:10%; width:80%; height:1px; background:var(--line-strong); }
 .math-inspection .measurement-origin { position:absolute; top:85px; left:50%; }
 .math-inspection .measurement-origin i { position:absolute; top:-6px; height:12px; border-left:1px solid var(--soft-violet); }
 .math-inspection .measurement-origin span { position:absolute; top:35px; transform:translateX(-50%); white-space:nowrap; font:.7rem var(--mono); color:var(--text-3); }
 .math-inspection .exact-instant { position:absolute; top:85px; }
 .math-inspection .exact-instant span { position:absolute; bottom:24px; transform:translateX(-50%); white-space:nowrap; font:.85rem var(--mono); }
-.math-inspection .measurement-lattice { position:absolute; left:10%; width:80%; top:20px; height:125px; display:flex; justify-content:space-between; opacity:0; transform:scaleY(.1); transform-origin:center; transition:opacity 350ms ease,transform 500ms var(--ease-resolve); }
+.math-inspection .measurement-lattice { position:absolute; left:10%; width:80%; top:20px; height:125px; display:flex; justify-content:space-between; opacity:0; transform:translateY(-30px) rotateX(58deg) scale(.85); transform-origin:center; border-block:1px solid var(--line-strong); background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(128,159,192,.1) calc(10% - 1px) 10%); transition:opacity 350ms ease,transform 850ms var(--ease-resolve); }
 .math-inspection .measurement-lattice i { display:block; border-left:1px dashed var(--text-3); }
-.math-inspection [data-measured=true] .measurement-lattice { opacity:.55; transform:scaleY(1); }
+.math-inspection [data-measured=true] .measurement-lattice { opacity:.55; transform:none; }
 .math-inspection .measurement-ticks { position:absolute; display:flex; justify-content:space-between; left:8%; width:84%; top:165px; font:.7rem var(--mono); color:var(--text-3); }
 .math-inspection .observation-reading { padding:1rem 0 1rem 1.5rem; border-left:1px solid var(--line); }
 .math-inspection .observation-reading>* { display:block; }
@@ -93,14 +96,19 @@
 .math-inspection .shift-world { position:relative; height:200px; }
 .math-inspection .ghost-placement { position:absolute; left:12%; top:60px; }
 .math-inspection .ghost-placement i { display:block; width:34px; height:16px; border:1px dashed var(--text-3); border-radius:10px; transform:translateX(-4px); }
+.math-inspection .ghost-placement::after { content:''; position:absolute; width:34px; height:16px; left:4px; top:-7px; border:1px dashed var(--line-strong); border-radius:10px; transform:skewY(-12deg); }
+.math-inspection .ghost-placement::before { content:''; position:absolute; left:0; top:16px; height:25px; border-left:1px dashed var(--text-3); }
 .math-inspection .ghost-placement span { position:absolute; top:-30px; font:.65rem var(--mono); white-space:nowrap; }
 .math-inspection .shift-candidate { position:absolute; top:125px; width:11px; height:11px; transition:left 500ms var(--ease-ui); }
 .math-inspection .shift-candidate span { position:absolute; top:20px; right:-15px; white-space:nowrap; font:.65rem var(--mono); }
 .math-inspection .shift-trace { position:absolute; top:96px; left:12%; height:1px; background:var(--text-3); transition:width 500ms var(--ease-ui); }
 .math-inspection .shift-trace::before, .math-inspection .shift-trace::after { content:''; position:absolute; top:-5px; height:11px; border-left:1px solid var(--text-3); }
 .math-inspection .shift-trace::after { right:0; }
-.math-inspection .absent-origin { height:100%; display:flex; align-items:center; justify-content:center; gap:1rem; font:2rem var(--mono); }
-.math-inspection .absent-origin span { font:.85rem var(--sans); }
+.math-inspection .absent-origin { position:absolute; left:12%; top:60px; width:35%; height:40px; border-bottom:1px dashed var(--line-strong); font:1.5rem var(--mono); }
+.math-inspection .absent-origin span { position:absolute; top:-30px; font:.65rem var(--mono); white-space:nowrap; }
+.math-inspection .absent-origin b { font-weight:400; color:var(--text-3); }
+.math-inspection .absent-origin i { position:absolute; right:0; bottom:-5px; height:10px; border-left:1px solid var(--line-strong); }
+.math-inspection .shift-candidate.unanchored { left:78%; }
 .math-inspection .technical-inspection { border-bottom:1px solid var(--line); }
 .math-inspection .technical-inspection>summary { padding:1.5rem .2rem; font-size:1.1rem; }
 .math-inspection .technical-inspection>summary small { display:block; color:var(--text-3); }
@@ -108,9 +116,15 @@
 .math-inspection .projection-paths { display:grid; grid-template-columns:minmax(0,1.3fr) 40px minmax(0,1fr); gap:1.5rem; align-items:center; }
 .math-inspection .observation { display:flex; align-items:flex-start; gap:1rem; }
 .math-inspection .observation code { display:block; }
-.math-inspection .projection-value { grid-column:3; grid-row:1/3; padding:1.5rem; border-left:1px solid var(--line); }
+.math-inspection .projection-value { position:relative; grid-column:3; grid-row:1/3; padding:1.5rem; }
+.math-inspection .projection-value::before { content:''; position:absolute; left:-1.5rem; top:50%; width:2rem; border-top:1px solid var(--cyan); }
+.math-inspection .projection-value::after { content:''; position:absolute; left:-1.5rem; top:50%; width:7px; height:7px; border:1px solid var(--cyan); border-radius:50%; background:var(--space-1); transform:translate(-50%,-50%); }
 .math-inspection .projection-value strong { display:block; font:2.5rem var(--mono); }
-.math-inspection .projection-connector { color:var(--text-3); text-align:center; }
+.math-inspection .projection-connector { position:relative; height:100%; }
+.math-inspection .projection-connector::before { content:''; position:absolute; inset:50% 0 -.75rem; border-top:1px dashed var(--text-3); border-right:1px dashed var(--text-3); border-radius:14px 0 0 0; }
+.math-inspection .present-path::before { inset:-.75rem 0 50%; border-top:0; border-bottom:1px solid var(--cyan); border-right:1px solid var(--cyan); border-radius:0 0 0 14px; }
+.math-inspection .projection-connector i { position:absolute; left:0; top:50%; width:6px; height:6px; border:1px solid var(--text-3); transform:translateY(-50%); }
+.math-inspection .present-path i { background:var(--cyan); border-color:var(--cyan); border-radius:50%; }
 .math-inspection .absence-symbol, .math-inspection .presence-symbol { font:1.5rem var(--mono); color:var(--cerebri); }
 .math-inspection .tuple-inspection { margin-top:2.5rem; padding-top:2rem; border-top:1px solid var(--line); }
 .math-inspection .tuple-dimensions { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.5rem; margin:1.5rem 0; }
@@ -136,9 +150,12 @@
   .math-inspection .math-chapter { padding:2rem 0; }
   .math-inspection .math-heading { gap:.5rem; }
   .math-inspection .observation-reading { border-left:0; border-top:1px solid var(--line); padding:1rem 0; }
-  .math-inspection .projection-paths { grid-template-columns:minmax(0,1fr); gap:1rem; }
-  .math-inspection .projection-value { grid-column:1; grid-row:auto; order:2; padding:1rem 0; border-left:0; border-top:1px solid var(--line); }
-  .math-inspection .projection-connector { display:none; }
+  .math-inspection .projection-paths { grid-template-columns:minmax(0,1fr) 24px; gap:1.5rem 1rem; }
+  .math-inspection .projection-value { grid-column:1/-1; grid-row:3; padding:1.5rem 0 0; border-top:1px solid var(--line); }
+  .math-inspection .projection-value::before { left:auto; right:0; top:0; width:24px; }
+  .math-inspection .projection-value::after { left:auto; right:20px; top:0; }
+  .math-inspection .present-path::before { inset:-.75rem 0 -1.5rem; border-bottom:0; border-radius:0; }
+  .math-inspection .present-path::after { content:''; position:absolute; left:0; right:0; top:50%; border-top:1px solid var(--cyan); }
   .math-inspection .tuple-dimensions { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .math-inspection .ordering-tuple { grid-template-columns:minmax(0,1fr); gap:.5rem; }
   .math-inspection .ordering-tuple li { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.7rem; align-items:center; }
