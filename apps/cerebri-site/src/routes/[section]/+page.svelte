@@ -4,6 +4,10 @@
   import StatusBadge from '$lib/components/StatusBadge.svelte';
   import SystemVisual from '$lib/components/SystemVisual.svelte';
   import SectionPrimer from '$lib/components/SectionPrimer.svelte';
+  import CpirInstrument from '$lib/components/cpir/CpirInstrument.svelte';
+  import ArchitectureInstrument from '$lib/components/architecture/ArchitectureInstrument.svelte';
+  import DomainPrelude from '$lib/components/technical/DomainPrelude.svelte';
+  import '$lib/components/technical/technical-routes.css';
   import VisualizationFrame from '$lib/components/VisualizationFrame.svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
 
@@ -12,11 +16,11 @@
   const sectionNumber = $derived(String(['explore','cpir','planning','time','safety','architecture','lab','roadmap','developers'].indexOf(data.key) + 1).padStart(2, '0'));
   const textAlternatives: Record<string, string> = {
     atlas: 'A central Cerebri node connects to Temporal, CPIR, Constraints, Planner and Validation. A visually distinct Research node sits outside the implemented core.',
-    cpir: 'Connected evidence layers summarize request identity, knowledge and provenance, scope, policy, capability and search budget. Scope is visually bounded and capability remains separate.',
+    cpir: 'A CPIR input envelope keeps scope, knowledge, constraints, preferences, policy, capability and declared budget distinct. The same interval endpoints resolve into exact field paths. A planner boundary separates the request from Rust-generated candidate results.',
     planning: 'A three-hour search field shows a known busy block, deterministic grid positions, evaluated candidates and the selected candidate. A proof strip states outcome and assessment from Rust output.',
     time: 'Three time paths explain half-open intervals, a DST gap and a DST fold, with raw temporal diagnostic output available in a disclosure.',
     safety: 'A one-way promotion pipeline progresses from PlanningRequest through ProposedPlan, ValidatedPlan, ActionPlan and AuthorizedActionPlan to ExecutionResult while keeping planner and executor boundaries distinct.',
-    architecture: 'Layered planes show types and temporal foundations, semantic and constraint layers, planner, core facade and thin transports. A separate research node is not part of production dependency flow.',
+    architecture: 'The same compressed system opens into ownership: transports delegate inward through the core facade to planner and domain foundations; results return outward. Research is detached. Candidate checks and later lifecycle validation remain separate.',
     roadmap: 'Four strata show implemented Foundation and Temporal Core, deterministic planner verification and later provider, repair, learning and neural work as a separate research horizon.',
     developers: 'A transport boundary lists validate, plan and temporal REST routes and explicitly shows that execute is absent, followed by a directional adapter-to-core-to-domain flow.',
     lab: 'Three panes show planner inspection, temporal diagnostics and an inactive reserved ML and dataset surface, separated from the official site.'
@@ -29,9 +33,13 @@
 </svelte:head>
 
 <section class="page-hero" data-section={data.key}>
-  <div class="page-nebula" aria-hidden="true"></div>
-  <div class="page-planet" aria-hidden="true"><span></span><i></i></div>
-  <div class="page-orbit" aria-hidden="true"><i></i><b></b><span></span></div>
+  {#if data.key === 'cpir' || data.key === 'architecture'}
+    <DomainPrelude kind={data.key} />
+  {:else}
+    <div class="page-nebula" aria-hidden="true"></div>
+    <div class="page-planet" aria-hidden="true"><span></span><i></i></div>
+    <div class="page-orbit" aria-hidden="true"><i></i><b></b><span></span></div>
+  {/if}
   <div class="page-hero-copy">
     <div class="hero-meta"><StatusBadge status={section.status} /><span>{section.truth}</span><span>FIELD {sectionNumber}</span></div>
     <p class="kicker">NEXUS CEREBRI / {section.eyebrow}</p>
@@ -59,7 +67,9 @@
 <SectionPrimer kind={data.key} />
 
 <section class="section-visual-wrap" data-section={data.key}>
-  <div class="section-transition-orbit" aria-hidden="true"><span></span><i></i><b></b></div>
+  {#if data.key !== 'cpir' && data.key !== 'architecture'}
+    <div class="section-transition-orbit" aria-hidden="true"><span></span><i></i><b></b></div>
+  {/if}
   <VisualizationFrame
     kind={section.truth}
     label={section.eyebrow}
@@ -70,7 +80,13 @@
         : 'A future-facing concept that is not implemented.'}
     textAlternative={textAlternatives[section.visual]}
   >
-    <SystemVisual visual={section.visual} />
+    {#if data.key === 'cpir'}
+      <CpirInstrument />
+    {:else if data.key === 'architecture'}
+      <ArchitectureInstrument />
+    {:else}
+      <SystemVisual visual={section.visual} />
+    {/if}
   </VisualizationFrame>
 </section>
 

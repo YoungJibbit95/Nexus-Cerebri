@@ -21,6 +21,12 @@ export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, str
     'technical-768': '20e85dd4976a52bd5df09c3c9a4df60466726efab07c03c61f4205f727f89317'
   },
   win32: {
+    'architecture-mobile': 'd1094fafc7b319bc2f19b304158741cd0534ff63ea636e28f88515e422fd758e',
+    'architecture-technical': '962accf8cb3682b98b844300cf02dbcc47dfb72652f20ec374be8086668d6b26',
+    'architecture-concept': '85dfb16ab29d97193a56cedd7bc31fd14b75fcf43e43dbb0f730ec10916d9954',
+    'cpir-mobile': '9704b6306526ee34a5a55be148523ba90652b933f4555898621c7b0167afce47',
+    'cpir-technical': '9eb4e73f2f551cebd675db0f91261526890194bdd7072268b5ad14103ae73b76',
+    'cpir-concept': 'c7d6bbd70a29ecfaa40348cc59e58c4037a17613e6820acb4d9bb6d68f0f9f1e',
     '1024': 'ee1d1756c8b955526692ce5f5c9be10fab294b41e7b837d661ccd5ee32955f40',
     '1440': 'eac6033c39667c75dab45182b38bfb081812195114d1f5ceda946aa2d7cf9f14',
     '390': '9bcad055f5fc8fe74dcf09e3c302028f836121feeda57e8dbd0204d76cb89735',
@@ -36,8 +42,8 @@ export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, str
     'math-768': '53da68fd5e1441678ac151a9383b4f7277baea8549cd610950c59f023888c158',
     'proposal-1440': 'd244fcc74fce2f2c49660307189f3e9de9027157dd4ff9a73fc2109eb5a213a0',
     'proposal-390': 'faee559e07feb19d46ce1cc42071a1a1055ac97614fc91ab47bb567709be1163',
-    'technical-1440': 'a0eeea2aa698a5905e8e1bffb91450e3655868db93972ff553fc0d95b80581f3',
-    'technical-390': 'd905795752593239cc6cbf6529790b66f0955da7269af323bfd99350a5dfa562',
-    'technical-768': '58d9d5c0aee7c31cf8b8b7e584cf690661ada5a1280f12b1ff9c523e6c2e187a'
+    'technical-1440': '7b2a06b726e34fc6804ada5bb0f2fba0ac2c473b2b88f5754d8123dbac190ae0',
+    'technical-390': '38b5d314edf288f4395527ec1e208434cf03721ba95847ee51ca6e2da87524aa',
+    'technical-768': 'c7999dd5629253341b8e5fcd73d8ce5d1e4e24ed3ade390df3b651f55d646f5b'
   }
 };
