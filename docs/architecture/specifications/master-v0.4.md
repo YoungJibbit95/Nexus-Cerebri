@@ -742,6 +742,13 @@ Preserve baselines.
 Goal:
 `Code + Data + Config + Seed + Environment -> reproducible experiment`.
 
+[ADR-0015](../decisions/ADR-0015-evaluation-contract-foundations.md) records the supplied
+qualified Intelligence v1.2.6 contract's initial synthetic evaluation foundations.
+The partial Phase-A module validates scalar, manifest and run/provenance components;
+it does not yet construct validated EvaluationEpisodes, compute fingerprints or replay
+planning. Complete Episode wire definitions remain a checkpoint blocker. Existing
+planning, ranking, admission, permission and execution authorities are unchanged.
+
 ## 28. Deployment progression
 
 LOCAL -\> TEST -\> SHADOW -\> SUGGESTION -\> CONFIRMATION -\>

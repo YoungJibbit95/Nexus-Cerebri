@@ -26,9 +26,10 @@ deletion and non-fast-forward updates are blocked. No bypass actors are configur
 integration reports `current_user_can_bypass: never`. Documentation Pages and Traffic Stats are
 not required qualification checks.
 
-The next Intelligence step is bounded architecture/contract work for Slice 2. Slice 2, ML,
-learned ranking/search and EvaluationEpisode implementation are not part of the current state
-and must not be inferred from the completed deterministic Slice 1.
+The current Intelligence increment is a partial Slice-2 Phase-A foundation checkpoint;
+see [the progress record](../progress/2026-09-27-evaluation-phase-a-checkpoint.md).
+Complete EvaluationEpisodes and deterministic replay remain unimplemented pending exact
+wire definitions. Phase B has not started. ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
 the dated entries below preserve earlier milestone context.
 
