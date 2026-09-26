@@ -21,10 +21,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        launchOptions: process.platform === 'linux' ? { args: ['--disable-gpu'] } : undefined
-      }
+      use: { ...devices['Desktop Chrome'] }
     }
   ]
 });

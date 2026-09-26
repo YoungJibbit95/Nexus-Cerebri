@@ -53,6 +53,7 @@ for (const width of [1440, 1024, 768, 390]) {
   });
 
   test('@visual homepage ' + width + 'px', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(prefix + '/');
     const screenshot = await page.screenshot({ path: test.info().outputPath('homepage-' + width + '.png'), fullPage: true, animations: 'disabled' });
