@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
   import { plannerSemanticLegend } from '$lib/visual-grammar';
   import AuthorityRail from './AuthorityRail.svelte';
@@ -62,9 +63,58 @@
     : null;
 
   const selectedLabel = selectedStart !== null ? formatTime(selectedStart) : '—';
+
+  let flowStage = 3;
+  let reducedMotion = true;
+
+  onMount(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+
+    const updateFlow = () => {
+      if (motion.matches) {
+        reducedMotion = true;
+        flowStage = 3;
+        return;
+      }
+
+      reducedMotion = false;
+      const root = document.querySelector<HTMLElement>('[data-flow-root="planning"]');
+      if (!root) return;
+
+      const rect = root.getBoundingClientRect();
+      const viewport = Math.max(window.innerHeight, 1);
+      const progress = (viewport * 0.78 - rect.top) / Math.max(rect.height + viewport * 0.2, 1);
+
+      flowStage = progress < 0.2 ? 0 : progress < 0.45 ? 1 : progress < 0.7 ? 2 : 3;
+    };
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateFlow);
+    };
+
+    updateFlow();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    motion.addEventListener('change', scheduleUpdate);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      motion.removeEventListener('change', scheduleUpdate);
+    };
+  });
 </script>
 
-<div class="planning-instrument" data-exhausted={exhausted}>
+<div
+  class="planning-instrument"
+  data-exhausted={exhausted}
+  data-flow-root="planning"
+  data-flow-stage={flowStage}
+  data-motion={reducedMotion ? 'reduced' : 'full'}
+>
   <div class="instrument-meta" aria-hidden="true">
     <span class="candidate-summary">{validStarts.size} valid / {rejectedStarts.size} rejected</span>
     <span><i></i> HARD CONSTRAINT / KNOWN BUSY</span>
@@ -75,7 +125,7 @@
 
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
 
-  <div class="desktop-plane" aria-hidden="true">
+  <div class:flow-current={flowStage === 0} class="desktop-plane" aria-hidden="true">
     <div class="verification-contour"><span>{exhausted ? 'VERIFIED BOUNDED TRAVERSAL' : 'OPEN TRAVERSAL'}</span></div>
     <div class="desktop-coordinate">
       {#if busy}
@@ -143,7 +193,42 @@
     {/each}
   </ol>
 
-  <section class="deterministic-comparator" aria-label="Deterministic comparator">
+  <section class="semantic-flow" aria-label="Candidate to authority flow">
+    <div class:reached={flowStage >= 0} class:current={flowStage === 0} class="flow-node candidates" data-flow-node="candidates">
+      <span class="flow-index">01</span>
+      <i aria-hidden="true"></i>
+      <strong>Feasible candidates</strong>
+      <small>{validStarts.size} valid after hard-rule checks</small>
+    </div>
+    <div class:reached={flowStage >= 1} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 1} class:current={flowStage === 1} class="flow-node comparator" data-flow-node="comparator">
+      <span class="flow-index">02</span>
+      <i aria-hidden="true"></i>
+      <strong>Compare ordering keys</strong>
+      <small>Inspect the Rust-produced order</small>
+    </div>
+    <div class:reached={flowStage >= 2} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 2} class:current={flowStage === 2} class="flow-node proposal" data-flow-node="proposal">
+      <span class="flow-index">03</span>
+      <i aria-hidden="true"></i>
+      <strong>First proposal</strong>
+      <small>{selectedLabel} UTC remains a proposal</small>
+    </div>
+    <div class:reached={flowStage >= 3} class="flow-link" aria-hidden="true"><span></span><i></i></div>
+    <div class:reached={flowStage >= 3} class:current={flowStage === 3} class="flow-node authority" data-flow-node="authority">
+      <span class="flow-index">04</span>
+      <i aria-hidden="true"></i>
+      <strong>Authority boundary</strong>
+      <small>Validation and authorization stay separate</small>
+    </div>
+  </section>
+
+  <section
+    class:flow-reached={flowStage >= 1}
+    class:flow-current={flowStage === 1}
+    class="deterministic-comparator"
+    aria-label="Deterministic comparator"
+  >
     <header>
       <small>DETERMINISTIC COMPARATOR</small>
       <strong>First two Rust-ranked candidates</strong>
@@ -174,7 +259,12 @@
     {/if}
   </section>
 
-  <div class="proposal-boundary" aria-label={"Selected proposal at " + selectedLabel + " UTC stops before a separate authority gate."}>
+  <div
+    class:flow-reached={flowStage >= 2}
+    class:flow-current={flowStage === 2}
+    class="proposal-boundary"
+    aria-label={"Selected proposal at " + selectedLabel + " UTC stops before a separate authority gate."}
+  >
     <div class="proposal-object"><span></span><strong>{selectedLabel} UTC</strong><small>SELECTED PROPOSAL</small></div>
     <div class="proposal-trace" aria-hidden="true"><i></i></div>
     <div class="authority-gate">
@@ -183,7 +273,12 @@
     <div class="execution-side"><strong>EXECUTION</strong><small>not implied by planning</small></div>
   </div>
 
-  <section class="authority-lifecycle" aria-label="Planner authority boundary">
+  <section
+    class:flow-reached={flowStage >= 3}
+    class:flow-current={flowStage === 3}
+    class="authority-lifecycle"
+    aria-label="Planner authority boundary"
+  >
     <div>
       <small>AUTHORITY LIFECYCLE</small>
       <strong>The current planning fixture stops at ProposedPlan.</strong>
@@ -195,6 +290,19 @@
 
 <style>
   .planning-instrument{position:relative;display:grid;gap:24px;padding-top:6px;--constraint:#ff8795;--valid:#60e6b8;--selected:#20d8ff;--line:rgba(91,151,216,.2)}
+  .semantic-flow{display:grid;grid-template-columns:minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr) minmax(36px,.36fr) minmax(125px,1fr);gap:10px;align-items:center;padding:4px 2px}
+  .flow-node{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;align-items:center;min-height:62px;padding:10px 11px;border:1px solid rgba(76,134,199,.13);border-radius:14px;background:rgba(4,14,36,.38);opacity:.42;transform:translateY(5px) scale(.985);transition:opacity 320ms ease,transform 460ms cubic-bezier(.16,1,.3,1),border-color 320ms ease,background 320ms ease,box-shadow 320ms ease}
+  .flow-node>i{grid-row:1/3;grid-column:1;width:24px;height:24px;border:1px solid rgba(103,164,221,.35);border-radius:50%;background:radial-gradient(circle,rgba(93,215,241,.18),rgba(12,30,61,.25));box-shadow:inset 0 0 0 4px rgba(9,27,55,.55)}
+  .flow-node strong{grid-column:2;color:#afc3d9;font-size:10px}.flow-node small{grid-column:2;color:#637c9b;font-size:9px;line-height:1.35}
+  .flow-index{position:absolute;right:8px;top:6px;color:#405a78;font:700 7px var(--mono);letter-spacing:.08em}
+  .flow-node.reached{opacity:.82;transform:none;border-color:rgba(71,179,215,.22)}
+  .flow-node.current{opacity:1;transform:translateY(-2px) scale(1);border-color:rgba(44,218,245,.44);background:linear-gradient(135deg,rgba(32,216,255,.085),rgba(13,28,61,.42));box-shadow:0 12px 34px rgba(1,10,28,.18),inset 0 0 24px rgba(32,216,255,.025)}
+  .flow-node.current>i{border-color:rgba(86,225,245,.68);box-shadow:inset 0 0 0 4px rgba(9,27,55,.55),0 0 18px rgba(32,216,255,.12)}
+  .flow-node.proposal>i{border-radius:999px;width:27px;height:12px}.flow-node.authority>i{border-radius:3px;width:3px;height:28px;margin-left:10px;background:linear-gradient(rgba(255,199,102,.18),rgba(255,199,102,.8),rgba(255,199,102,.18));border:0;box-shadow:0 0 12px rgba(255,199,102,.15)}
+  .flow-link{position:relative;height:18px}.flow-link span{position:absolute;left:0;right:0;top:8px;height:1px;background:linear-gradient(90deg,rgba(32,216,255,.48),rgba(79,120,190,.24));transform:scaleX(0);transform-origin:left;transition:transform 520ms cubic-bezier(.16,1,.3,1)}.flow-link>i{position:absolute;right:-1px;top:5px;width:7px;height:7px;border-radius:50%;border:1px solid rgba(60,199,228,.45);background:#07172f;opacity:0;transform:scale(.5);transition:opacity 220ms ease 180ms,transform 360ms cubic-bezier(.16,1,.3,1) 180ms}.flow-link.reached span{transform:scaleX(1)}.flow-link.reached>i{opacity:1;transform:scale(1)}
+  .desktop-plane,.deterministic-comparator,.proposal-boundary,.authority-lifecycle{transition:border-color 420ms ease,box-shadow 420ms ease,transform 520ms cubic-bezier(.16,1,.3,1),opacity 360ms ease}
+  .desktop-plane.flow-current,.deterministic-comparator.flow-current,.proposal-boundary.flow-current,.authority-lifecycle.flow-current{border-color:rgba(42,211,239,.33);box-shadow:0 16px 42px rgba(0,8,25,.18),inset 0 0 34px rgba(32,216,255,.022);transform:translateY(-2px)}
+  .deterministic-comparator:not(.flow-reached),.proposal-boundary:not(.flow-reached),.authority-lifecycle:not(.flow-reached){opacity:.62}
   .deterministic-comparator,.authority-lifecycle{border:1px solid rgba(82,140,207,.16);border-radius:18px;background:rgba(4,14,36,.56)}
   .deterministic-comparator>header{display:grid;gap:5px;padding:18px 20px;border-bottom:1px solid rgba(78,139,208,.12)}
   .deterministic-comparator>header small,.authority-lifecycle>div>small{color:#67ddeb;font:750 9px var(--mono);letter-spacing:.09em}
@@ -220,7 +328,9 @@
   .mobile-plane{display:none}
   .sr-candidates{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
   .proposal-boundary{display:grid;grid-template-columns:minmax(160px,1fr) minmax(80px,.7fr) 86px minmax(120px,.8fr);align-items:center;gap:16px;min-height:112px;padding:18px 20px;border:1px solid rgba(82,140,207,.16);border-radius:18px;background:rgba(4,14,36,.56)}.proposal-object{position:relative;min-height:58px;padding:11px 14px 10px 52px;border:1px solid rgba(32,216,255,.32);border-radius:14px;background:linear-gradient(90deg,rgba(32,216,255,.08),rgba(15,37,71,.2))}.proposal-object>span{position:absolute;left:15px;top:25px;width:25px;height:9px;border:1px solid rgba(32,216,255,.65);border-radius:999px}.proposal-object>span::before{content:"";position:absolute;left:-3px;top:2px;width:5px;height:5px;border-radius:50%;background:#8ff2ff}.proposal-object strong{display:block;color:#dffaff;font:750 13px var(--mono)}.proposal-object small{display:block;margin-top:5px;color:#6aa9bb;font:700 9px var(--mono);letter-spacing:.08em}.proposal-trace{height:1px;background:linear-gradient(90deg,rgba(32,216,255,.3),rgba(32,216,255,.04));position:relative}.proposal-trace i{position:absolute;right:0;top:-3px;width:7px;height:7px;border-radius:50%;border:1px solid rgba(32,216,255,.55);background:#08172f}.authority-gate{position:relative;height:76px;text-align:center}.authority-gate>i{position:absolute;left:50%;top:18px;bottom:18px;width:2px;background:linear-gradient(rgba(255,199,102,.12),rgba(255,199,102,.72),rgba(255,199,102,.12));box-shadow:0 0 12px rgba(255,199,102,.12)}.authority-gate>span,.authority-gate>small{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 8px var(--mono);letter-spacing:.07em}.authority-gate>span{top:0;color:#b99b67}.authority-gate>small{bottom:0;color:#796a50}.execution-side{opacity:.52;padding-left:4px}.execution-side strong{display:block;color:#a9b5c5;font:700 11px var(--mono);letter-spacing:.08em}.execution-side small{display:block;margin-top:5px;color:#697b94;font-size:11px}
+  @media(max-width:900px){.semantic-flow{grid-template-columns:minmax(110px,1fr) 24px minmax(110px,1fr) 24px minmax(110px,1fr) 24px minmax(110px,1fr);gap:6px}.flow-node{padding:9px 8px;grid-template-columns:26px minmax(0,1fr)}.flow-node>i{width:20px;height:20px}.flow-node.proposal>i{width:23px;height:10px}.flow-node strong{font-size:9px}.flow-node small{font-size:8px}}
+  @media(max-width:620px){.semantic-flow{grid-template-columns:1fr;gap:0;padding:0 2px}.flow-node{grid-template-columns:30px minmax(0,1fr);min-height:58px}.flow-link{height:26px;width:1px;margin-left:25px}.flow-link span{left:0;right:auto;top:0;bottom:0;width:1px;height:auto;transform:scaleY(0);transform-origin:top}.flow-link.reached span{transform:scaleY(1)}.flow-link>i{right:auto;left:-3px;top:auto;bottom:-1px}.flow-node.current{transform:translateX(3px)}}
   @media(max-width:760px){.deterministic-comparator .comparator-head,.deterministic-comparator .comparator-row{grid-template-columns:minmax(104px,1fr) minmax(68px,.65fr) minmax(68px,.65fr);gap:5px}.comparator-row>span{font-size:8px}.comparator-row>strong{font-size:9px}.authority-lifecycle{grid-template-columns:1fr;gap:14px}.instrument-meta{gap:8px 14px}.preference-none{margin-left:0}.desktop-plane{display:none}.mobile-plane{display:block;position:relative;height:690px;border:1px solid rgba(70,136,204,.16);border-radius:20px;background:linear-gradient(180deg,rgba(4,15,39,.76),rgba(3,10,29,.62));overflow:hidden}.mobile-scope{position:absolute;left:50%;top:4%;bottom:4%;width:68px;transform:translateX(-50%);border:1px solid rgba(66,232,224,.16);border-radius:16px}.mobile-scope span{position:absolute;left:50%;transform:translateX(-50%);color:#647d9d;font:700 9px var(--mono)}.mobile-scope span:first-child{top:8px}.mobile-scope span:last-child{bottom:8px}.mobile-rail{position:absolute;left:50%;top:8%;bottom:8%;width:1px;background:linear-gradient(rgba(32,216,255,.34),rgba(113,106,222,.28));transform:translateX(-50%)}.mobile-busy{position:absolute;left:calc(50% - 28px);top:var(--busy-top);height:var(--busy-height);width:56px;background:rgba(255,135,149,.1);border-top:1px solid rgba(255,135,149,.42);border-bottom:1px solid rgba(255,135,149,.3)}.mobile-busy span{position:absolute;right:5px;top:6px;writing-mode:vertical-rl;color:#ba7782;font:700 8px var(--mono)}.mobile-candidate{position:absolute;top:var(--candidate-top);height:var(--candidate-height);width:72px;left:calc(50% - 92px);border:1px solid rgba(94,180,217,.36);border-radius:999px;background:linear-gradient(180deg,rgba(86,185,220,.55),rgba(49,98,157,.18))}.mobile-candidate.alternate{left:calc(50% + 20px)}.mobile-candidate::before,.mobile-candidate::after{content:"";position:absolute;left:50%;width:7px;height:7px;border-radius:50%;transform:translateX(-50%)}.mobile-candidate::before{top:-4px;background:#b8f4ff}.mobile-candidate::after{bottom:-4px;border:1px solid #93ccdf;background:#07142d}.mobile-candidate span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);color:#b0c2d6;font:700 8px var(--mono);white-space:nowrap}.mobile-candidate small{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);color:#6d819b;font:700 7px var(--mono);text-transform:uppercase}.mobile-candidate.rejected{border-color:rgba(255,135,149,.42);background:linear-gradient(180deg,rgba(255,135,149,.45),rgba(99,43,66,.18))}.mobile-candidate.rejected i{position:absolute;left:-5px;top:24%;width:82px;height:1px;background:var(--constraint);transform:rotate(-24deg);box-shadow:0 0 7px rgba(255,135,149,.16)}.mobile-candidate.valid{border-color:rgba(96,230,184,.4);background:linear-gradient(180deg,rgba(96,230,184,.48),rgba(37,99,84,.17))}.mobile-candidate.selected{left:calc(50% + 42px);border-color:rgba(32,216,255,.76);background:linear-gradient(180deg,rgba(126,239,255,.8),rgba(32,216,255,.24));box-shadow:0 0 17px rgba(32,216,255,.08)}.mobile-verification{position:absolute;inset:14px;border:1px solid rgba(66,232,224,.11);border-radius:14px;pointer-events:none}.mobile-verification span{position:absolute;right:8px;bottom:7px;color:#65948f;font:700 8px var(--mono);letter-spacing:.07em}.proposal-boundary{grid-template-columns:1fr 42px 68px;gap:10px}.execution-side{display:block;grid-column:1/-1;padding:10px 4px 0;border-top:1px solid rgba(92,132,181,.12);text-align:right}.execution-side strong{font-size:9px}.execution-side small{font-size:9px}.proposal-object{padding-left:46px}.proposal-trace{min-width:32px}}
   @media(max-width:380px){.mobile-candidate{width:62px;left:calc(50% - 82px)}.mobile-candidate.alternate{left:calc(50% + 20px)}.mobile-candidate.selected{left:calc(50% + 34px)}.proposal-boundary{padding:14px}.proposal-object strong{font-size:11px}}
-  @media(prefers-reduced-motion:reduce){.planning-instrument *{scroll-behavior:auto!important}}
+  @media(prefers-reduced-motion:reduce){.planning-instrument *{scroll-behavior:auto!important}.flow-node,.flow-link span,.flow-link>i,.desktop-plane,.deterministic-comparator,.proposal-boundary,.authority-lifecycle{transition:none!important;animation:none!important}.flow-node,.deterministic-comparator,.proposal-boundary,.authority-lifecycle{opacity:1!important;transform:none!important}.flow-link span{transform:none!important}.flow-link>i{opacity:1!important;transform:none!important}}
 </style>
