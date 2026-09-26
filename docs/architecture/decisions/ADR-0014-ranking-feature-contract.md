@@ -1,7 +1,7 @@
 # ADR-0014: Versioned deterministic ranking observations
 
 Date: 2026-09-25
-Status: Accepted (qualified Slice 1 contract; implementation pending independent review)
+Status: Accepted (implemented; independent Math and Security qualification complete)
 
 ## Context
 
@@ -78,7 +78,8 @@ evidence, not a universal proof. Manifest expectations remain independent test o
 
 Feature schema 0.1 is independent of software 0.2.0, CPIR 0.1/0.2, REST /v1,
 specification 0.4, model and dataset versions. None of those authorities is bumped.
-No tag or release is implied; independent implementation qualification is still required.
+No tag or release is implied; Slice 1 implementation qualification is complete, while
+software release qualification and publication remain separate.
 
 ## References
 
