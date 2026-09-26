@@ -127,8 +127,15 @@ Historical ADRs, dated progress entries and specification records do not set cur
 Retain CI, version, license, toolchain and repository-health badges that help readers assess the
 project. GitHub/Shields requests are an accepted external availability dependency; their images
 are informational and never an authority or prerequisite for builds or runtime behavior.
-Do not add visit/view counters: their limited engineering value does not justify a separate
-tracking request and availability dependency. The Komarev view counter was removed on 2026-09-22.
+Do not add generic visit/view counters or user-tracking systems. A narrow exception exists for
+GitHub-native Repository Traffic metrics such as Views and Clones when they are published for
+repository transparency or project monitoring. This exception applies only when the source is
+GitHub Repository Traffic, any third-party action is pinned to an immutable commit SHA,
+least-privilege workflow permissions are used, secrets are available only in the workflow context
+that requires them, no additional external user-tracking or analytics infrastructure is introduced,
+and no personal visitor profiles are built. The existing GitHub Traffic Stats workflow and its
+Views/Clones badges are intentionally retained under this exception. Other generic visit counters
+and user-tracking systems remain outside the exception.
 The static website's application runtime remains independent of remote badge services; rendered
 repository Markdown may still contain the documented informational images.
 
