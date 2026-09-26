@@ -6,10 +6,10 @@
 
 <br>
 
-[![Software](https://img.shields.io/badge/software-0.2.0-0969da?style=for-the-badge)](#project-status)
-[![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=for-the-badge)](docs/architecture/specifications/master-v0.4.md)
-[![CPIR](https://img.shields.io/badge/CPIR-0.2-1f883d?style=for-the-badge)](docs/en/cpir.md)
-[![Release status](https://img.shields.io/badge/status-unreleased-d29922?style=for-the-badge)](#project-status)
+[![Software](https://img.shields.io/badge/software-0.2.0-0969da?style=for-the-badge)](#)
+[![Specification](https://img.shields.io/badge/specification-0.4-8250df?style=for-the-badge)](#)
+[![CPIR](https://img.shields.io/badge/CPIR-0.2-1f883d?style=for-the-badge)](#)
+[![Release status](https://img.shields.io/badge/status-unreleased-d29922?style=for-the-badge)](#)
 [![REST](https://img.shields.io/badge/REST-%2Fv1-d1242f?style=for-the-badge)](apps/cerebri-api/src/main.rs)
 
 [![Rust](https://img.shields.io/badge/Rust-1.97.0-000000?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
@@ -30,7 +30,7 @@ Nexus Cerebri is an open-source temporal planning foundation. It turns a **struc
 
 The project exists to make scheduling and temporal reasoning inspectable instead of implicit. Timezones, daylight-saving transitions, incomplete availability, dependencies, constraints, preferences, permissions and execution state are represented explicitly so that a result can be checked rather than merely trusted.
 
-The current planner is deterministic. Learned or neural components are a later research direction, not part of the current planning runtime.
+The current implementation is deterministic. Learned or neural components are a later research direction, not part of the current planning runtime.
 
 ---
 
@@ -233,6 +233,20 @@ The longer-term research direction explores learned or neural intuition as an ad
 ---
 
 ## Project status
+
+> **Software:** `0.2.0`
+>
+> **Release status:** `Unreleased`
+>
+> **Release qualification:** `Undergoing release qualification`
+>
+> **Published release:** `None`
+>
+> **Specification:** `0.4`
+>
+> **Current CPIR:** `0.2`
+>
+> **Legacy CPIR:** `0.1`
 
 | Authority | Current state |
 | --- | --- |
