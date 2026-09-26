@@ -49,14 +49,14 @@
   const rejected = rejections.length;
 </script>
 
-<section class="planning-workbench" aria-labelledby="planning-workbench-title">
+<section class="planning-workbench" role="region" aria-labelledby="planning-workbench-title">
   <header class="workbench-header">
     <div>
       <small>PLANNING WORKBENCH / RUST-GENERATED FIXTURE</small>
       <h3 id="planning-workbench-title">From evidence to one deterministic first proposal.</h3>
       <p>Every validity and ordering state below comes from the generated planner result. The browser formats that evidence; it does not decide which candidate wins.</p>
     </div>
-    <span class="workbench-coordinate" aria-hidden="true">{evaluated} POSITIONS · {feasible} VALID · {rejected} REJECTED</span>
+    <div class="workbench-counts"><span class="workbench-coordinate" aria-hidden="true">{evaluated} POSITIONS · {feasible} VALID · {rejected} REJECTED</span><span class="workbench-summary">{feasible} valid / {rejected} rejected</span></div>
   </header>
 
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
@@ -127,7 +127,7 @@
             <div class:decisive={field.key === decisiveField} class="comparator-row" data-key-field={field.key}>
               <span><b>{String(index + 1).padStart(2, '0)}</b>{field.label}</span>
               <strong>{field.render(winner.ordering_key?.[field.key])}</strong>
-              <strong>{field.render(runnerUp.ordering_key?.[field.key]))}</strong>
+              <strong>{field.render(runnerUp.ordering_key?.[field.key])}</strong>
             </div>
           {/each}
         </div>
@@ -149,7 +149,7 @@
     </div>
     <div class="workbench-authority">
       <div><small>04 / AUTHORITY</small><strong>The planner stops at a proposal.</strong></div>
-      <AuthorityRail currentStage="proposal" compact label="The current fixture produces a proposal; hater authority states are separate" />
+      <AuthorityRail currentStage="proposal" compact label="The current fixture produces a proposal; later authority states are separate" />
     </div>
   </footer>
 </section>
