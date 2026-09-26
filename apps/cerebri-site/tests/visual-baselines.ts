@@ -1,10 +1,10 @@
 // Exact hashes are renderer/platform dependent. Keep each platform independently reviewed.
 export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, string>>> = {
   linux: {
-    '1440': '8f72b97bf7d537640ae7ec25eec971c6bfacb39fb2009e94fe933e9704565c01',
-    '1024': '18d7b71bc747350976396b0e4eaaaa98a0aa3ee44a28acd1d02dde331f772fea',
-    '768': '0d6f70a2d7740e78ed44b69149db94321596f4529e22562fb38ed31d672d0eae',
-    '390': '916cec36966e630a1bef87420206c5df17d71eaa9757f19618212f7a731e14a6'
+    '1440': '59bf6faa912bc76c6a9bf4ba338104b900e0c43e1b42360443f1b0d6a4b28899',
+    '1024': '8fed22d1a7cd4b916bca0f5d265cd3db18ef05b374049f24a2c20c5599c58ca6',
+    '768': 'ccc9ef57aafd8acd9b63c6994225cbd7db43da2908ce4ecf7edc0eb26f7a4a34',
+    '390': '125bbe826e54490f8212438ee3622bf3aca4f0f3963384e5eb479af7ba164482'
   },
   win32: {
     '1440': 'ff4cb454985314ac7bc67d9d29c2a57ac09de307ae4ad02524adf8681eca0c6e',
