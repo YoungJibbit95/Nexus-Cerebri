@@ -1,6 +1,5 @@
 <script lang="ts">
   import { runtimeData } from '$lib/generated/runtime-data';
-  import PlanningWorkbench from './PlanningWorkbench.svelte';
   import VisualizationFrame from './VisualizationFrame.svelte';
   import PlanningInstrument from './PlanningInstrument.svelte';
 
@@ -23,7 +22,7 @@
   <div class="intent-nebula" aria-hidden="true"></div>
   <div class="section-copy intent-copy">
     <span class="section-index">ACT 03 / REAL FIXTURE → PLAN</span>
-    <span class="kicker">EVIDENCE → CANDIDATES → ORDER → PROPOSAL</span>
+    <span class="kicker">CPIR → GRID → VALIDITY → PROPOSAL</span>
     <h2 id="intent-title">One real request.<br /><em>{evaluated} evaluated positions.</em></h2>
     <p>
       The site build runs the Rust planner against the repository's current CPIR {runtimeData.metadata.cpirVersion} fixture.

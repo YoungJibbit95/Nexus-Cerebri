@@ -59,6 +59,23 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   await expect(authorityBoundary).toHaveAttribute('aria-label', /Selected proposal at 10:00 UTC stops before a separate authority gate/);
   await expect(authorityBoundary.getByText('AUTHORITY GATE', { exact: true })).toBeVisible();
   await expect(authorityBoundary.getByText('EXECUTION', { exact: true })).toBeVisible();
+
+  const instrument = page.locator('.planning-instrument');
+  await expect(instrument.locator('[aria-label="Planning visual grammar"]')).toBeVisible();
+  await expect(instrument.locator('[data-semantic-kind="scope"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="fact"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
+  await expect(instrument.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
+
+  const comparator = instrument.getByRole('region', { name: /Deterministic comparator/i });
+  await expect(comparator).toBeVisible();
+  await expect(comparator.locator('.comparator-row.decisive')).toHaveAttribute('data-key-field', 'start');
+  await expect(comparator.locator('.comparator-resolution')).toContainText('First differing key:');
+
+  const lifecycle = instrument.getByRole('region', { name: /Planner authority boundary/i });
+  await expect(lifecycle).toBeVisible();
+  await expect(lifecycle.locator('[data-authority-stage="proposal"]')).toHaveClass(/current/);
+  await expect(lifecycle.locator('[data-authority-stage="authorized"]')).not.toHaveClass(/reached/);
 });
 
 test('reduced motion resolves the hero directly to an equivalent semantic state', async ({ page }) => {
@@ -126,28 +143,3 @@ for (const width of [1440, 1024, 768, 390]) {
     expect(hash, 'visual hash for ' + width + 'px').toBe(expected);
   });
 }
-
-
-test('semantic visual grammar keeps candidates, constraints, preferences and authority distinct', async ({ page }) => {
-  await page.goto(prefix + '/');
-  const workbench = page.getByRole('region', { name: /Planning workbench/i });
-  await expect(workbench).toBeVisible();
-  const evidence = workbench.locator('.workbench-inputs');
-  await expect(evidence.locator('[data-semantic-kind="fact"]')).toHaveCount(1);
-  await expect(evidence.locator('[data-semantic-kind="constraint"]')).toHaveCount(1);
-  await expect(evidence.locator('[data-semantic-kind="preference"]')).toHaveCount(1);
-  await expect(workbench.locator('[data-candidate-state="rejected"]')).toHaveCount(4);
-  await expect(workbench.locator('[data-candidate-state="valid"]')).toHaveCount(6);
-  await expect(workbench.locator('[data-candidate-state="selected"]')).toHaveCount(1);
-  await expect(workbench.locator('.comparator-row.decisive')).toContainText('start');
-  await expect(workbench.getByText('7 valid / 4 rejected', { exact: true })).toBeVisible();
-
-  const proposal = workbench.locator('[data-authority-stage="proposal"]');
-  const authorized = workbench.locator('[data-authority-stage="authorized"]');
-  await expect(proposal).toHaveClass(/current/);
-  await expect(authorized).not.toHaveClass(/reached/);
-
-  await page.goto(prefix + '/safety/');
-  await expect(page.locator('.authority-path [data-authority-stage="proposal"]')).toBeVisible();
-  await expect(page.locator('.authority-path [data-authority-stage="authorized"]')).toBeVisible();
-});
