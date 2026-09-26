@@ -125,6 +125,7 @@ for (const width of [1440, 390]) {
   for (const phase of [0, 6]) test(`@visual calibration ${phase} at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1100 });
     await page.goto(prefix + '/');
+    await page.evaluate(() => document.fonts.ready);
     await page.locator('.observatory-track').evaluate((el, target) => {
       const rect = el.getBoundingClientRect();
       window.scrollTo({ top: scrollY + rect.top - 160 + (target + .1) / 7 * (rect.height - 700), behavior: 'instant' });
