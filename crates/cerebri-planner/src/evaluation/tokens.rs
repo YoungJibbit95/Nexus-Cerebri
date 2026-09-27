@@ -10,12 +10,59 @@ macro_rules! tokens {
             $(#[serde(rename = $token)] $variant),+
         }
         impl $name {
+            pub(crate) const TOKENS: &'static [&'static str] = &[$($token),+];
             /// The exact architecture-owned token, independent of Rust naming.
             pub const fn as_str(self) -> &'static str {
                 match self { $(Self::$variant => $token),+ }
             }
         }
     };
+}
+
+pub(crate) fn is_canonical_token(value: &str) -> bool {
+    [
+        OperationToken::TOKENS,
+        ProvenanceToken::TOKENS,
+        PreferenceSourceToken::TOKENS,
+        MutationKindToken::TOKENS,
+        DeploymentModeToken::TOKENS,
+        PlanningObjectKindToken::TOKENS,
+        KnowledgeStateToken::TOKENS,
+        FactValueKindToken::TOKENS,
+        HardConstraintKindToken::TOKENS,
+        CoverageToken::TOKENS,
+        RecurrenceFrequencyToken::TOKENS,
+        WeekdayToken::TOKENS,
+        GapPolicyToken::TOKENS,
+        FoldPolicyToken::TOKENS,
+        SeriesStateToken::TOKENS,
+        EntityPresenceToken::TOKENS,
+        PlannerAdmissionClassToken::TOKENS,
+        PlanningOutcomeToken::TOKENS,
+        SearchAssessmentToken::TOKENS,
+        ProofClaimToken::TOKENS,
+        PlannerRunUseToken::TOKENS,
+        LineageTransitionReasonToken::TOKENS,
+        ArtifactClassToken::TOKENS,
+        ArtifactRoleToken::TOKENS,
+        DataScope::TOKENS,
+        RevisionEntityTypeV1::TOKENS,
+        IdentityTypeV1::TOKENS,
+        GraphVertexTypeToken::TOKENS,
+        GraphEdgeTypeToken::TOKENS,
+        EvidenceRoleToken::TOKENS,
+        ReplayResolutionState::TOKENS,
+        InteractionKindToken::TOKENS,
+        RejectionScopeToken::TOKENS,
+        CorrectionKindToken::TOKENS,
+        TerminalStateToken::TOKENS,
+        ProductDecisionStateToken::TOKENS,
+        ProductDecisionReasonToken::TOKENS,
+        CaptureIncompleteReason::TOKENS,
+        PlannerAdmissionIssueCodeToken::TOKENS,
+    ]
+    .iter()
+    .any(|tokens| tokens.contains(&value))
 }
 
 tokens!(OperationToken {

@@ -137,9 +137,12 @@ Funktionserweiterung noch eine Veröffentlichung.
 Die abgeschlossenen [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
 aus Slice 2, Phase A ergänzen den geschlossenen Episode-Wire-Vertrag, einen separaten
 wire-validierten Domain-Container und strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
-in Rust. Semantische Lifecycle-/Collection-Validierung, Fingerprint-Berechnung und Replay sind
-noch nicht implementiert. Planner und Transporte bleiben unverändert; Live-Erfassung,
-Telemetrie und Lernen sind weiterhin nicht vorhanden.
+in Rust. Der partielle Phase-B-Stand ergänzt kanonische Wert-/Regel-Grammatiken, reine
+Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Die vollständige
+Graph-/BSF-, DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-
+Validierung und Replay sind noch nicht fertig. Planner- und Transportverhalten bleiben unverändert;
+Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die neu geschlossenen
+Regel-Bytes benötigen noch eine gezielte unabhängige Qualifikation.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md)

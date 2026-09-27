@@ -749,6 +749,10 @@ wire-validated domain container, scalar/manifest and run/provenance components. 
 validity does not certify lifecycle/collection semantics, authenticate fingerprints or replay
 planning; those belong to later phases. Existing
 planning, ranking, admission, permission and execution authorities are unchanged.
+The partial Phase-B checkpoint adds canonical value/rule byte grammars, pure candidate and
+hypothesis identities and shared admission-work measurement. Whole-scenario graph/BSF,
+DecisionInput and DecisionObservation projection remain unfinished. The new rule variant
+bytes require the targeted independent qualification recorded in ADR-0015.
 
 ## 28. Deployment progression
 
