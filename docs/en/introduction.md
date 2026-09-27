@@ -20,7 +20,7 @@ Finding a time does not book it in a calendar.
 I wanted to understand how neural networks learn. The mathematics behind work such as
 the 1986 paper
 [Learning representations by back-propagating errors](https://www.nature.com/articles/323533a0)
-by David E. Rumelhart, Geoffrey E. Hinton and Ronald J. Williams helped draw me in.
+by David E. Rumelhart, Geoffrey E. Hinton and Ronald J. Williams helped drawing me in.
 At first, the equations looked like a language I could barely read.
 
 That changed when I followed the calculations one operation at a time. A formula that
