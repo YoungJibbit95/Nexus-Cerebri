@@ -135,6 +135,8 @@ decimal!(
     "Canonical unsigned u64 decimal JSON string; numeric comparison.",
     |_: u64| true
 );
+/// Native observation counters use exactly the same decimal-string grammar (§4.4.1).
+pub type CanonicalU64 = CanonicalU64Decimal;
 decimal!(
     CanonicalPositiveSeconds,
     u64,
@@ -180,12 +182,13 @@ impl From<NineDigitNanoseconds> for String {
     }
 }
 
+closed_wire! {
 /// Canonical seconds/nanoseconds pair. Its i64 domain is not limited by Chrono.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Copy, PartialOrd, Ord)]
 pub struct CanonicalInstantV1 {
     pub unix_seconds: CanonicalI64Decimal,
     pub nanoseconds: NineDigitNanoseconds,
+}
 }
 impl TryFrom<Instant> for CanonicalInstantV1 {
     type Error = EvaluationContractError;

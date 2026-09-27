@@ -21,13 +21,13 @@ impl EpisodeId {
 }
 
 /// Sole run-identity/use component. Parent existence/equality require collection validation.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "PlannerRunBindingWire")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct PlannerRunBindingV0_1 {
     planner_run_id: IdentifierString,
     run_use: PlannerRunUseToken,
     reused_from_episode_id: Option<EpisodeId>,
 }
+deserialize_object_via!(PlannerRunBindingV0_1, PlannerRunBindingWire);
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PlannerRunBindingWire {
@@ -75,12 +75,12 @@ impl TryFrom<PlannerRunBindingWire> for PlannerRunBindingV0_1 {
 }
 
 /// Immutable planner-run timing, separate from a later policy application's lifecycle.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "PlannerRunTimestampsWire")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct PlannerRunTimestampsV0_1 {
     context_captured_at: Instant,
     generation_completed_at: Instant,
 }
+deserialize_object_via!(PlannerRunTimestampsV0_1, PlannerRunTimestampsWire);
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PlannerRunTimestampsWire {
@@ -116,10 +116,10 @@ impl TryFrom<PlannerRunTimestampsWire> for PlannerRunTimestampsV0_1 {
     }
 }
 
+closed_wire! {
 /// Raw lifecycle timestamps only; Episode/run/event partial orders remain unvalidated.
 /// This type deliberately grants no validated Episode status.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Copy)]
 pub struct EpisodeLifecycleTimestampsWireV0_1 {
     pub episode_started_at: Instant,
     #[serde(deserialize_with = "required_nullable")]
@@ -128,20 +128,21 @@ pub struct EpisodeLifecycleTimestampsWireV0_1 {
     pub closed_at: Option<Instant>,
     pub episode_recorded_at: Instant,
 }
+}
 
+closed_wire! {
 /// Explicit orchestration observations; never inferred from hashes or revision changes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Copy)]
 pub struct LineageTransitionCauseObservationV0_1 {
     pub context_changed: bool,
     pub explicit_replan: bool,
     pub new_visible_policy_application: bool,
 }
+}
 
+closed_wire! {
 /// Raw lineage component. Root/child reasons and parent/run consistency require later
 /// Episode/collection validation; successful decoding alone grants neither.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct EpisodeLineageWireV0_1 {
     pub family_id: IdentifierString,
     #[serde(deserialize_with = "required_nullable")]
@@ -150,34 +151,35 @@ pub struct EpisodeLineageWireV0_1 {
     pub transition_cause: Option<LineageTransitionCauseObservationV0_1>,
     pub transition_reasons: Vec<LineageTransitionReasonToken>,
 }
+}
 
+closed_wire! {
 /// Build/version metadata only (section 27); deliberately no planner artifact authority.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct SoftwareProvenanceV0_1 {
     pub git_commit_sha: RepositoryCommitHex,
     pub workspace_version: IdentifierString,
     pub cpir_schema_version: IdentifierString,
     pub ranking_feature_schema_version: IdentifierString,
 }
+}
 
+closed_wire! {
 /// Reserved pseudonymous grouping shape; this type does not authorize human capture.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct PrincipalGroupRef {
     pub group_id: IdentifierString,
     pub key_version: IdentifierString,
 }
+}
 
 /// Synthetic privacy metadata, with content_fields_present fixed to false.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(try_from = "PrivacyWire")]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct PrivacyV0_1 {
     classification: IdentifierString,
     retention_policy_id: IdentifierString,
     retention_policy_version: IdentifierString,
     content_fields_present: bool,
 }
+deserialize_object_via!(PrivacyV0_1, PrivacyWire);
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PrivacyWire {

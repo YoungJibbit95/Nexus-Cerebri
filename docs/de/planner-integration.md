@@ -134,10 +134,11 @@ materialisierte Occurrence-Evidenz <= 1 MiB. Die bisherigen Arbeitslimits gelten
 Ein Überlauf des lokalen Datums lehnt den Kandidaten kontrolliert ab. Daraus folgt weder eine
 Funktionserweiterung noch eine Veröffentlichung.
 
-Die teilweise implementierten [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
-aus Slice 2, Phase A ergänzen strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
-in Rust. Vollständige EvaluationEpisodes, Fingerprint-Berechnung und Replay sind noch
-nicht implementiert. Planner und Transporte bleiben unverändert; Live-Erfassung,
+Die abgeschlossenen [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
+aus Slice 2, Phase A ergänzen den geschlossenen Episode-Wire-Vertrag, einen separaten
+wire-validierten Domain-Container und strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
+in Rust. Semantische Lifecycle-/Collection-Validierung, Fingerprint-Berechnung und Replay sind
+noch nicht implementiert. Planner und Transporte bleiben unverändert; Live-Erfassung,
 Telemetrie und Lernen sind weiterhin nicht vorhanden.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·

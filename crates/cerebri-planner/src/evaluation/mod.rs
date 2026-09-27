@@ -1,15 +1,52 @@
-//! Synthetic evaluation contract foundations (Slice 2, Phase A checkpoint).
+//! Synthetic evaluation contract foundations (Slice 2, Phase A).
 //!
-//! These types validate individual wire values only. They do not construct a validated
-//! EvaluationEpisode, canonicalize a scenario, compute fingerprints, or replay planning.
+//! These types validate wire contracts. They do not certify lifecycle/collection validity,
+//! authenticate artifacts, canonicalize a scenario, compute fingerprints, or replay planning.
 //! Planning, ranking, admission and execution retain their existing authorities.
 
+// A closed wire struct must deserialize from a map, never a positional JSON array.
+// The helper remains typed and streaming; no untyped JSON intermediate is used.
+macro_rules! closed_wire {
+    ($(#[$attr:meta])* pub struct $name:ident {
+        $($(#[$field_attr:meta])* pub $field:ident: $ty:ty),* $(,)?
+    }) => {
+        $(#[$attr])*
+        #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+        pub struct $name { $($(#[$field_attr])* pub $field: $ty),* }
+        impl<'de> serde::Deserialize<'de> for $name {
+            fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+                #[derive(serde::Deserialize)]
+                #[serde(deny_unknown_fields)]
+                struct Fields { $($(#[$field_attr])* $field: $ty),* }
+                let fields = super::object_only::<D, Fields>(deserializer)?;
+                Ok(Self { $($field: fields.$field),* })
+            }
+        }
+    };
+}
+
+macro_rules! deserialize_object_via {
+    ($name:ty, $wire:ty) => {
+        impl<'de> serde::Deserialize<'de> for $name {
+            fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+                super::object_only::<D, $wire>(deserializer)?
+                    .try_into()
+                    .map_err(serde::de::Error::custom)
+            }
+        }
+    };
+}
+
 mod artifact;
+mod episode;
+mod observation;
 mod primitives;
 mod tokens;
 mod wire;
 
 pub use artifact::*;
+pub use episode::*;
+pub use observation::*;
 pub use primitives::*;
 pub use tokens::*;
 pub use wire::*;
@@ -18,6 +55,26 @@ pub use wire::*;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("{0}")]
 pub struct EvaluationContractError(&'static str);
+
+// Serde's default struct visitor also accepts positional JSON arrays. Closed JSON
+// object contracts require a map visitor, while retaining duplicate-field detection.
+fn object_only<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::Deserialize<'de>,
+{
+    struct ObjectVisitor<T>(std::marker::PhantomData<T>);
+    impl<'de, T: serde::Deserialize<'de>> serde::de::Visitor<'de> for ObjectVisitor<T> {
+        type Value = T;
+        fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str("a JSON object")
+        }
+        fn visit_map<M: serde::de::MapAccess<'de>>(self, map: M) -> Result<T, M::Error> {
+            T::deserialize(serde::de::value::MapAccessDeserializer::new(map))
+        }
+    }
+    deserializer.deserialize_map(ObjectVisitor(std::marker::PhantomData))
+}
 
 /// Require the JSON member's presence while retaining explicit null as `None`.
 ///

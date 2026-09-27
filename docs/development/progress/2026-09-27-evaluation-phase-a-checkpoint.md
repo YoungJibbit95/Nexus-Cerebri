@@ -1,5 +1,9 @@
 # 2026-09-27 — Evaluation foundations: partial Phase A checkpoint
 
+Historical checkpoint at `aa86b82accac28144b39fd46b10da74e9e6da931`.
+The corrected consolidated contract closes the four wire gaps below; current status and
+evidence are in the [Phase-A completion record](2026-09-27-evaluation-phase-a-completion.md).
+
 ## Repository and authority revalidation
 
 Fetched origin; authoring-time and actual base are both

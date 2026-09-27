@@ -39,7 +39,17 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
-### 2026-09-27 — Synthetic evaluation foundations (partial Phase A)
+### 2026-09-27 — Synthetic evaluation contract foundations (Phase A complete)
+
+- Apply the corrected consolidated v1.2.6 authority: closed Episode schema object,
+  required null-only E2 outcome, CanonicalU64 decimal-string alias, artifact bindings and
+  structural replay provenance. Add the full Episode wire shape and immutable wire-validated
+  domain conversion, with negative decoding tests and positional-array rejection.
+- Preserve existing planner/ranking/transport behavior. Lifecycle/collection semantics,
+  fingerprints, runtime observation/capture and replay remain later-phase work.
+  See the [completion record](docs/development/progress/2026-09-27-evaluation-phase-a-completion.md).
+
+### 2026-09-27 — Initial synthetic evaluation checkpoint (partial Phase A)
 
 - Add strict canonical scalars, explicit token registries and structural manifest,
   run-binding, provenance and privacy components under `cerebri-planner::evaluation`.

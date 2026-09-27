@@ -26,10 +26,11 @@ deletion and non-fast-forward updates are blocked. No bypass actors are configur
 integration reports `current_user_can_bypass: never`. Documentation Pages and Traffic Stats are
 not required qualification checks.
 
-The current Intelligence increment is a partial Slice-2 Phase-A foundation checkpoint;
-see [the progress record](../progress/2026-09-27-evaluation-phase-a-checkpoint.md).
-Complete EvaluationEpisodes and deterministic replay remain unimplemented pending exact
-wire definitions. Phase B has not started. ML and learned ranking/search remain absent.
+The current Intelligence increment completes Slice-2 Phase-A contract foundations;
+see [the completion record](../progress/2026-09-27-evaluation-phase-a-completion.md).
+Episode wire/domain types exist. Semantic lifecycle/collection validation, fingerprints,
+production observations and deterministic replay remain unimplemented. Phase B has not
+started. ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
 the dated entries below preserve earlier milestone context.
 
