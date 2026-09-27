@@ -122,9 +122,10 @@ request size <= 256 KiB, request bytes times candidate budget <= 16 MiB and mate
 occurrence evidence <= 1 MiB. These complement the existing workload limits. Local-date
 overflow rejects the candidate rather than panicking. No feature expansion or release is implied.
 
-The partial Slice-2 Phase-A [evaluation foundations](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
-add strict scalar/manifest, provenance and run-binding components in Rust. They do not
-yet provide a complete EvaluationEpisode, fingerprint computation or replay. Existing
+The completed Slice-2 Phase-A [evaluation foundations](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
+add the closed Episode wire contract, a distinct wire-validated domain container and strict
+scalar/manifest, provenance and run-binding components in Rust. Semantic lifecycle/collection
+validation, fingerprint computation and replay remain unimplemented. Existing
 planner and transport behavior is unchanged; live capture, telemetry and learning remain absent.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·

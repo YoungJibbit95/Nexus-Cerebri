@@ -743,10 +743,11 @@ Goal:
 `Code + Data + Config + Seed + Environment -> reproducible experiment`.
 
 [ADR-0015](../decisions/ADR-0015-evaluation-contract-foundations.md) records the supplied
-qualified Intelligence v1.2.6 contract's initial synthetic evaluation foundations.
-The partial Phase-A module validates scalar, manifest and run/provenance components;
-it does not yet construct validated EvaluationEpisodes, compute fingerprints or replay
-planning. Complete Episode wire definitions remain a checkpoint blocker. Existing
+qualified Intelligence v1.2.6 contract's synthetic evaluation foundations.
+The completed Phase-A module provides the closed Episode wire contract and a distinct
+wire-validated domain container, scalar/manifest and run/provenance components. Wire
+validity does not certify lifecycle/collection semantics, authenticate fingerprints or replay
+planning; those belong to later phases. Existing
 planning, ranking, admission, permission and execution authorities are unchanged.
 
 ## 28. Deployment progression
