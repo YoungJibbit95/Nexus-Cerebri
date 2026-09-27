@@ -14,28 +14,29 @@ test('calibration retains endpoints, coordinates and Rust classifications when r
   const hero = page.locator('.observatory');
   const endpoints = await hero.locator('.capsule-origin').elementHandles();
   const track = page.locator('.observatory-track');
-  for (const phase of [2, 4, 6, 1, 0]) {
+  for (const [progress, phase] of [[.85, 2], [.915, 4], [1, 6], [.3, 1], [0, 0]]) {
     await track.evaluate((el, target) => {
       const rect = el.getBoundingClientRect();
       const surface = el.querySelector('.observatory')!;
       const top = Number.parseFloat(getComputedStyle(surface).top);
-      window.scrollTo({ top: window.scrollY + rect.top - top + (target + .1) / 7 * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
-    }, phase);
+      window.scrollTo({ top: window.scrollY + rect.top - top + target * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
+    }, progress);
     await expect(hero).toHaveAttribute('data-scene', String(phase));
     if (phase === 6) {
       await expect.poll(async () => {
-        const first = await hero.locator('.candidate-lanes li').first().boundingBox();
-        const last = await hero.locator('.candidate-lanes li').last().boundingBox();
+        const first = await hero.locator('.brain-candidate').first().boundingBox();
+        const last = await hero.locator('.brain-candidate').last().boundingBox();
         return last!.y - first!.y;
       }).toBeGreaterThan(280);
     }
     expect(await endpoints[4].evaluate(el => el === document.querySelector('.observatory [data-candidate-id="C05"] .capsule-origin'))).toBe(true);
   }
   const read = (selector: string) => page.locator(selector).evaluateAll(nodes => nodes.map(n => [n.getAttribute('data-candidate-id'), n.getAttribute('data-start'), n.getAttribute('data-state')]));
-  expect(await read('.observatory .candidate-lanes li')).toEqual(await read('.planning-instrument .candidate-lanes li'));
+  expect(await read('.observatory .brain-candidate')).toEqual(await read('.planning-instrument .candidate-lanes li'));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(hero).toHaveAttribute('data-scene', '6');
-  await expect(hero.locator('.coordinate-volume')).toHaveCSS('transform', 'none');
+  await expect(hero.locator('.cerebri-brain')).toHaveAttribute('data-progress', '1.0000');
+  await expect(hero.locator('.temporal-spine')).toHaveCSS('transition-duration', '0s');
 });
 
 test('candidate survives comparison and proposal, inspection stops at first difference', async ({ page }) => {
@@ -88,7 +89,7 @@ test('chapter environment follows navigation and releases its state on another r
   await page.locator('.technical-inspection>summary').click();
   await page.locator('.projection-value').scrollIntoViewIfNeeded();
   await expect(page.locator('body')).toHaveAttribute('data-instrument-world', 'technical');
-  await page.getByRole('link', { name: 'Explore Cerebri', exact: true }).click();
+  await page.getByRole('link', { name: 'Inspect the structured request', exact: true }).click();
   await expect(page.locator('body')).not.toHaveAttribute('data-instrument-world');
 });
 
@@ -137,6 +138,7 @@ for (const width of [1440, 390]) {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
     ));
     await expect(page.locator('.observatory')).toHaveAttribute('data-scene', String(phase));
+    await expect(page.locator('.observatory .cerebri-brain')).toHaveAttribute('data-activation', 'ready');
     const name = `calibration-${phase}-${width}`;
     const screenshot = await page.locator('.observatory').screenshot({ path: test.info().outputPath(name + '.png'), animations: 'disabled', style: '.site-header{visibility:hidden!important}' });
     await test.info().attach(name + '.png', { body: screenshot, contentType: 'image/png' });

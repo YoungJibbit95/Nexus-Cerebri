@@ -27,7 +27,7 @@
   });
 </script>
 
-<section bind:this={host} class="deterministic-comparator" aria-label="Deterministic comparator" data-mode={mode} data-inspected={inspected} data-motion={reducedMotion ? 'reduced' : 'full'}>
+<section bind:this={host} id="candidate-comparison" class="deterministic-comparator" aria-label="Deterministic comparator" data-mode={mode} data-inspected={inspected} data-motion={reducedMotion ? 'reduced' : 'full'}>
   <header><small>DETERMINISTIC COMPARATOR</small><h3>Why does 10:00 come before 10:15?</h3><p>Both options pass the checks. Compare one field at a time: the first difference decides which option comes first. These values and the order come from Rust.</p></header>
   <div class="representation-controls" role="group" aria-label="Candidate representation">
     {#each ['Candidate capsules', 'Inspect comparison', 'Resolve proposal'] as label, index}<button aria-pressed={mode === index} onclick={() => manual = index}>{label}</button>{/each}
@@ -55,7 +55,7 @@
 </section>
 
 <style>
-  .deterministic-comparator{position:relative;padding:36px 0 20px;border-block:1px solid var(--line);--columns:5;--decision-cyan:var(--cyan)}
+  .deterministic-comparator{position:relative;scroll-margin-top:10rem;padding:36px 0 20px;border-block:1px solid var(--line);--columns:5;--decision-cyan:var(--cyan)}
   header{max-width:700px}header>small{font:.8125rem var(--mono);color:var(--cyan);letter-spacing:.08em}h3{font-size:clamp(22px,3vw,34px);margin:12px 0;letter-spacing:-.035em}header p,.comparator-resolution,.identity-equivalent{color:var(--text-3);font-size:.9375rem;line-height:1.7}
   .representation-controls{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 36px}.representation-controls button{background:none;border:0;border-bottom:1px solid var(--line);color:var(--text-3);padding:12px 10px;min-height:3.5rem;font-size:.8125rem;cursor:pointer}.representation-controls button[aria-pressed=true]{color:var(--text-1);border-color:var(--cyan)}.follow-scroll{margin-left:auto}
   .decision-surface{height:26rem;position:relative;border-bottom:1px solid var(--line);isolation:isolate}
