@@ -162,4 +162,3 @@
     .scene-controls button{padding:9px}.reduced-brain-overview{grid-template-columns:1fr}.reduced-brain-overview :global(.cerebri-brain){height:520px}
   }
 </style>
-

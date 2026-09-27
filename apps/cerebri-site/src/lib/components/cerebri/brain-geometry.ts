@@ -151,4 +151,3 @@ export const focusStrength = (progress: number, id: string) => {
   const range = focusWindows[id];
   return range ? ramp(progress, range[0] - .025, range[0]) * (1 - ramp(progress, range[1], range[1] + .025)) : 0;
 };
-

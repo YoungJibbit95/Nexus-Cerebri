@@ -220,4 +220,3 @@
   .comparator-entry:hover{background:#0f2841}.comparator-entry:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   @media(prefers-reduced-motion:reduce){.cerebri-brain *{animation:none!important;transition:none!important}}
 </style>
-

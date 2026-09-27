@@ -121,4 +121,3 @@ for (const width of [1440, 390]) test(`@visual exploded Cerebri brain ${width}px
   await test.info().attach(name + '.png', { body: screenshot, contentType: 'image/png' });
   expect(createHash('sha256').update(screenshot).digest('hex')).toBe(visualBaselines[process.platform]?.[name]);
 });
-
