@@ -2,7 +2,8 @@ name: gh-traffic-stats
 
 on:
   schedule:
-    - cron: "30 0 * * *"
+    # Poll several times per day so delayed GitHub traffic data is picked up promptly.
+    - cron: "17 */6 * * *"
   workflow_dispatch:
 
 permissions: {}
@@ -17,6 +18,46 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: gtapps/gh-traffic-stats@f05c995b41d817087f7f728dd1794af559d81471 # v1.0.0
+      - name: Update traffic totals
+        uses: gtapps/gh-traffic-stats@f05c995b41d817087f7f728dd1794af559d81471 # v1.0.0
         with:
           token: ${{ secrets.GH_TRAFFIC_STATS_TOKEN }}
+
+      # The traffic action intentionally commits only when GitHub returns changed
+      # totals/history. Keep one daily freshness marker so an unchanged counter
+      # cannot be mistaken for a dead workflow.
+      - name: Check out traffic branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: _gh_traffic_stats
+          path: traffic-freshness
+          fetch-depth: 1
+
+      - name: Record successful daily traffic refresh
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd traffic-freshness
+
+          today="$(date -u +%Y-%m-%d)"
+          marker=".github/badges/last-check.json"
+          mkdir -p "$(dirname "$marker")"
+
+          cat > "$marker" <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "Traffic checked",
+            "message": "$today UTC",
+            "color": "informational"
+          }
+          EOF
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "$marker"
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: record traffic refresh"
+            git pull --rebase origin _gh_traffic_stats
+            git push origin HEAD:_gh_traffic_stats
+          fi
