@@ -1,0 +1,69 @@
+.technical-instrument { --line:rgba(112,179,215,.28); --ink:#d7e7f2; --muted:#a2b6cd; --field:#8aebe5; color:var(--ink); font-size:14px; min-width:0; }
+.technical-instrument *, .technical-instrument *::before, .technical-instrument *::after { box-sizing:border-box; }
+.technical-instrument code { color:#bee9ec; font:12px/1.7 var(--mono); overflow-wrap:anywhere; }
+.technical-instrument small { font:11px/1.6 var(--mono); letter-spacing:.04em; color:var(--muted); }
+.technical-instrument p { color:var(--muted); line-height:1.65; }
+.technical-instrument h2 { font-size:clamp(27px,3vw,42px); line-height:1.15; letter-spacing:-.035em; }
+.technical-instrument h3 { font-size:18px; line-height:1.35; margin:0; }
+.technical-instrument dl { margin:0; }
+.technical-instrument dd { margin:0; overflow-wrap:anywhere; }
+.technical-instrument button, .technical-instrument a { touch-action:manipulation; }
+.technical-instrument button { min-height:44px; padding:9px 13px; color:var(--ink); border:1px solid var(--line); background:#081a30; font:12px/1.4 var(--mono); cursor:pointer; }
+.technical-instrument button[aria-pressed="true"] { border-color:var(--field); color:var(--field); background:#102a38; }
+.technical-instrument button:disabled { opacity:.6; cursor:default; }
+.technical-instrument :is(button,a,summary):focus-visible { outline:2px solid #f0d098; outline-offset:5px; }
+.depth-lens { display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; gap:18px; padding:0 0 28px; }
+.lens-caption { display:flex; gap:14px; align-items:center; }
+.lens-caption>span { font:48px/1 var(--mono); color:var(--field); transform:rotate(-9deg); }
+.lens-caption p { margin:3px 0 0; font-size:12px; }
+.lens-controls { display:flex; flex-wrap:wrap; gap:5px; }
+.lens-controls .lens-reset { background:transparent; border-color:transparent; text-decoration:underline; text-underline-offset:4px; }
+.instrument-heading { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:12px; margin-bottom:30px; }
+.instrument-heading h2 { margin:8px 0 0; }
+.instrument-heading>span { color:var(--field); font:11px var(--mono); }
+.range-field { position:relative; min-width:0; }
+.range-heading { display:flex; flex-direction:column; gap:4px; }
+.range-heading strong { font-size:16px; }
+.range-heading>code { opacity:0; transition:opacity 300ms; }
+.range-field[data-precision="1"] .range-heading>code,.range-field[data-precision="2"] .range-heading>code { opacity:1; }
+.range-geometry { position:relative; height:94px; margin-top:10px; transition:height 650ms var(--ease-space); }
+.range-connector { position:absolute; top:22px; left:8px; width:calc(100% - 16px); height:1px; background:var(--field); opacity:.65; transition:width 650ms var(--ease-space),height 650ms var(--ease-space),top 650ms var(--ease-space),left 650ms var(--ease-space); }
+.range-endpoint { position:absolute; top:19px; left:0; width:145px; padding:14px 0 0; transition:left 650ms var(--ease-space),top 650ms var(--ease-space),width 650ms var(--ease-space),padding 650ms var(--ease-space); }
+.range-endpoint.end { left:calc(100% - 145px); text-align:right; }
+.range-endpoint i { position:absolute; top:0; left:0; width:8px; height:8px; border:1px solid var(--field); background:var(--field); border-radius:50%; transition:border-radius 650ms; }
+.range-endpoint.end i { left:auto; right:0; background:#06142a; }
+.range-endpoint dt { font-size:11px; }
+.range-endpoint dd { font:16px/1.6 var(--mono); color:#effbff; }
+.range-endpoint time { display:none; font:12px/1.6 var(--mono); overflow-wrap:anywhere; }
+.range-field[data-precision="0"] dt { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.range-field[data-precision="2"] .range-geometry { height:166px; }
+.range-field[data-precision="2"] .range-connector { top:22px; left:3px; width:1px; height:76px; }
+.range-field[data-precision="2"] .range-endpoint { width:calc(100% - 12px); left:0; padding:0 0 0 22px; text-align:left; top:8px; }
+.range-field[data-precision="2"] .range-endpoint.end { top:82px; }
+.range-field[data-precision="2"] .range-endpoint i { left:0; right:auto; top:11px; border-radius:0; }
+.range-field[data-precision="2"] .range-time { display:none; }
+.range-field[data-precision="2"] time { display:block; }
+.range-field[data-range-kind="fact"] { --field:#eea9ac; }
+.range-field[data-range-kind="fact"] .range-connector { height:8px; top:19px; background:repeating-linear-gradient(135deg,#eea9ac55 0 4px,#eea9ac22 4px 8px); }
+.range-field[data-range-kind="fact"][data-precision="2"] .range-connector { width:1px; height:76px; top:22px; background:var(--field); }
+.field-detail { margin:0; padding-left:18px; border-left:1px solid var(--line); }
+.field-detail>div { padding:7px 0; }
+.field-detail dt { color:var(--muted); font:11px/1.65 var(--mono); overflow-wrap:anywhere; }
+.field-detail dd { font:13px/1.7 var(--mono); color:#e5eff8; }
+.technical-instrument details { border-top:1px solid var(--line); padding:18px 0; }
+.technical-instrument summary { cursor:pointer; min-height:32px; color:#c5d9e7; }
+.technical-instrument textarea { display:block; width:100%; resize:vertical; white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.6 var(--mono); background:#040f22; color:var(--ink); border:1px solid var(--line); padding:18px; }
+.technical-instrument textarea:focus-visible { outline:2px solid #f0d098; outline-offset:4px; }
+.technical-instrument .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.runtime-link { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:24px 0; border-top:1px solid var(--line); color:#a5eee8; font:13px/1.7 var(--mono); }
+.runtime-link code { color:inherit; }
+@media(max-width:700px) {
+  .depth-lens { align-items:stretch; gap:20px; }
+  .lens-controls { width:100%; }
+  .lens-controls button { flex:1 1 auto; padding:9px 8px; font-size:11px; }
+  .range-endpoint { width:110px; }
+  .range-endpoint.end { left:calc(100% - 110px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .technical-instrument *, .technical-instrument *::before, .technical-instrument *::after { transition:none!important; animation:none!important; scroll-behavior:auto!important; }
+}

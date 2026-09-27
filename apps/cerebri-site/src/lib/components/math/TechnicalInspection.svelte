@@ -3,6 +3,9 @@
   import { runtimeData } from '$lib/generated/runtime-data';
   import SourceLink from '../SourceLink.svelte';
   import { candidateIdentity } from '$lib/planning-display';
+  import { base } from '$app/paths';
+  import RangeField from '../technical/RangeField.svelte';
+  import '../technical/technical.css';
 
   const absent = mathData.measurement.absent;
   const zero = mathData.measurement.samples[1];
@@ -47,5 +50,14 @@
       <SourceLink path="crates/cerebri-planner/src/search.rs" label="CandidateOrderingKey field order" />
     </section>
     <SourceLink path="docs/architecture/decisions/ADR-0014-ranking-feature-contract.md" label="Observation and projection contract" />
+    <nav class="technical-instrument technical-descent-bridge" aria-label="Continue technical descent">
+      <RangeField label="The same scope, as an exact field" path="scope.time_range" start={runtimeData.request.scope.time_range.start} end={runtimeData.request.scope.time_range.end} precision={1} />
+      <a class="runtime-link" href={base + '/cpir/#scope-field'}><span>Scope geometry → CPIR input</span><span>Inspect evidence →</span></a>
+      <a class="runtime-link" href={base + '/cpir/#result-title'}><span>{candidateIdentity(candidates[0].start)} → planner result record</span><code>candidates[0] →</code></a>
+    </nav>
   </div>
 </details>
+
+<style>
+  .technical-descent-bridge { margin-top:32px; padding-top:30px; border-top:1px solid rgba(112,179,215,.28); }
+</style>
