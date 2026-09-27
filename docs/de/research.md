@@ -84,10 +84,18 @@ Die [Ranking-Beobachtungen](../architecture/decisions/ADR-0014-ranking-feature-c
 beschreiben bereits berechnete Vergleichswerte und ihre Herkunft. Sie verändern die
 feste Reihenfolge nicht und sind kein trainiertes Bewertungsmodell.
 
-Die [Evaluationsgrundlagen, Phase A](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
-definieren Datentypen und prüfen das Übertragungsformat synthetischer Einträge. Sie
-sammeln noch keine Planerbeobachtungen, berechnen keine Fingerabdrücke und führen keine
-Wiederholung früherer Läufe aus. Die semantische Gesamtprüfung bleibt ebenfalls spätere Arbeit.
+Die [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
+definieren Datentypen und prüfen das Übertragungsformat synthetischer Einträge. Phase A
+ist abgeschlossen. Der bisherige Teil von Phase B ergänzt einheitliche Darstellungen
+von Werten und Regeln, Fingerabdrücke für einzelne Kandidaten und Hypothesen sowie eine
+gemeinsame Berechnung der Aufwandsgrenzen einer Anfrage. Ein Fingerabdruck ist eine
+berechnete Kennung, mit der sich die dargestellten Inhalte vergleichen lassen.
+
+Eine vollständige Aufzeichnung eines Planungslaufs entsteht dadurch noch nicht.
+Fingerabdrücke ganzer Szenarien und Entscheidungen, die vollständige semantische Prüfung,
+das automatische Sammeln von Planerbeobachtungen und die Wiederholung früherer Läufe
+sind noch nicht fertig. Der [Phase-B-Zwischenstand](../development/progress/2026-09-27-evaluation-phase-b-checkpoint.md)
+beschreibt die genaue Grenze; Phase B wird damit nicht als abgeschlossen dargestellt.
 
 [cerebri-ml](../../crates/cerebri-ml/src/lib.rs) enthält Metadaten und Schnittstellen für
 Modelle und Datensätze. Ein Trainingslauf, ein einsatzfähiges Modell oder ein Anschluss
