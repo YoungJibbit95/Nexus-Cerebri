@@ -1,12 +1,18 @@
 <script lang="ts">
+  import './core-assembly.css';
   import { candidates, busy, durationPosition, scopeStart, scopeEnd, timeLabel } from '$lib/planning-display';
-  let { phase = 6, context = 'workbench' }: { phase?: number; context?: 'hero' | 'workbench' } = $props();
+  let { phase = 6, context = 'workbench', inspected }: { phase?: number; context?: 'hero' | 'workbench'; inspected?: string } = $props();
   const depths = [-70, 35, -35, 90, 15, -90, 55, -15, 80, -45, 20];
   const heights = [28, 67, 38, 77, 22, 58, 42, 74, 32, 63, 47];
 </script>
 
 <div class="candidate-coordinate" data-phase={phase} data-context={context} aria-hidden="true">
   <div class="coordinate-volume">
+    {#if context === 'hero'}
+      <div class="core-assembly">
+        {#each ['TIME WINDOW', 'KNOWN STATE', 'POSSIBLE PLACEMENTS'] as layer, index}<div class="core-plate" style={`--plate:${index}`}><span>{layer}</span><i></i></div>{/each}
+      </div>
+    {/if}
     <div class="calibration-plane"><i></i><i></i><i></i></div>
     <div class="optical-aperture"><i></i><b></b></div>
     <div class="coordinate-scope"><span>BOUNDED SCOPE</span><b>{timeLabel(scopeStart)}–{timeLabel(scopeEnd)} UTC</b></div>
@@ -18,8 +24,8 @@
     {#if busy}<div class="coordinate-busy" style={`--busy:${busy.position}%;--busy-span:${busy.width}%`}><span>KNOWN BUSY</span></div>{/if}
     <ol class="candidate-lanes">
       {#each candidates as candidate, index (candidate.id)}
-        <li data-state={candidate.state} data-candidate-id={candidate.id} data-start={candidate.start}
-          style={`--position:${candidate.position}%;--duration:${durationPosition}%;--lane:${index};--scatter:${heights[index] ?? 50}%;--depth:${depths[index] ?? 0}px;--delay:${index * 25}ms;--mobile-lane:${index % 3};--narrow-lane:${index % 2}`}>
+        <li class:inspected={inspected === candidate.start} data-state={candidate.state} data-candidate-id={candidate.id} data-start={candidate.start}
+          style={`--position:${candidate.position}%;--duration:${durationPosition}%;--lane:${index};--scatter:${heights[index] ?? 50}%;--depth:${depths[index] ?? 0}px;--delay:${index * 25}ms;--mobile-lane:${index % 3};--narrow-lane:${index % 2};--core-x:${27 + index % 4 * 13}%;--core-y:${34 + Math.floor(index / 4) * 14}%`}>
           <span class="candidate-identity">{candidate.id}</span>
           <span class="candidate-capsule"><i class="capsule-origin"></i><i class="capsule-end"></i><b class="incision"></b><em class="evidence-anchor"></em></span>
           <span class="candidate-coordinate-label">{candidate.label}</span>
@@ -34,6 +40,7 @@
 
 <style>
   .mobile-busy-key{display:none}
+  .inspected .candidate-capsule{outline:1px solid var(--red);outline-offset:4px}.inspected .candidate-identity{color:var(--red);font-weight:700}
   .candidate-coordinate{container-type:inline-size;height:35rem;position:relative;isolation:isolate;perspective:1000px;--ink:var(--cyan);--settle:cubic-bezier(.18,.8,.2,1)}
   .coordinate-volume{position:absolute;inset:2rem 8% 3rem;transform-style:preserve-3d;transform:rotateX(48deg) rotateZ(-9deg);transition:transform 1100ms var(--settle)}
   .calibration-plane{position:absolute;inset:10% -3%;border:1px solid var(--line);transform:translateZ(-75px);transition:transform 1000ms var(--settle),opacity 800ms;opacity:.3}

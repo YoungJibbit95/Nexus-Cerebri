@@ -5,31 +5,34 @@ import { visualBaselines } from './visual-baselines';
 const prefix = process.env.CEREBRI_BASE_PATH ?? '';
 
 for (const width of [1920, 1440, 768, 390, 320]) {
-  test(`explanation keeps prose and annotations in separate rows at ${width}px`, async ({ page }) => {
+  test(`arrival keeps prose, stages and the instrument separate at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(prefix + '/');
+    const heading = await page.locator('h1').boundingBox();
+    const header = await page.locator('.site-header').boundingBox();
+    expect(heading!.y).toBeGreaterThan(header!.y + header!.height);
     for (const depth of ['Understand', 'Technical', 'Research']) {
       await page.getByRole('button', { name: new RegExp(depth) }).click();
       for (const textSize of ['100%', '200%']) {
         await page.evaluate(size => document.documentElement.style.fontSize = size, textSize);
-        // The original sticky copy overlapped the following grid row only after scrolling.
-        for (const anchor of ['.explainer-copy', '.explainer-panels', '.explainer-next']) {
-          await page.locator(anchor).scrollIntoViewIfNeeded();
-          const overlaps = await page.locator('.cerebri-explainer').evaluate(el => {
-            const box = (selector: string) => el.querySelector(selector)!.getBoundingClientRect();
-            const panels = box('.explainer-panels');
-            const stage = box('.explainer-stage');
-            const blocks = [...el.querySelectorAll('.explainer-stage > *')]
-              .filter(node => getComputedStyle(node).position !== 'absolute' && node.getBoundingClientRect().height > 0);
-            return {
-              copy: box('.explainer-copy').bottom - panels.top,
-              stage: stage.bottom - panels.top,
-              next: panels.bottom - box('.explainer-next').top,
-              annotations: blocks.slice(1).map((node, index) => blocks[index].getBoundingClientRect().bottom - node.getBoundingClientRect().top)
-            };
-          });
-          expect(Math.max(overlaps.copy, overlaps.stage, overlaps.next, ...overlaps.annotations)).toBeLessThanOrEqual(1);
+        for (const phase of [0, 3, 6]) {
+          await page.locator('.scene-controls button').nth(phase).click();
+          for (const anchor of ['.hero-copy', '.arrival-instrument', '.scene-controls']) {
+            await page.locator(anchor).scrollIntoViewIfNeeded();
+            const collisions = await page.locator('.observatory').evaluate(el => {
+              const selectors = ['.hero-copy', '.scene-explanation', '.arrival-instrument', '.scene-controls'];
+              return selectors.flatMap((selector, index) => {
+                const a = el.querySelector(selector)!.getBoundingClientRect();
+                return selectors.slice(index + 1).filter(other => {
+                  const b = el.querySelector(other)!.getBoundingClientRect();
+                  return a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1;
+                }).map(other => [selector, other]);
+              });
+            });
+            expect(collisions).toEqual([]);
+          }
+          expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
         }
       }
     }
@@ -47,15 +50,20 @@ for (const width of [1440, 390]) {
       return description.bottom > link.top + 1 || link.bottom > card.getBoundingClientRect().bottom + 1;
     }).map(card => card.querySelector('h3')!.textContent));
     expect(collisions).toEqual([]);
+    const unusedAssessmentHeight = await page.locator('.intent-boundary-note').evaluate(node =>
+      node.getBoundingClientRect().bottom - node.querySelector('p')!.getBoundingClientRect().bottom - Number.parseFloat(getComputedStyle(node).paddingBottom));
+    expect(unusedAssessmentHeight).toBeLessThanOrEqual(1);
   });
 }
 
 for (const viewport of [{ width: 1440, height: 600 }, { width: 390, height: 700 }]) {
-  test(`short viewport ${viewport.width}px shows a complete unpinned field`, async ({ page }) => {
+  test(`short viewport ${viewport.width}px keeps all stages available without pinning`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto(prefix + '/');
     const track = page.locator('.observatory-track');
     await expect(track).toHaveClass(/static-view/);
+    await expect(track.locator('.observatory')).toHaveAttribute('data-scene', '0');
+    await track.locator('.scene-controls button').nth(6).click();
     await expect(track.locator('.observatory')).toHaveAttribute('data-scene', '6');
     expect(await track.evaluate(el => el.getBoundingClientRect().height - el.firstElementChild!.getBoundingClientRect().height)).toBeLessThanOrEqual(1);
     await page.setViewportSize({ width: 1440, height: 1200 });
@@ -111,13 +119,13 @@ for (const width of [1440, 768, 390, 320]) {
 }
 
 for (const width of [1440, 390]) {
-  for (const section of ['explainer', 'workbench']) test(`@visual ${section} ${width}px`, async ({ page }) => {
+  for (const section of ['rejection', 'workbench']) test(`@visual ${section} ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(prefix + '/');
     await page.evaluate(() => document.fonts.ready);
     const name = `${section}-${width}`;
-    const selector = section === 'explainer' ? '.cerebri-explainer' : '.intent-field';
+    const selector = section === 'rejection' ? '.rejection-witness' : '.intent-field';
     const screenshot = await page.locator(selector).screenshot({ path: test.info().outputPath(name + '.png'), animations: 'disabled', style: '.site-header,.skip-link{visibility:hidden!important}' });
     await test.info().attach(name + '.png', { body: screenshot, contentType: 'image/png' });
     expect(createHash('sha256').update(screenshot).digest('hex')).toBe(visualBaselines[process.platform]?.[name]);

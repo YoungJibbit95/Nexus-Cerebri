@@ -32,10 +32,10 @@ test('explanation depth changes visible information and persists', async ({ page
 test('homepage reflects the current structured deterministic planning boundary', async ({ page }) => {
   await page.goto(prefix + '/');
   const heroHeading = page.locator('h1').first();
-  await expect(heroHeading).toContainText('Bound the problem.');
-  await expect(heroHeading).toContainText('Verify the plan.');
+  await expect(heroHeading).toContainText('A plan you');
+  await expect(heroHeading).toContainText('can inspect.');
   await expect(page.getByText('Current CPIR planning fixture', { exact: true })).toBeVisible();
-  await expect(page.getByText('11 evaluated positions', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('11 positions', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('7 valid / 4 rejected', { exact: true })).toBeVisible();
   await expect(page.getByText('Structured evidence. Bounded search. Explicit authority.', { exact: true })).toBeVisible();
   await expect(page.getByText(/It can explore meaning and ambiguity/i)).toHaveCount(0);

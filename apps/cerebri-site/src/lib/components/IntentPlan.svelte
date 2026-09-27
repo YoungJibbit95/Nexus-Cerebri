@@ -21,12 +21,12 @@
 <section data-world="planning" class="intent-section cosmic-section" aria-labelledby="intent-title">
   <div class="intent-nebula" aria-hidden="true"></div>
   <div class="section-copy intent-copy">
-    <span class="section-index">ACT 03 / REAL FIXTURE → PLAN</span>
-    <span class="kicker">CPIR → GRID → VALIDITY → PROPOSAL</span>
-    <h2 id="intent-title">One real request.<br /><em>{evaluated} evaluated positions.</em></h2>
+    <span class="section-index">CONTINUE THE SEARCH / INSPECT THE RESULT</span>
+    <span class="kicker">VALIDITY → ORDERING → PROPOSAL</span>
+    <h2 id="intent-title">From possible times.<br /><em>To one proposal.</em></h2>
     <p>
-      The site build runs the Rust planner against the repository's current CPIR {runtimeData.metadata.cpirVersion} fixture.
-      The request is already structured before planning begins; the browser renders the generated result rather than recreating planner logic.
+      Keep the same {evaluated} positions in view. First inspect a conflict, then compare two valid candidates.
+      Every classification and ordering key below is a result from the Rust planner.
     </p>
   </div>
 
@@ -43,40 +43,12 @@
         <div class="depth-technical"><small>ORDERING STATE</small><strong>{preferenceSource ? 'Preferred-start source: ' + preferenceSource : 'No preferred-start evidence; absent distance stays None in the feature contract.'}</strong></div>
       </div>
 
-      <div class="intent-axis" aria-hidden="true"><span>STRUCTURED INPUT</span><i></i><span>DETERMINISTIC OUTPUT</span></div>
-      <div class="intent-flow">
-        <article class="intent-node">
-          <span class="intent-planet cpir-orb" aria-hidden="true"></span>
-          <small>01 · CPIR REQUEST</small>
-          <strong>{request.operation} · {request.duration.value.knowledge.data}s</strong>
-          <span>Scope {formatTime(scopeStart)}–{formatTime(scopeEnd)} UTC</span>
-          <i class="node-state">structured</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>enumerate</span><b></b></div>
-        <article class="intent-node">
-          <span class="intent-planet search-orb" aria-hidden="true"></span>
-          <small>02 · DECLARED GRID</small>
-          <strong>{evaluated} evaluated positions</strong>
-          <span>{request.granularity / 60} minute granularity</span>
-          <i class="node-state">bounded</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>validate</span><b></b></div>
-        <article class="intent-node">
-          <span class="intent-planet" aria-hidden="true"></span>
-          <small>03 · VALIDITY</small>
-          <strong>{feasibleCount} valid · {rejectedCount} rejected</strong>
-          <span>Known busy state removes overlaps</span>
-          <i class="node-state">checked</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>order</span><b></b></div>
-        <article class="intent-node intent-resolved">
-          <span class="intent-planet proof-orb" aria-hidden="true"></span>
-          <small>04 · FIRST PROPOSAL</small>
-          <strong>{winner ? formatTime(new Date(winner.start).getTime()) + ' UTC' : 'See result'}</strong>
-          <span>{planner.assessment ?? 'Structured assessment'} · proposal, not execution</span>
-          <i class="node-state">proposed</i>
-        </article>
-      </div>
+      <dl class="fixture-readout" aria-label="Planning fixture overview">
+        <div><dt>Request</dt><dd>{request.operation} · {request.duration.value.knowledge.data / 60} minutes</dd></div>
+        <div><dt>Evaluated</dt><dd>{evaluated} positions</dd></div>
+        <div><dt>Result</dt><dd>{feasibleCount} valid · {rejectedCount} rejected</dd></div>
+        <div><dt>First proposal</dt><dd>{winner ? formatTime(new Date(winner.start).getTime()) + ' UTC' : 'See result'}</dd></div>
+      </dl>
 
       <PlanningInstrument />
 
@@ -101,3 +73,9 @@
     {/if}
   </VisualizationFrame>
 </section>
+
+<style>
+  .fixture-readout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;margin:1.5rem 0 0;padding:1.5rem 0;border-block:1px solid var(--line)}.fixture-readout dt{font:.8125rem var(--mono);color:var(--text-3);margin-bottom:.75rem}.fixture-readout dd{margin:0;font-size:1.125rem;font-weight:600;line-height:1.5}.fixture-readout>div:last-child dd{color:var(--cyan)}
+  @media(max-width:760px){.fixture-readout{grid-template-columns:1fr 1fr;gap:1.5rem 1rem}.fixture-readout dd{font-size:1rem}}
+  @media(max-width:350px){.fixture-readout{grid-template-columns:1fr}}
+</style>
