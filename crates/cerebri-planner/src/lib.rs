@@ -1,6 +1,7 @@
 //! Pure, bounded planning. Execution and persistence are separate application boundaries.
 mod compilation;
 mod dependencies;
+pub mod evaluation;
 mod lifecycle;
 pub mod model;
 pub mod policy;

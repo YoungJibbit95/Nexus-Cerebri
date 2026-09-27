@@ -39,6 +39,17 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
+### 2026-09-27 — Synthetic evaluation foundations (partial Phase A)
+
+- Add strict canonical scalars, explicit token registries and structural manifest,
+  run-binding, provenance and privacy components under `cerebri-planner::evaluation`.
+- Pin the existing serde_json 1.0.151 dependency for the qualified admission-work metric;
+  retain the lockfile and all current planner/transport semantics.
+- Record [ADR-0015](docs/architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
+  and the [checkpoint](docs/development/progress/2026-09-27-evaluation-phase-a-checkpoint.md).
+  Phase A is incomplete: complete Episode wire definitions need clarification.
+  No Episode construction, fingerprints, replay, Phase B or release is claimed.
+
 ### 2026-09-26 — Repository hardening and governance closure
 
 - Pin the retained GitHub Traffic Stats action to immutable commit

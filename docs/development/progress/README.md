@@ -10,3 +10,4 @@ Create dated/monthly development logs for meaningful implementation, experiment,
 - [2026-09-26 — Ranking import parity correction](2026-09-26-ranking-import-parity-correction.md)
 - [2026-09-26 — Repository hardening](2026-09-26-repository-hardening.md)
 - [2026-09-26 — Final governance cleanup](2026-09-26-final-governance-cleanup.md)
+- [2026-09-27 — Evaluation foundations: partial Phase A checkpoint](2026-09-27-evaluation-phase-a-checkpoint.md)
