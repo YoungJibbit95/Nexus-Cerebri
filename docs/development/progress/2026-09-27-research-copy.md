@@ -50,10 +50,15 @@ not part of this PR.
   two old button labels in an upstream continuity test; only those text selectors changed.
 - Reviewed all 28 Windows visual captures, with detailed mobile crops for the changed
   explanation, comparison, measurement and founder passages. Updated the Windows hashes
-  and reran the unmodified visual gates: all 28 passed. Linux hashes await CI captures.
+  and reran the unmodified visual gates: all 28 passed.
 - Checked semantic DE/EN parity, equal inline technical terms and unchanged component style
   blocks. `git diff --check` and the staged whitespace check passed.
-- Remote CI results will be checked on the actual pushed PR revision. No release or tag
-  is authorized by this publication of code for review.
+- The initial PR CI run [36310686211](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36310686211)
+  on `c4bd764` passed 14 of 15 gates, including the Linux browser suite. Only the visual
+  hash gate differed from the pre-copy references. Reviewed its 28 Linux captures and
+  detailed mobile crops; every initial/retry pair had identical hashes. Updated only the
+  Linux reference hashes from that artifact. The follow-up revision must pass the actual
+  remote gates before this PR is marked ready for review.
+- No release, tag, merge or deployment is authorized by this publication of code for review.
 
 This is implementation evidence, not independent Architecture, Math or Security qualification.
