@@ -20,7 +20,7 @@ for (const width of [1920, 1440, 768, 390, 320]) {
           await page.locator('.scene-controls button').nth(phase).click();
           for (const anchor of ['.hero-copy', '.arrival-instrument', '.scene-controls']) {
             await page.locator(anchor).scrollIntoViewIfNeeded();
-            const collisions = await page.locator('.observatory').evaluate(el => {
+            const collisions = await page.locator('.cerebri-hero').evaluate(el => {
               const selectors = ['.hero-copy', '.scene-explanation', '.arrival-instrument', '.scene-controls'];
               return selectors.flatMap((selector, index) => {
                 const a = el.querySelector(selector)!.getBoundingClientRect();

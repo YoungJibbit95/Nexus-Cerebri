@@ -34,7 +34,8 @@ test('manual scene inspection survives fast scrolling, resizing and reduced moti
   await expect(scene).toHaveAttribute('data-scene', '3');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(scene).toHaveAttribute('data-scene', '3');
-  await expect(scene.locator('.coordinate-volume')).toHaveCSS('transition-duration', '0s');
+  await expect(scene.locator('.cerebri-brain')).toHaveAttribute('data-activation', 'ready');
+  await expect(scene.locator('.temporal-spine')).toHaveCSS('transition-duration', '0s');
   await scene.getByRole('button', { name: 'Follow scroll', exact: true }).click();
   await expect(scene).toHaveAttribute('data-scene', '6');
   await page.goto(prefix + '/#structured-descent');
