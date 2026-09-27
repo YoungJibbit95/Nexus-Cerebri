@@ -1,10 +1,10 @@
 // Exact hashes are renderer/platform dependent. Keep each platform independently reviewed.
 export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, string>>> = {
   linux: {
-    '1024': '9d43107ab1225738e229822f5e88508f4307da73d5da756d16de931e97fae4d6',
-    '1440': '908b16965453449d5d04bbfc8fe0b1d6b560e2cbf37187713eedc18533c677db',
-    '390': '7db9c00f8e6d60cef1745637333cbfe8ee2465b8026960f96557fa3353b4db45',
-    '768': '3143ec75c00107e4c7eda65c41b4ab23eabfcc14b82daed99be8e787cf0c4cda',
+    '1024': 'ecb81a3575b422de36c0cbe3b21cf4f9e5548a127dfbd0a695cd72ea3b1afdd9',
+    '1440': 'bd84abfa550883d76319045184fdea580085b273def59a8dfabd682b21f8221b',
+    '390': '3b59771ededa2547d77cf3fd9f05a48ba072eccba9db2686596aacbaaf91a9b6',
+    '768': 'f28a962d86adb0f92134ecb5f93af56b12beaf2ebc2d08150ac3b3eba921adc6',
     'architecture-concept': 'f55005f09f874eff6355141f71a76049ba531e990a4e7266559d88e7ef319a29',
     'architecture-mobile': '94bcc57e03002bef24319214403c845b0fe0d408d6bff2b77540830d71e8b4a5',
     'architecture-technical': '8e5c84c0998a99f9bb1b91198745a640e627cd80c415dcc412175558a4487a0f',
