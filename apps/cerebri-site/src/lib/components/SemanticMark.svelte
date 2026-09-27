@@ -24,9 +24,9 @@
   .semantic-glyph{position:relative;flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center}
   .semantic-glyph::before{content:"";position:absolute;inset:3px;border:1px solid color-mix(in srgb,var(--semantic) 62%,transparent);background:var(--semantic-soft);box-shadow:inset 0 0 16px color-mix(in srgb,var(--semantic) 10%,transparent),0 0 18px color-mix(in srgb,var(--semantic) 8%,transparent)}
   .semantic-glyph i{position:absolute;inset:0;opacity:.35;border:1px solid color-mix(in srgb,var(--semantic) 35%,transparent);border-radius:50%}
-  .semantic-glyph b{position:relative;z-index:1;color:var(--semantic);font:800 11px/1 var(--mono)}
-  .semantic-mark-copy{min-width:0;display:grid;gap:2px}.semantic-mark-copy strong{color:#dce8f5;font-size:12px;line-height:1.22}.semantic-mark-copy small{color:#7189a7;font-size:10px;line-height:1.28}
-  .compact{gap:7px}.compact .semantic-glyph{flex-basis:28px;width:28px;height:28px}.compact .semantic-mark-copy strong{font-size:11px}.compact .semantic-mark-copy small{font-size:9px}
+  .semantic-glyph b{position:relative;z-index:1;color:var(--semantic);font:800 .8125rem/1 var(--mono)}
+  .semantic-mark-copy{min-width:0;display:grid;gap:2px}.semantic-mark-copy strong{color:#dce8f5;font-size:.8125rem;line-height:1.22}.semantic-mark-copy small{color:#7189a7;font-size:.8125rem;line-height:1.28}
+  .compact{gap:7px}.compact .semantic-glyph{flex-basis:28px;width:28px;height:28px}.compact .semantic-mark-copy strong{font-size:.8125rem}.compact .semantic-mark-copy small{font-size:.8125rem}
   [data-semantic-kind="fact"]{--semantic:#42e8e0;--semantic-soft:rgba(66,232,224,.11)}[data-semantic-kind="fact"] .semantic-glyph::before{border-radius:50%}
   [data-semantic-kind="constraint"]{--semantic:#ff8795;--semantic-soft:rgba(255,135,149,.11)}[data-semantic-kind="constraint"] .semantic-glyph::before{clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
   [data-semantic-kind="preference"]{--semantic:#b9a0ff;--semantic-soft:rgba(185,160,255,.11)}[data-semantic-kind="preference"] .semantic-glyph::before{inset:7px;transform:rotate(45deg)}

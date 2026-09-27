@@ -1,9 +1,9 @@
 <script lang="ts">
+  import './cerebri-explainer.css';
   import { base } from '$app/paths';
 </script>
 
 <section class="cerebri-explainer cosmic-section" aria-labelledby="cerebri-explainer-title">
-  <div class="explainer-transition" aria-hidden="true"><i></i><span></span><b></b></div>
 
   <div class="explainer-copy">
     <span class="section-index">ACT 02 / WHAT CEREBRI DOES</span>
@@ -47,22 +47,25 @@
       <span class="cloud-path p1"></span><span class="cloud-path p2"></span><span class="cloud-path p3"></span>
     </div>
 
+    <div class="stage-annotation annotation-a"><b>1</b><span><strong>The input is structured.</strong><small>The current planner consumes CPIR, not free-form language.</small></span></div>
+
     <div class="boundary-shell">
       <span class="boundary-label bl-time">TIME</span>
       <span class="boundary-label bl-scope">SCOPE</span>
       <span class="boundary-label bl-policy">POLICY</span>
       <span class="boundary-label bl-knowledge">FACTS</span>
       <span class="boundary-label bl-constraints">HARD RULES</span>
-      <div class="boundary-ring ring-a"></div><div class="boundary-ring ring-b"></div>
     </div>
 
+    <div class="stage-annotation annotation-b"><b>2</b><span><strong>Hard rules remove candidates.</strong><small>Invalid positions never become valid merely because they would be preferable.</small></span></div>
+
     <div class="deterministic-core">
-      <span class="core-pulse" aria-hidden="true"></span>
       <div class="core-title"><small>DETERMINISTIC CORE</small><strong>Generate → Validate → Order</strong></div>
-      <div class="core-grid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="core-candidates" aria-hidden="true"><span></span><span></span><span class="selected"></span><span></span></div>
       <div class="core-proof"><b>✓</b><span>bounded search assessment</span></div>
     </div>
+
+    <div class="stage-annotation annotation-c"><b>3</b><span><strong>Valid candidates are ordered.</strong><small>The result and its bounded assessment remain inspectable.</small></span></div>
 
     <div class="authority-rail">
       <small>AUTHORITY INCREASES EXPLICITLY</small>
@@ -72,9 +75,6 @@
       <p class="technical-only">PlanningRequest → ProposedPlan → ValidatedPlan → ActionPlan → AuthorizedActionPlan → ExecutionResult</p>
     </div>
 
-    <div class="stage-annotation annotation-a"><b>1</b><span><strong>The input is structured.</strong><small>The current planner consumes CPIR, not free-form language.</small></span></div>
-    <div class="stage-annotation annotation-b"><b>2</b><span><strong>Hard rules remove candidates.</strong><small>Invalid positions never become valid merely because they would be preferable.</small></span></div>
-    <div class="stage-annotation annotation-c"><b>3</b><span><strong>Valid candidates are ordered.</strong><small>The result and its bounded assessment remain inspectable.</small></span></div>
   </div>
 
   <div class="explainer-panels" aria-label="Cerebri planner concepts">

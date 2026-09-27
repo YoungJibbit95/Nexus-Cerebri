@@ -5,33 +5,33 @@ body[data-instrument-world] .site-footer { overflow:clip; }
 .instrument-story .hero-scroll-cue { display:none; }
 .instrument-story .hero-nebula { pointer-events:none; max-width:100%; }
 .instrument-story .hero-copy { z-index:3; }
-.instrument-story .home-story { margin-top:60px; }
+.instrument-story .home-story { margin-top:2rem; }
 .instrument-story .coordinate-relay { position:sticky; top:122px; z-index:4; height:0; margin-left:auto; margin-right:5%; width:150px; pointer-events:none; }
 .instrument-story .coordinate-relay>span { display:flex; gap:10px; align-items:center; padding:8px 0; font:10px var(--mono); color:var(--text-3); background:linear-gradient(90deg,transparent,var(--space-1)); }
 .instrument-story .coordinate-relay i { width:28px; height:5px; border-block:1px solid var(--cyan); position:relative; }
 .instrument-story .coordinate-relay i::before { content:''; position:absolute; width:6px; height:6px; background:var(--cyan); border-radius:50%; left:0; top:-1px; }
 body:is([data-instrument-world='measurement'],[data-instrument-world='technical']) .coordinate-relay { visibility:hidden; }
 .instrument-story .metrics { border:0; border-top:1px solid var(--line); border-radius:0; box-shadow:none; background:linear-gradient(90deg,rgba(32,216,255,.025),transparent); }
-.instrument-story .intent-section { padding-bottom:50px; }
+.instrument-story .intent-section { margin-top:0; padding:3rem 0; }
 .instrument-story .intent-section .visual-frame { border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; overflow:visible; }
 .instrument-story .intent-section .visual-frame::before { display:none; }
 .instrument-story .intent-section .visual-space { overflow:hidden; }
 .instrument-story .intent-section .visual-heading { border-block:1px solid var(--line); }
 .instrument-story .intent-section .visual-body { padding:32px 0; }
-.instrument-story .intent-field { padding-inline:0; }
+.instrument-story .intent-field { padding:0; min-height:0; }
 .instrument-story .intent-stage-summary>div { border:0; border-left:2px solid var(--line-strong); border-radius:0; background:none; }
-.instrument-story .intent-flow { margin:36px 0; grid-template-columns:1fr 30px 1fr 30px 1fr 30px 1fr; }
-.instrument-story .intent-node { min-height:160px; padding:34px 12px 16px 0; border:0; border-top:1px solid var(--line); border-radius:0; background:none; box-shadow:none; }
+.instrument-story .intent-flow { margin:1.5rem 0; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1.5rem; }
+.instrument-story .intent-node { min-height:0; padding:1.5rem .75rem 1rem 0; border:0; border-top:1px solid var(--line); border-radius:0; background:none; box-shadow:none; }
 .instrument-story .intent-planet { width:8px; height:8px; top:-4px; left:0; border-radius:50%; background:var(--cyan); box-shadow:none; }
 .instrument-story .intent-node::before { display:none; }
 .instrument-story .intent-node strong { font-variant-numeric:tabular-nums; font-size:17px; }
-.instrument-story .intent-node small { font-size:10px; }
+.instrument-story .intent-node small { font-size:.8125rem; }
 .instrument-story .intent-trace i::after { animation:none; }
-.instrument-story .intent-trace span { display:none; }
-.instrument-story .node-state { position:static; display:block; margin-top:16px; font-size:10px; }
+.instrument-story .intent-trace { display:none; }
+.instrument-story .node-state { position:static; display:block; margin-top:16px; font-size:.8125rem; }
 .instrument-story .intent-boundary-note { border:0; border-left:2px solid var(--cerebri); border-radius:0; background:none; }
-.instrument-story .math-inspection { margin-top:0; padding-top:130px; }
-.instrument-story .math-inspection::before { content:''; position:absolute; top:0; left:7%; height:110px; width:86%; border-left:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong); transform:perspective(600px) rotateX(50deg) skewX(-12deg) scaleX(.6); transform-origin:top left; transition:transform 1100ms var(--ease-resolve); }
+.instrument-story .math-inspection { margin-top:0; padding-top:5rem; }
+.instrument-story .math-inspection::before { content:''; position:absolute; top:0; left:7%; height:3rem; width:86%; border-left:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong); transform:perspective(600px) rotateX(50deg) skewX(-12deg) scaleX(.6); transform-origin:top left; transition:transform 1100ms var(--ease-resolve); }
 body:is([data-instrument-world='measurement'],[data-instrument-world='technical']) .instrument-story .math-inspection::before { transform:none; }
 .instrument-story .math-heading { position:relative; }
 .instrument-story .math-heading::before { content:''; position:absolute; left:0; top:-25px; width:8px; height:8px; border:1px solid var(--cyan); }
@@ -62,7 +62,48 @@ body[data-instrument-world='horizon'] .space-environment .structural-field { tra
 @media(max-width:760px) {
   .instrument-story .coordinate-relay { top:128px; width:115px; margin-right:16px; }.instrument-story .coordinate-relay>span { font-size:8px; }
   .instrument-story .intent-flow { grid-template-columns:1fr 1fr; gap:24px; }.instrument-story .intent-trace { display:none; }.instrument-story .intent-node { min-height:0; }.instrument-story .intent-node strong { font-size:15px; }
-  .instrument-story .intent-section .visual-body { padding:24px 0; }.instrument-story .math-inspection .math-chapter { padding-left:16px; margin-left:4px; }.instrument-story .math-chapter .chapter-number { margin-left:-27px; }.instrument-story .math-inspection { padding-top:100px; }.instrument-story .math-inspection::before { height:75px; }
+  .instrument-story .intent-section .visual-body { padding:24px 0; }.instrument-story .math-inspection .math-chapter { padding-left:16px; margin-left:4px; }.instrument-story .math-chapter .chapter-number { margin-left:-27px; }.instrument-story .math-inspection { padding-top:4rem; }.instrument-story .math-inspection::before { height:2.5rem; }
   .instrument-story .journey-card { padding-inline:0; }.instrument-story .domain-journey .journey-grid { gap:16px; }
 }
 @media(prefers-reduced-motion:reduce) { body[data-instrument-world] .space-environment * { transition:none!important; }.instrument-story .coordinate-relay { position:relative; top:0; height:auto; }.instrument-story .math-inspection::before { transition:none;transform:none; } }
+
+/* Landing composition scales with text instead of reserving empty scene space. */
+.instrument-story .hero { padding-top:clamp(8.5rem,12vw,10.5rem); }
+.instrument-story .hero h1 { font-size:clamp(3rem,7.2vw,6rem); line-height:1.02; margin-top:2rem; }
+.instrument-story .hero-lede { font-size:1.125rem; max-width:66ch; margin-top:1.5rem; }
+.instrument-story .hero-release-row { font-size:.8125rem; }
+.instrument-story .metrics { margin:0 auto 1.5rem; padding:1.75rem 0; gap:1rem; grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(0,1fr)); }
+.instrument-story .metrics-intro h2 { font-size:clamp(1.5rem,2.4vw,2rem); line-height:1.2; }
+.instrument-story .metrics article { min-height:0; padding:1rem; }
+.instrument-story .metrics article small { color:var(--text-3); font-size:.8125rem; }
+.instrument-story .metrics article span { color:var(--text-3); font-size:.9375rem; }
+.instrument-story .metrics .source-link { margin-top:0; }
+.instrument-story .intent-copy { margin-bottom:2rem; }
+.instrument-story .intent-copy h2 { font-size:clamp(2.25rem,4.8vw,4rem); line-height:1.1; }
+.instrument-story .intent-stage-summary { display:flex; flex-wrap:wrap; margin-bottom:1.5rem; }
+.instrument-story .intent-stage-summary>div { flex:1 1 20rem; padding:.5rem 1rem; }
+.instrument-story .intent-stage-summary strong { font-size:1rem; color:var(--text-2); }
+.instrument-story .intent-stage-summary small,.instrument-story .intent-axis { font-size:.8125rem; }
+.instrument-story .intent-node>span:not(.intent-planet) { font-size:.9375rem; color:var(--text-3); line-height:1.65; }
+.instrument-story .intent-node strong { font-size:1.125rem; }
+.instrument-story .intent-boundary-note { margin-top:1.5rem; padding:1rem 1.25rem; flex-wrap:wrap; }
+.instrument-story .intent-boundary-note span { font-size:.8125rem; }.instrument-story .intent-boundary-note p { font-size:1rem; flex:1 1 30rem; }
+.instrument-story .coordinate-relay { display:none; }
+.instrument-story .domain-journey { padding:clamp(3rem,6vw,5rem) 0; }
+.instrument-story .journey-copy { margin-bottom:2rem; }
+.instrument-story .journey-copy h2,.instrument-story .home-grid-intro h2 { font-size:clamp(2rem,4vw,3rem); line-height:1.15; }
+.instrument-story .journey-card:nth-child(n) { grid-column:span 4; min-height:0!important; display:flex; flex-direction:column; padding:1.5rem 0; }
+.instrument-story .journey-card h3 { margin-top:5rem; font-size:1.5rem; line-height:1.25; }
+.instrument-story .journey-card small { font-size:.8125rem; }
+.instrument-story .journey-card p,.instrument-story .feature-card p { font-size:.9375rem; line-height:1.65; }
+.instrument-story .journey-card>strong,.instrument-story .feature-card a { position:relative; left:auto; bottom:auto; margin-top:auto; padding-top:1rem; font-size:.9375rem; }
+.instrument-story .home-grid { grid-template-columns:repeat(3,minmax(0,1fr)); padding:3rem 0 5rem; gap:2rem; }
+.instrument-story .home-grid-intro { grid-column:1/-1; max-width:68ch; padding:0; }
+.instrument-story .home-grid-intro>p:last-child { font-size:1.0625rem; }
+.instrument-story .feature-card { min-height:0; display:flex; flex-direction:column; align-items:start; padding:1.5rem; }
+.instrument-story .feature-card h3 { font-size:1.5rem; line-height:1.25; margin-top:1.5rem; }
+@media(max-width:68rem) { .instrument-story .journey-card:nth-child(n) { grid-column:span 6; } }
+@media(max-width:48rem) { .instrument-story .journey-card:nth-child(n) { grid-column:span 12; }.instrument-story .home-grid { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:68rem) { .instrument-story .metrics { grid-template-columns:repeat(4,minmax(0,1fr)); }.instrument-story .metrics-intro { grid-column:1/-1; padding:0; } }
+@media(max-width:48rem) { .instrument-story .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }.instrument-story .intent-flow { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }.instrument-story .intent-trace { display:none; }.instrument-story .intent-axis { flex-wrap:wrap; gap:.75rem; } }
+@media(max-width:25rem) { .instrument-story .intent-flow { grid-template-columns:minmax(0,1fr); } }

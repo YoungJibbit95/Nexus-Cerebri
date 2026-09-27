@@ -7,6 +7,9 @@ import AxeBuilder from '@axe-core/playwright';
 const prefix = process.env.CEREBRI_BASE_PATH ?? '';
 
 test('calibration retains endpoints, coordinates and Rust classifications when reversed', async ({ page }) => {
+  // Exercise the cinematic path in a viewport that can contain the whole instrument.
+  // Short viewports are covered separately by landing-layout.spec.ts.
+  await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto(prefix + '/');
   const hero = page.locator('.observatory');
   const endpoints = await hero.locator('.capsule-origin').elementHandles();
@@ -14,7 +17,9 @@ test('calibration retains endpoints, coordinates and Rust classifications when r
   for (const phase of [2, 4, 6, 1, 0]) {
     await track.evaluate((el, target) => {
       const rect = el.getBoundingClientRect();
-      window.scrollTo({ top: window.scrollY + rect.top - 160 + (target + .1) / 7 * (rect.height - 700), behavior: 'instant' });
+      const surface = el.querySelector('.observatory')!;
+      const top = Number.parseFloat(getComputedStyle(surface).top);
+      window.scrollTo({ top: window.scrollY + rect.top - top + (target + .1) / 7 * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
     }, phase);
     await expect(hero).toHaveAttribute('data-scene', String(phase));
     if (phase === 6) {
@@ -128,7 +133,9 @@ for (const width of [1440, 390]) {
     await page.evaluate(() => document.fonts.ready);
     await page.locator('.observatory-track').evaluate((el, target) => {
       const rect = el.getBoundingClientRect();
-      window.scrollTo({ top: scrollY + rect.top - 160 + (target + .1) / 7 * (rect.height - 700), behavior: 'instant' });
+      const surface = el.querySelector('.observatory')!;
+      const top = Number.parseFloat(getComputedStyle(surface).top);
+      window.scrollTo({ top: scrollY + rect.top - top + (target + .1) / 7 * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
     }, phase);
     await expect(page.locator('.observatory')).toHaveAttribute('data-scene', String(phase));
     const name = `calibration-${phase}-${width}`;
