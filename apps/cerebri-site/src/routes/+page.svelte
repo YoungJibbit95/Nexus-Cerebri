@@ -1,39 +1,16 @@
 <script lang="ts">
   import '$lib/creative-fidelity.css';
+  import '$lib/cinematic-landing.css';
   import { instrumentEnvironment } from '$lib/instrument-environment';
   import { ranked, candidateIdentity, timeLabel } from '$lib/planning-display';
   import { base } from '$app/paths';
   import IntentPlan from '$lib/components/IntentPlan.svelte';
   import BoundedSearchObservatory from '$lib/components/BoundedSearchObservatory.svelte';
-  import CerebriExplainer from '$lib/components/CerebriExplainer.svelte';
+  import RepresentationDescent from '$lib/components/RepresentationDescent.svelte';
   import MathematicalInspection from '$lib/components/math/MathematicalInspection.svelte';
   import SourceLink from '$lib/components/SourceLink.svelte';
   import { runtimeData } from '$lib/generated/runtime-data';
 
-  function pointerField(node: HTMLElement) {
-    let frame = 0;
-    const move = (event: PointerEvent) => {
-      if (event.pointerType === 'touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const rect = node.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        node.style.setProperty('--pointer-x', x.toFixed(3));
-        node.style.setProperty('--pointer-y', y.toFixed(3));
-      });
-    };
-    const reset = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        node.style.setProperty('--pointer-x', '0');
-        node.style.setProperty('--pointer-y', '0');
-      });
-    };
-    node.addEventListener('pointermove', move);
-    node.addEventListener('pointerleave', reset);
-    return { destroy() { cancelAnimationFrame(frame); node.removeEventListener('pointermove', move); node.removeEventListener('pointerleave', reset); } };
-  }
 </script>
 
 <svelte:head>
@@ -45,28 +22,24 @@
 </svelte:head>
 
 <div class="instrument-story" use:instrumentEnvironment>
-<section class="hero cosmic-hero" data-world="space" use:pointerField>
+<section class="hero cosmic-hero" data-world="space">
   <div class="hero-nebula hero-nebula-a" aria-hidden="true"></div>
   <div class="hero-nebula hero-nebula-b" aria-hidden="true"></div>
+  <BoundedSearchObservatory>
   <div class="hero-copy">
     <div class="hero-badge"><span class="badge-orbit" aria-hidden="true"></span><b>NEXUS CEREBRI</b><span>DETERMINISTIC PLANNING FOUNDATION</span><i aria-hidden="true"></i></div>
-    <h1><span>Bound the problem.</span><em>Verify the plan.</em></h1>
+    <h1><span>A plan you</span><em>can inspect.</em></h1>
     <p class="hero-lede">
-      Nexus Cerebri turns structured temporal context into a bounded search. Known state and hard rules reject invalid
-      candidates, deterministic ordering compares what remains, and a proposal never becomes execution authority by itself.
+      Nexus Cerebri makes temporal planning inspectable. Follow a 30-minute appointment through a bounded search:
+      from possible times to a proposal you can examine. Nothing is booked.
     </p>
     <div class="hero-actions">
       <a class="primary-action" href={base + '/explore/'}><span>Explore Cerebri</span><b aria-hidden="true">↗</b></a>
       <a class="secondary-action" href={base + '/docs/'}><span>Read the Specification</span><b aria-hidden="true">→</b></a>
     </div>
-    <div class="hero-release-row" role="group" aria-label="Release status">
-      <span>Published release: {runtimeData.metadata.publishedRelease}</span>
-      <span>Unreleased · qualification in progress</span>
-      <span>CPIR {runtimeData.metadata.cpirVersion}</span>
-    </div>
-  </div>
 
-  <BoundedSearchObservatory />
+  </div>
+  </BoundedSearchObservatory>
 
   <div class="hero-scroll-cue" aria-hidden="true"><span>FOLLOW THE SEARCH</span><i></i><b></b></div>
 </section>
@@ -85,17 +58,22 @@
   <article><small>SPECIFICATION</small><strong>{runtimeData.metadata.specVersion}</strong><span>Current Master baseline</span></article>
   <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Structured planning schema</span></article>
   <article><small>RUST</small><strong>{runtimeData.metadata.rustVersion}</strong><span>Pinned workspace language floor</span></article>
+    <div class="hero-release-row" role="group" aria-label="Release status">
+      <span>Published release: {runtimeData.metadata.publishedRelease}</span>
+      <span>Unreleased · qualification in progress</span>
+      <span>CPIR {runtimeData.metadata.cpirVersion}</span>
+    </div>
   <SourceLink path="docs/architecture/specifications/master-v0.4.md" label="Master Specification 0.4" />
 </section>
 
-<CerebriExplainer />
 <IntentPlan />
 <MathematicalInspection />
+<RepresentationDescent />
 </div>
 
 <section data-world="horizon" class="domain-journey cosmic-section" aria-labelledby="journey-title">
   <div class="section-copy journey-copy">
-    <span class="section-index">ACT 04–09 / CEREBRI UNIVERSE</span>
+    <span class="section-index">EXPLORE THE SYSTEM</span>
     <span class="kicker">ONE SYSTEM · EXPLICIT BOUNDARIES</span>
     <h2 id="journey-title">Follow the system.<br /><em>Keep authority explicit.</em></h2>
     <p>Move from typed time and CPIR through bounded search, lifecycle safety, architecture and future research.</p>
@@ -123,36 +101,15 @@
   </div>
 </section>
 
-<section class="home-grid cosmic-section" aria-label="Truth surfaces">
-  <div class="home-grid-intro">
-    <p class="kicker">CURRENT · EXPLANATORY · FUTURE</p>
-    <h2>Current behavior stays separate from future research.</h2>
-    <p>Repository-backed outputs, explanatory diagrams and future concepts are labeled separately so their authority is never interchangeable.</p>
-  </div>
-  <article class="feature-card real-surface">
-    <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="REAL">REAL</span>
-    <h3>Deterministic core output</h3>
-    <p>The website build executes Rust planner and temporal diagnostic examples. Displayed fixture results come from the same core authority as the transports.</p>
-    <a href={base + '/planning/'}>Inspect planning field <span>→</span></a>
-  </article>
-  <article class="feature-card educational-surface">
-    <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="EDUCATIONAL">EDUCATIONAL</span>
-    <h3>Architecture shown as explanation</h3>
-    <p>Diagrams explain ownership and lifecycle boundaries without presenting educational motion as runtime behavior.</p>
-    <a href={base + '/architecture/'}>See the constellation <span>→</span></a>
-  </article>
-  <article class="feature-card future-surface">
-    <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="FUTURE CONCEPT">FUTURE CONCEPT</span>
-    <h3>Research stays visibly future</h3>
-    <p>Learning, neural planning, advanced repair and production provider execution remain future work until implementation exists.</p>
-    <a href={base + '/roadmap/'}>Read roadmap strata <span>→</span></a>
-  </article>
+<section class="research-horizon cosmic-section" data-world="horizon" aria-labelledby="horizon-title">
+  <div><span class="kicker">FUTURE RESEARCH / BEYOND THE CURRENT PLANNER</span><h2 id="horizon-title">The next question<br /><em>starts here.</em></h2><p>Could learned observations help order valid possibilities? That is a research direction. The planner you just inspected uses deterministic ordering.</p><a href={base + '/roadmap/'}>Explore the research roadmap <span aria-hidden="true">→</span></a></div>
+  <div class="research-frontier"><span>CURRENT / DETERMINISTIC CORE</span><div class="frontier-line" aria-hidden="true"><i></i><b></b></div><strong>Validity and authority stay explicit.</strong><p>Future learned components may advise within their contract. Facts, hard constraints, permissions and execution remain outside learned authority.</p><small>FUTURE / LEARNED ADVICE</small></div>
 </section>
 
 <section class="home-finale cosmic-section">
   <div class="finale-planet" aria-hidden="true"><span></span><i></i></div>
   <div class="finale-copy">
-    <span class="kicker">ACT 10 / ENTER THE SYSTEM</span>
+    <span class="kicker">KEEP EXPLORING</span>
     <h2>Inspect what exists.<br /><em>See what comes later.</em></h2>
     <p>Start with the system map, inspect the real planning fixture, or go straight to the repository documentation.</p>
     <div class="hero-actions">
