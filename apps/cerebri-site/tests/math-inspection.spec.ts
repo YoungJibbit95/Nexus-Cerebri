@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { runtimeData } from '../src/lib/generated/runtime-data';
 import { createHash } from 'node:crypto';
 import { visualBaselines } from './visual-baselines';
@@ -8,6 +8,17 @@ const prefix = process.env.CEREBRI_BASE_PATH ?? '';
 const fields = ['preference_distance_seconds', 'mutation_count', 'shifted_seconds', 'start', 'object_id'];
 // Component captures exclude unrelated fixed page chrome; homepage coverage retains it.
 const componentCaptureStyle = '.site-header, .skip-link { visibility: hidden !important; }';
+
+async function settleMeasurementCapture(page: Page) {
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('.math-inspection')).toHaveAttribute('data-motion', 'reduced');
+  // Clicks scroll into this chapter before its IntersectionObserver updates the
+  // fixed environment. Capture the settled chapter, not the previous background.
+  await expect(page.locator('body')).toHaveAttribute('data-instrument-world', 'measurement');
+  await page.evaluate(() => new Promise<void>(resolve =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  ));
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto(prefix + '/');
@@ -138,6 +149,7 @@ for (const width of [1440, 768, 390]) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 1000 });
     await page.locator('.interval-inspection').getByRole('button', { name: 'One-second overlap', exact: true }).click();
+    await settleMeasurementCapture(page);
     const surface = page.locator('.math-inspection');
     const screenshot = await surface.screenshot({ path: test.info().outputPath(`math-${width}.png`), animations: 'disabled', style: componentCaptureStyle });
     const hash = createHash('sha256').update(screenshot).digest('hex');
