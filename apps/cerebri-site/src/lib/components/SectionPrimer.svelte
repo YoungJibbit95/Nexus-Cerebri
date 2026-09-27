@@ -5,17 +5,17 @@
     eyebrow: string; title: string; plain: string; steps: Array<[string,string,string]>; technical: string;
   }> = {
     cpir: {
-      eyebrow: 'STRUCTURED PLANNING INPUT',
-      title: 'CPIR keeps the evidence for planning explicit.',
-      plain: 'It records what is being requested, what knowledge is available, which scope is in play, which policy applies, what capability exists and how much search is permitted.',
+      eyebrow: 'FROM THE APPOINTMENT TO ITS DATA',
+      title: 'Where do the details go?',
+      plain: 'The example describes a new 30-minute appointment and an existing booking from 09:00 to 10:00 UTC. The new appointment has no time yet. Each field tells the planner one part of that problem.',
       steps: [
-        ['01','Identify the requested operation','Request identity'],
-        ['02','Carry known state and provenance','Knowledge + provenance'],
-        ['03','Bound what may be considered','Scope boundary'],
-        ['04','Keep rules and capability separate','Policy + capability'],
-        ['05','Declare the search budget','Search budget']
+        ['01','Propose one new appointment','operation: CREATE · target_ids: new-event'],
+        ['02','Record the duration and existing times','duration · context.objects'],
+        ['03','Search between 09:00 and 12:00 UTC','scope.time_range'],
+        ['04','Check the rules and planning grants','policy · planning_capability'],
+        ['05','Check starts every 15 minutes','granularity: 900 seconds · budget: at most 256 starts']
       ],
-      technical: 'Omitted, empty and populated scope filters retain different semantics. Epistemic knowledge state is distinct from processing state, and capability does not silently expand scope.'
+      technical: 'The 30-minute duration and 09:00–12:00 window give 11 starts on this 15-minute grid. The budget is an upper limit; it does not create extra candidates. The empty constraints list does not disable the built-in overlap check.'
     },
     planning: {
       eyebrow: 'BOUNDED DETERMINISTIC SEARCH',

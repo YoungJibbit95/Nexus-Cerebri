@@ -6,7 +6,7 @@
   let scene = $state(0);
   let reducedMotion = $state(false);
   let pinned = $state(true);
-  const scenes = ['Unresolved space', 'Instrument calibration', 'Space → time', 'Bounded scope', 'Point → interval', 'Validity evidence', 'Calibrated planning field'];
+  const scenes = ['Possible options', 'Finding a time', 'Options → times', 'Search window', 'Start → appointment', 'Checking overlaps', 'The checked options'];
   onMount(() => {
     const media = matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0;
@@ -33,10 +33,10 @@
 
 <div class="observatory-track" class:static-view={!pinned || reducedMotion} bind:this={host}>
   <div class="observatory" class:calibrated={scene === 6} data-scene={scene} data-motion={reducedMotion ? 'reduced' : 'full'} role="img"
-    aria-label={"Bounded search observatory. " + scenes[scene] + ". The same eleven Rust-backed candidate positions become the planning coordinate system. Four rejected positions, seven valid candidates. First in Rust order: " + candidateIdentity(ranked[0].start) + ", " + timeLabel(ranked[0].start) + " UTC. A proposal does not grant authority."}>
-    <div class="calibration-caption" aria-hidden="true"><span>0{scene + 1} / CALIBRATION</span><strong>{scenes[scene]}</strong><small>SPACE → TIME → PLANNING</small></div>
+    aria-label={"Appointment search. " + scenes[scene] + ". Rust checks eleven possible starts. Four overlap the existing appointment; seven pass. First in the result: " + candidateIdentity(ranked[0].start) + ", " + timeLabel(ranked[0].start) + " UTC. Nothing is booked."}>
+    <div class="calibration-caption" aria-hidden="true"><span>0{scene + 1} / SEARCH STEP</span><strong>{scenes[scene]}</strong><small>SPACE → TIME → PLANNING</small></div>
     <CandidateField phase={scene} context="hero" />
-    <div class="identity-handoff" aria-hidden="true" class:resolved={scene === 6}><span>{candidateIdentity(ranked[0].start)}</span><i></i><b>{timeLabel(ranked[0].start)} UTC</b><small>SAME COORDINATES · CONTINUE TO INSPECTION</small></div>
+    <div class="identity-handoff" aria-hidden="true" class:resolved={scene === 6}><span>{candidateIdentity(ranked[0].start)}</span><i></i><b>{timeLabel(ranked[0].start)} UTC</b><small>SAME OPTION · EXPLORE THE RESULT</small></div>
   </div>
 </div>
 

@@ -18,7 +18,7 @@
 </script>
 
 <section class="deterministic-comparator" aria-label="Deterministic comparator" data-mode={mode} data-inspected={inspected} data-motion={reducedMotion ? 'reduced' : 'full'}>
-  <header><small>DETERMINISTIC COMPARATOR</small><h3>First two Rust-ranked candidates</h3><p>The browser does not rank candidates. It reads the Rust-produced ordering keys and highlights the first field where the already ordered candidates differ.</p></header>
+  <header><small>DETERMINISTIC COMPARATOR</small><h3>Why does 10:00 come before 10:15?</h3><p>Both options pass the checks. Compare their values from left to right: the first difference decides their order. These values and the order come from Rust.</p></header>
   <div class="representation-controls" role="group" aria-label="Candidate representation">
     {#each ['Candidate capsules', 'Inspect comparison', 'Resolve proposal'] as label, index}<button aria-pressed={mode === index} onclick={() => manual = index}>{label}</button>{/each}
     {#if manual !== null}<button class="follow-scroll" onclick={() => manual = null}>Follow scroll</button>{/if}
@@ -40,7 +40,7 @@
     <div class="proposal-destination" aria-hidden="true"><span>PROPOSAL RAIL</span><i></i><b>AIR GAP</b></div>
     <div class="authority-plane" aria-hidden="true"><i></i><span>AUTHORITY</span><small>SEPARATE STATE</small></div>
   </div>
-  <p class="comparator-resolution">First differing key: <strong>{decisiveIndex >= 0 ? keyFields[decisiveIndex].label : 'none'}</strong>. The current no-preference fixture resolves at the start-time tie-break after earlier key fields remain equal.</p>
+  <p class="comparator-resolution">First difference: <strong>{decisiveIndex >= 0 ? keyFields[decisiveIndex].label : 'none'}</strong>. No preferred time was supplied. The first three comparison values are equal, so the earlier start comes first.</p>
   <p class="identity-equivalent">{candidateIdentity(ranked[0].start)} · {timeLabel(ranked[0].start)} UTC remains the same candidate in the field, comparison and proposal. Planning stops before authority.</p>
 </section>
 

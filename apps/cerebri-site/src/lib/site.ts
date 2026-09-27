@@ -17,16 +17,16 @@ export const sections = {
   },
   cpir: {
     eyebrow: 'CPIR Explorer',
-    title: 'Make planning evidence explicit.',
-    summary: 'CPIR 0.2 adds bounded temporal source state while retaining separate scope, knowledge, provenance, constraints, preferences, policy and capability. Legacy 0.1 inputs remain accepted.',
-    technical: 'Resolved processing state and epistemic knowledge state are intentionally separate. Omitted, empty and populated scope filters retain different semantics.',
-    research: 'The schema remains internal: 0.2 accepts temporal source state; 0.1 is retained for legacy inputs and the website example. Neither is a stable v1 promise.',
+    title: 'What information does the planner need?',
+    summary: 'To find 30 minutes for an appointment, Cerebri needs its duration, a search window and the times already occupied. CPIR puts those details, rules and planning permissions into separate fields. A calling application supplies this data; the current planner does not read a sentence.',
+    technical: 'The new appointment has no assigned time: its time.value is RESOLVED with knowledge MISSING. The duration is KNOWN: 1800 seconds. A missing duration would prevent the search from starting.',
+    research: 'This example uses CPIR 0.2. The format also supports temporal source data; older 0.1 requests remain accepted without it. CPIR is still an internal, evolving format. Learned interpretation remains future work.',
     status: 'Implemented' as StatusKind,
     truth: 'REAL' as TruthKind,
     visual: 'cpir',
     sourcePath: 'examples/request.json',
-    sourceLabel: 'Canonical CPIR fixture',
-    bullets: ['Schemas 0.1 and 0.2 are validated explicitly.', 'MISSING is not the same as UNRESOLVED.', 'Capability does not silently expand planning scope.']
+    sourceLabel: 'Read the complete example input',
+    bullets: ['The new appointment still needs a time.', 'The existing 09:00–10:00 appointment blocks overlapping starts.', 'Planning permissions do not authorize a calendar change.']
   },
   planning: {
     eyebrow: 'Deterministic Planning Field',
@@ -68,17 +68,17 @@ export const sections = {
     bullets: ['Planner ≠ Executor.', 'Validation does not grant permission.', 'Unknown provider outcome requires reconciliation.']
   },
   architecture: {
-    eyebrow: 'Architecture Constellation',
-    title: 'Keep authority directional and inspectable.',
-    summary: 'Independent temporal/types foundations feed semantics, constraints and planning; core exposes a thin synchronous facade; transports delegate.',
-    technical: 'Repository checks enforce workspace dependency direction and keep research outside production membership. Core owns no database, HTTP client or provider schema.',
-    research: 'Future adapters may become asynchronous when real I/O justifies it, without moving domain truth into transports.',
+    eyebrow: 'Architecture',
+    title: 'Which part does what?',
+    summary: 'Rust checks the appointment details, tests possible times and compares valid options. The API and Node bridge pass requests to that code. The Lab and website show the results. Carrying out a change requires separate validation, permission checks and an executor.',
+    technical: 'cerebri-core forwards planning calls to cerebri-planner. The planner owns CPIR and the stages through AuthorizedActionPlan; cerebri-integrations owns execution. An import arrow shows a code dependency, not an execution step.',
+    research: 'cerebri-ml defines metadata and interfaces, but the current planner does not call a learned model. Learning experiments in research/ stay outside production dependencies.',
     status: 'Foundation' as StatusKind,
     truth: 'EDUCATIONAL' as TruthKind,
     visual: 'architecture',
-    sourcePath: 'docs/architecture/decisions/ADR-0001-workspace.md',
-    sourceLabel: 'ADR-0001',
-    bullets: ['Core stays transport-neutral.', 'Research never becomes a hidden production dependency.', 'Frontend clients consume typed outputs.']
+    sourcePath: 'docs/en/foundation.md',
+    sourceLabel: 'Read the architecture walkthrough',
+    bullets: ['Rust calculates; the interfaces display its results.', 'A proposal is not permission to execute.', 'Learning experiments do not run inside the planner.']
   },
   lab: {
     eyebrow: 'Cerebri Lab',
@@ -94,17 +94,17 @@ export const sections = {
     bullets: ['Separate package and route surface.', 'Developer/research UI, not an end-user calendar.', 'No provider mutation controls.']
   },
   roadmap: {
-    eyebrow: 'Roadmap Strata',
-    title: 'Implemented foundations below, research horizons above.',
-    summary: 'The roadmap deliberately sequences deterministic planner depth before provider integration, repair, learning and neural planning.',
-    technical: 'Software remains unreleased 0.2.0. Bounded deterministic schedule/graph/recurrence oracles and malformed-input campaigns now cover the planner baseline. Release qualification is in progress; independent review and an explicit publication decision remain required.',
-    research: 'Dates are planning targets, not promises; releases remain gated by repository truth and verified CI.',
+    eyebrow: 'Learning and research',
+    title: 'Where could learning help?',
+    summary: 'Cerebri began with a wish to understand how neural networks learn. Building the planner makes a related question concrete: could learned suggestions help find useful plans while every option still has to pass explicit checks? This is a research direction; the current planner follows fixed rules.',
+    technical: 'Rust already produces deterministic ranking observations. Evaluation Episode Phase A defines synthetic record types and checks their wire format; it does not collect observations or replay runs. The ML crate defines metadata and interfaces, with no trained model in the planner. Software 0.2.0 remains unreleased.',
+    research: 'Later experiments could study request interpretation, preferences and search guidance. Each would need reproducible comparisons with the deterministic baseline. Facts, required rules, permissions and execution would remain outside learned authority.',
     status: 'Planned' as StatusKind,
     truth: 'REAL' as TruthKind,
     visual: 'roadmap',
-    sourcePath: 'docs/development/roadmap/README.md',
-    sourceLabel: 'Current roadmap',
-    bullets: ['0.2.0 Temporal Core is implemented.', 'Planner verification is implemented; release qualification is in progress.', 'Providers, learning and neural layers remain later milestones.']
+    sourcePath: 'docs/en/research.md',
+    sourceLabel: 'Read the learning and research path',
+    bullets: ['The current planner does not learn from your choices.', 'Neural-network lessons are planned, not implemented.', 'Future experiments must show what improves and what still fails.']
   },
   developers: {
     eyebrow: 'Developer Surface',

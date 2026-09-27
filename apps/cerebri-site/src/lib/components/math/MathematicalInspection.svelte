@@ -17,7 +17,7 @@
 </script>
 
 <section data-world="measurement" class="math-inspection" id="mathematical-inspection" aria-labelledby="math-title" data-motion={reduced ? 'reduced' : 'full'}>
-  <header class="math-heading"><div><span class="kicker">CURRENT / MATHEMATICAL INSPECTION</span><h2 id="math-title">Geometry. Measurement. Notation.</h2></div><p>Inspect the temporal relationships behind the current deterministic planner.</p></header>
+  <header class="math-heading"><div><span class="kicker">A CLOSER LOOK AT TIME</span><h2 id="math-title">When do appointments overlap?</h2></div><p>Explore why one appointment can start exactly when another ends, and how a preferred time affects the comparison.</p></header>
   <IntervalGeometry />
   <PreferredDistanceView />
   <MeasurementInspection />

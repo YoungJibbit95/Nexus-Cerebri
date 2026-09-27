@@ -11,8 +11,8 @@
 </script>
 
 <section class="math-chapter preferred-inspection" aria-labelledby="preferred-title">
-  <header class="chapter-heading"><span class="chapter-number">02</span><div><small>CURRENT / SEPARATE PREFERENCE FIXTURE</small><h3 id="preferred-title">Measure from a preference.</h3></div></header>
-  <SemanticMark kind="preference" label="Preference ≠ hard constraint" detail="Measurement influences order, never blocks this candidate." />
+  <header class="chapter-heading"><span class="chapter-number">02</span><div><small>A SECOND EXAMPLE / PREFERRED START</small><h3 id="preferred-title">What if you would prefer 10:45?</h3></div></header>
+  <SemanticMark kind="preference" label="A preference helps compare valid times" detail="A time further away can still be valid. Required rules always apply." />
   <div class="distance-composition">
     <div class="distance-world" aria-hidden="true">
       <div class="preference-field" style:left={preferredX + '%'}></div>
@@ -23,16 +23,16 @@
       <div class="distance-limits"><span>{timeLabel(fixture.scope.start)}</span><span>{timeLabel(fixture.scope.end)} UTC</span></div>
     </div>
     <div class="measurement-reading">
-      <label for="math-candidate">Inspect a valid candidate</label>
+      <label for="math-candidate">Choose a possible start</label>
       <select id="math-candidate" bind:value={selected}>{#each fixture.candidates as entry, index}<option value={index}>{timeLabel(entry.start)} UTC</option>{/each}</select>
-      <p>Candidate {timeLabel(candidate.start)} is <strong>{candidate.ranking_features.preferred_start_distance_seconds} seconds</strong> from preferred start {timeLabel(fixture.preferred_start)} UTC.</p>
-      <small>All listed candidates are valid. Their sequence is the Rust-produced order.</small>
+      <p>A start at {timeLabel(candidate.start)} is <strong>{candidate.ranking_features.preferred_start_distance_seconds} seconds</strong> from the preferred {timeLabel(fixture.preferred_start)} UTC. For example, 900 seconds is 15 minutes.</p>
+      <small>Every listed time has passed the required checks. The Rust planner has already put them in order. This separate example adds a preference; the earlier example has none.</small>
     </div>
   </div>
-  <details class="math-disclosure"><summary>Inspect the distance observation</summary><div class="technical-reading">
+  <details class="math-disclosure"><summary>Show the distance and its source</summary><div class="technical-reading">
     <code>preferred_start_distance_seconds = {candidate.ranking_features.preferred_start_distance_seconds}</code>
     <code>preferred_start_source = {candidate.ranking_features.preferred_start_source}</code>
-    <p>The homepage fixture above still has no preference evidence. This separate fixture explicitly supplies the preferred start.</p>
+    <p>These fields record the distance and where the preferred start came from. The source is recorded separately from the numeric value used for comparison.</p>
   </div></details>
-  <SourceLink path={fixture.source} label="Preferred-start fixture" />
+  <SourceLink path={fixture.source} label="Input data for the preferred-start example" />
 </section>

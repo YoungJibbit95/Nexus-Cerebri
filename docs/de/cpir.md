@@ -1,6 +1,152 @@
 <!-- doc: cpir; lang: de; counterpart: ../en/cpir.md -->
 # CPIR 0.2 und Schnittstellen
 
+CPIR ist das Datenformat, in dem Cerebri eine Planungsaufgabe erhält. Dauer, belegte
+Zeiten, Regeln und Berechtigungen stehen in eigenen Feldern. So kann der Planer prüfen,
+welche Angaben vorliegen und welche noch fehlen. Der vollständige Name lautet
+*Cerebri Planning Intermediate Representation*.
+
+[English](../en/cpir.md) · [Projektgeschichte und Planungsbeispiel](introduction.md)
+
+## Vom Terminwunsch zur Anfrage
+
+Das [Beispiel im Repository](../../examples/request.json) beschreibt diese Aufgabe:
+
+> Finde am 1. Oktober 2026 einen 30-minütigen Termin zwischen 09:00 und 12:00 Uhr.
+> Von 09:00 bis 10:00 Uhr liegt bereits ein Termin. Eine Wunschzeit ist nicht angegeben.
+
+Alle Uhrzeiten sind UTC. Der Satz erklärt das Beispiel; der aktuelle Planer liest keine
+freie Texteingabe. Eine aufrufende Anwendung muss die Angaben als CPIR bereitstellen.
+Die Beispieldatei enthält synthetische Daten, keine Termine aus einem angebundenen Kalender.
+
+| Frage | Feld in der Anfrage | Wert im Beispiel |
+| --- | --- | --- |
+| Was soll entstehen? | [`operation`](../../crates/cerebri-planner/src/model.rs) | `CREATE`: einen neuen Termin vorschlagen |
+| Für welches Objekt? | [`target_ids`](../../crates/cerebri-planner/src/model.rs) | `new-event`, beschrieben in `context.objects` |
+| Wie lange dauert es? | [`duration`](../../crates/cerebri-planner/src/model.rs) | 1800 Sekunden, also 30 Minuten |
+| In welchem Zeitraum wird gesucht? | [`scope.time_range`](../../crates/cerebri-planner/src/model.rs) | 09:00–12:00 Uhr |
+| Was belegt schon Zeit? | [`context.objects`](../../crates/cerebri-planner/src/model.rs) | Das bestehende Objekt `busy`, 09:00–10:00 Uhr |
+| Gibt es zusätzliche verbindliche Regeln? | [`constraints`](../../crates/cerebri-planner/src/model.rs) | `[]`: keine zusätzlichen Regeln angegeben |
+| Gibt es Wünsche? | [`preferences.preferences`](../../crates/cerebri-preferences/src/lib.rs) | `[]`: keine Präferenzen angegeben |
+
+`new-event` hat `revision: null`: Es ist ein geplantes neues Objekt. `busy` hat bereits
+`revision: 1` und eine bekannte Zeit. Die separate `context.revision` kennzeichnet den
+Stand des gesamten übergebenen Kontexts. Die Suche erzeugt einen Vorschlag für
+`new-event`; sie legt dadurch noch keinen Kalendereintrag an.
+
+## Warum die neue Zeit fehlen darf, die Dauer aber nicht
+
+Die Zeit für `new-event` muss erst gefunden werden. Deshalb enthält dessen `time.value`
+in der Beispieldatei genau diesen Wert:
+
+```json
+{
+  "processing": "RESOLVED",
+  "knowledge": {
+    "state": "MISSING"
+  }
+}
+```
+
+Das ist ein Ausschnitt, keine vollständige Planungsanfrage. `RESOLVED` bedeutet, dass
+der Verarbeitungszustand geklärt ist. `MISSING` sagt, dass keine Zeit angegeben wurde.
+Diese Kombination ist für den neuen Termin vorgesehen. Eine bereits belegte Zeit
+dürfte hingegen nicht fehlen: Der Planer braucht sie, um Überschneidungen zu prüfen.
+
+Auch die Dauer muss vor der Suche feststehen. So sieht das vollständige Feld `duration`
+in derselben Datei aus:
+
+```json
+{
+  "value": {
+    "processing": "RESOLVED",
+    "knowledge": {
+      "state": "KNOWN",
+      "data": 1800
+    }
+  },
+  "provenance": "USER_EXPLICIT",
+  "confidence": null,
+  "evidence": []
+}
+```
+
+`KNOWN` kennzeichnet den bekannten Wert von 1800 Sekunden. `USER_EXPLICIT` hält fest,
+dass die Dauer ausdrücklich vorgegeben wurde. Das leere `evidence`-Array enthält keine
+zusätzlichen Belegkennungen. `confidence: null` bedeutet, dass kein separater
+Konfidenzwert angegeben ist; es macht die bekannte Dauer nicht zu null oder unbekannt.
+
+Andere Zustände bleiben unterscheidbar: `UNKNOWN` heißt, dass sich ein benötigter Wert
+derzeit nicht bestimmen lässt. `AMBIGUOUS` hält mehrere mögliche Deutungen fest.
+`UNRESOLVED` bedeutet, dass die Verarbeitung noch offen ist. Wenn die Dauer fehlt oder
+in einem dieser Zustände steht, beginnt die Suche nicht. Ein geschätzter Wert mit
+`UNCERTAIN` darf nur für eine Analyse mit ausdrücklicher Policy-Erlaubnis verwendet werden.
+
+## Eine leere Regelliste schaltet Prüfungen nicht ab
+
+Auch bei `constraints: []` prüft der Planer die Dauer, das Planungsfenster und
+Überschneidungen mit bekannten Belegungen. Die Zeit von `busy` steht direkt im Objekt
+und wird deshalb auch berücksichtigt, wenn `context.facts` leer ist.
+
+Die Herkunft dieser Zeit ist im Beispiel als `INTEGRATION_FACT` angegeben. Hier ist das
+eine Angabe in synthetischen Testdaten, kein Nachweis einer produktiven Kalenderanbindung.
+
+Wünsche stehen separat in `preferences`. In diesem Beispiel ist die Liste leer; es wird
+keine Wunschzeit ergänzt oder gelernt. Auch mit einem Wunsch müsste ein Kandidat zuerst
+die verbindlichen Prüfungen bestehen. Eine bevorzugte Uhrzeit kann einen Konflikt nicht
+aufheben.
+
+## Suchschritte und Suchgrenze sind verschiedene Angaben
+
+`granularity: 900` legt mögliche Startzeiten im Abstand von 900 Sekunden, also 15 Minuten,
+fest. Zusammen mit der Dauer von 30 Minuten und dem Fenster 09:00–12:00 Uhr ergeben sich
+11 mögliche Starts: 09:00, 09:15 und so weiter bis 11:30 Uhr.
+
+`budget.max_candidates: 256` begrenzt dagegen, wie viele Startzeiten geprüft werden
+dürfen. Es verlangt keine 256 Kandidaten. Das Budget reicht hier für alle 11 Starts,
+einschließlich der später verworfenen. `max_repairs` und `max_depth` stehen auf null;
+eine weitergehende Reparatursuche findet nicht statt. Das Budget zählt Arbeitsschritte,
+keine verstrichenen Millisekunden.
+
+## Ein Suchraum ist noch keine Berechtigung
+
+`scope` begrenzt, wo geplant werden darf. Seine Filter stehen hier auf `null`, fügen also
+keine Einschränkung nach Kennungen hinzu. Eine leere Liste `[]` würde nichts auswählen.
+Keine dieser Angaben erteilt eine Berechtigung.
+
+`policy` beschreibt die geltenden Regeln für Änderungen; `planning_capability` enthält
+die Planungsrechte für konkrete Objekte. Die Beispiel-Policy erlaubt grundsätzlich
+`CREATE_EVENT` und `MOVE_EVENT`. Die Capability enthält aber nur einen passenden Eintrag
+für `CREATE_EVENT` an `new-event`. Daraus entsteht kein Recht, `busy` zu verschieben.
+Die Änderungsgrenze von drei im Scope und in der Policy ist eine Obergrenze, kein Auftrag
+für drei Änderungen. Die Suche behandelt hier weiterhin genau einen Zieltermin.
+
+Diese Angaben werden schon bei der Planung geprüft. Für eine Ausführung sind danach
+weitere Validierungs- und Berechtigungsprüfungen erforderlich. Insbesondere ersetzt ein
+`principal_id` in einer Anfrage keine Anmeldung. Die [Lifecycle-Referenz](foundation.md)
+beschreibt die Schritte bis zur Ausführung.
+
+## Von den Eingaben zum Ergebnis
+
+Für diese unveränderte Datei verwirft der Rust-Planer vier überlappende Starts; sieben
+bleiben übrig. Ohne Wunschzeit steht nach den festen Vergleichsregeln 10:00 Uhr an erster
+Stelle. Die [Einführung](introduction.md) führt durch dieses Ergebnis, die
+[Planungsreferenz](planner-integration.md) beschreibt den genauen Vergleich.
+
+Als Nächstes zeigt die [Architektur-Erklärung](foundation.md), welcher Teil diese
+Eingaben prüft, Vorschläge berechnet und Ergebnisse an Anwendungen zurückgibt.
+
+Die folgenden Quellen verbinden die Erklärung mit der Implementierung:
+
+- [Vollständige CPIR-Anfrage](../../examples/request.json): die ausführbare Eingabe.
+- [Rust-Datenmodell](../../crates/cerebri-planner/src/model.rs): Felder und Scope-Filter.
+- [Wissenszustände](../../crates/cerebri-types/src/lib.rs): `FieldState`, `Knowledge` und Herkunft.
+- [Eingabeprüfung](../../crates/cerebri-planner/src/validation.rs): benötigte Werte und Planungsrechte.
+- [Kandidatenprüfung](../../crates/cerebri-planner/src/lifecycle.rs): unter anderem die feste Überschneidungsprüfung.
+- [Suche](../../crates/cerebri-planner/src/search.rs): Raster, Budget und Reihenfolge.
+
+## Schema und weitere Eingaberegeln
+
 **Current CPIR:** `0.2`
 **Legacy CPIR:** `0.1`
 
@@ -20,8 +166,9 @@ Eine Anfrage enthält Identität/Trace/Principal, Operation, Scope, unveränderl
 Objekten, Fakten und optionalen temporalen Quelldaten, Ziele, Dauerevidenz, Constraints, Präferenzen, typisierte Policy,
 Planungsrechte, Raster und deterministisches Budget. Event, Task, Deadline, Availability und
 Resource sind modelliert. Such- und Mutationsziele sind derzeit Events. Bestehende blockierende
-Zeiten müssen bekannt sein; neue Events haben den Zeitstatus Missing. Explizite Wunschzeiten
-werden als ExplicitTime-Constraint angegeben.
+Zeiten müssen bekannt sein; neue Events haben den Zeitstatus Missing. Eine verbindlich
+vorgegebene Platzierung wird als ExplicitTime-Constraint angegeben, eine bloß bevorzugte
+Startzeit gehört zu den Präferenzen.
 
 FieldState trennt den Verarbeitungszustand Unresolved von Knowledge: Known, Missing, Unknown,
 Uncertain und Ambiguous. Confidence ist endlich und liegt in [0,1]; sie ersetzt keinen Wissensstatus.

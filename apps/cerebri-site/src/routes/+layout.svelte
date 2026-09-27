@@ -39,7 +39,7 @@
 <header class:scrolled class="site-header">
   <a class="brand" href={href('/')} aria-label="Nexus Cerebri home">
     <span class="brand-mark"><img src={href('/nexus-cerebri-logo.png')} alt="" /></span>
-    <span class="brand-copy"><strong><span>Nexus</span> Cerebri</strong><small>DETERMINISTIC PLANNING FOUNDATION</small></span>
+    <span class="brand-copy"><strong><span>Nexus</span> Cerebri</strong><small>OPEN-SOURCE PLANNING PROJECT</small></span>
   </a>
   <button
     class="nav-toggle"
@@ -65,9 +65,9 @@
 <footer class="site-footer">
   <div class="footer-orbit" aria-hidden="true"><span></span><i></i><b></b></div>
   <div class="footer-statement">
-    <small>NEXUS CEREBRI / VERIFIED FOUNDATION</small>
-    <strong>Structured evidence. Bounded search. Explicit authority.</strong>
-    <span>Learned or neural layers remain future research; current planning stays deterministic.</span>
+    <small>NEXUS CEREBRI / IN DEVELOPMENT</small>
+    <strong>See the options. Check the result.</strong>
+    <span>The current planner follows fixed rules. Neural networks and learned planning remain research goals.</span>
   </div>
   <div class="footer-links">
     <a href={href('/docs/project/')}>Project <span>↗</span></a>

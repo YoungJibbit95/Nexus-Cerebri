@@ -37,10 +37,10 @@
 </script>
 
 <svelte:head>
-  <title>Nexus Cerebri · Deterministic temporal planning</title>
+  <title>Nexus Cerebri · Find a time and understand the result</title>
   <meta
     name="description"
-    content="The official Nexus Cerebri knowledge surface for deterministic temporal planning, CPIR, lifecycle safety and research boundaries."
+    content="See how Nexus Cerebri checks possible appointment times, rules out conflicts and returns a proposal you can inspect. Explore the project in English or German."
   />
 </svelte:head>
 
@@ -49,26 +49,27 @@
   <div class="hero-nebula hero-nebula-a" aria-hidden="true"></div>
   <div class="hero-nebula hero-nebula-b" aria-hidden="true"></div>
   <div class="hero-copy">
-    <div class="hero-badge"><span class="badge-orbit" aria-hidden="true"></span><b>NEXUS CEREBRI</b><span>DETERMINISTIC PLANNING FOUNDATION</span><i aria-hidden="true"></i></div>
-    <h1><span>Bound the problem.</span><em>Verify the plan.</em></h1>
+    <div class="hero-badge"><span class="badge-orbit" aria-hidden="true"></span><b>NEXUS CEREBRI</b><span>OPEN-SOURCE PLANNING PROJECT</span><i aria-hidden="true"></i></div>
+    <h1><span>Find a time.</span><em>Understand the choice.</em></h1>
     <p class="hero-lede">
-      Nexus Cerebri turns structured temporal context into a bounded search. Known state and hard rules reject invalid
-      candidates, deterministic ordering compares what remains, and a proposal never becomes execution authority by itself.
+      Cerebri is a learning project exploring how software can make plans and explain its results.
+      Its current example is an appointment: given a duration, a time window and rules as structured data,
+      the planner checks possible times and returns a proposal. It does not book the appointment.
     </p>
     <div class="hero-actions">
       <a class="primary-action" href={base + '/explore/'}><span>Explore Cerebri</span><b aria-hidden="true">↗</b></a>
-      <a class="secondary-action" href={base + '/docs/'}><span>Read the Specification</span><b aria-hidden="true">→</b></a>
+      <a class="secondary-action" href={base + '/docs/de/introduction/'} lang="de" hreflang="de"><span>Auf Deutsch lesen</span><b aria-hidden="true">→</b></a>
     </div>
     <div class="hero-release-row" role="group" aria-label="Release status">
       <span>Published release: {runtimeData.metadata.publishedRelease}</span>
-      <span>Unreleased · qualification in progress</span>
-      <span>CPIR {runtimeData.metadata.cpirVersion}</span>
+      <span>In development · release checks in progress</span>
+      <span>Input format: CPIR {runtimeData.metadata.cpirVersion}</span>
     </div>
   </div>
 
   <BoundedSearchObservatory />
 
-  <div class="hero-scroll-cue" aria-hidden="true"><span>FOLLOW THE SEARCH</span><i></i><b></b></div>
+  <div class="hero-scroll-cue" aria-hidden="true"><span>SEE HOW IT WORKS</span><i></i><b></b></div>
 </section>
 
 <div class="home-story">
@@ -77,14 +78,14 @@
 
 <section class="metrics" aria-label="Repository authority">
   <div class="metrics-intro">
-    <span class="kicker">CURRENT REPOSITORY STATE</span>
-    <h2>The system you can inspect.<br /><em>Today.</em></h2>
+    <span class="kicker">PROJECT STATUS</span>
+    <h2>Available to explore.<br /><em>Still in development.</em></h2>
   </div>
   <div class="metric-orbit" aria-hidden="true"><i></i><span></span></div>
-  <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>{runtimeData.metadata.releaseStatus} · qualification in progress</span></article>
-  <article><small>SPECIFICATION</small><strong>{runtimeData.metadata.specVersion}</strong><span>Current Master baseline</span></article>
-  <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Structured planning schema</span></article>
-  <article><small>RUST</small><strong>{runtimeData.metadata.rustVersion}</strong><span>Pinned workspace language floor</span></article>
+  <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>{runtimeData.metadata.releaseStatus} · release checks in progress</span></article>
+  <article><small>SPECIFICATION</small><strong>{runtimeData.metadata.specVersion}</strong><span>Architecture document version</span></article>
+  <article><small>CPIR</small><strong>{runtimeData.metadata.cpirVersion}</strong><span>Planning input format version</span></article>
+  <article><small>RUST</small><strong>{runtimeData.metadata.rustVersion}</strong><span>Minimum Rust version for this workspace</span></article>
   <SourceLink path="docs/architecture/specifications/master-v0.4.md" label="Master Specification 0.4" />
 </section>
 
@@ -95,10 +96,10 @@
 
 <section data-world="horizon" class="domain-journey cosmic-section" aria-labelledby="journey-title">
   <div class="section-copy journey-copy">
-    <span class="section-index">ACT 04–09 / CEREBRI UNIVERSE</span>
-    <span class="kicker">ONE SYSTEM · EXPLICIT BOUNDARIES</span>
-    <h2 id="journey-title">Follow the system.<br /><em>Keep authority explicit.</em></h2>
-    <p>Move from typed time and CPIR through bounded search, lifecycle safety, architecture and future research.</p>
+    <span class="section-index">EXPLORE THE DETAILS</span>
+    <span class="kicker">TIME · INPUT · PLANNING · EXECUTION</span>
+    <h2 id="journey-title">What would you<br /><em>like to explore?</em></h2>
+    <p>Follow a topic from the example to its data format, rules and implementation.</p>
   </div>
 
   <div class="journey-grid">
@@ -118,7 +119,7 @@
       <span class="journey-system" aria-hidden="true"><i></i><i></i><i></i><b></b></span><small>05 / AUTHORITY</small><h3>Architecture with direction.</h3><p>Foundations feed domain semantics and thin transports without moving authority outward.</p><strong>See Architecture <b>→</b></strong>
     </a>
     <a class="journey-card roadmap-card future" href={base + '/roadmap/'}>
-      <span class="journey-nebula" aria-hidden="true"></span><small>06 / HORIZON</small><h3>Research stays distant.</h3><p>Providers, learning and neural layers remain later milestones until repository truth changes.</p><strong>View Roadmap <b>→</b></strong>
+      <span class="journey-nebula" aria-hidden="true"></span><small>06 / HORIZON</small><h3>Where could learning help?</h3><p>Explore how the learning project could grow from fixed planning rules to tested, learned advice.</p><strong>View Roadmap <b>→</b></strong>
     </a>
   </div>
 </section>
@@ -143,21 +144,23 @@
   </article>
   <article class="feature-card future-surface">
     <div class="feature-orb" aria-hidden="true"></div><span class="truth-label" data-kind="FUTURE CONCEPT">FUTURE CONCEPT</span>
-    <h3>Research stays visibly future</h3>
-    <p>Learning, neural planning, advanced repair and production provider execution remain future work until implementation exists.</p>
-    <a href={base + '/roadmap/'}>Read roadmap strata <span>→</span></a>
+    <h3>Learning is the next question</h3>
+    <p>Could a model help interpret a request or compare valid times? These are future experiments. The current planner does not train a model or learn from choices.</p>
+    <a href={base + '/docs/en/research/'}>Explore the research questions <span>→</span></a>
   </article>
 </section>
 
 <section class="home-finale cosmic-section">
   <div class="finale-planet" aria-hidden="true"><span></span><i></i></div>
   <div class="finale-copy">
-    <span class="kicker">ACT 10 / ENTER THE SYSTEM</span>
-    <h2>Inspect what exists.<br /><em>See what comes later.</em></h2>
-    <p>Start with the system map, inspect the real planning fixture, or go straight to the repository documentation.</p>
+    <span class="kicker">THE PROJECT’S BEGINNING</span>
+    <h2>Why I started<br /><em>Nexus Cerebri.</em></h2>
+    <p>I wanted to understand how neural networks learn. The <a href="https://www.nature.com/articles/323533a0">1986 backpropagation paper by David E. Rumelhart, Geoffrey E. Hinton and Ronald J. Williams</a> helped draw me into the mathematics. Following each operation turned equations I found intimidating into steps I could understand.</p>
+    <p>Cerebri became a way to keep learning by building and testing a real system. Planning gave me a concrete problem: what is already known, which rules must hold, and why does one option come before another? Scheduling is the first example; the longer-term aim is planning software for different applications.</p>
+    <p>The planner shown here follows fixed rules. Later, I want to explore how learned methods could help it find and compare options. The <a href={base + '/docs/en/research/'}>learning and research path</a> explains those questions and the checks that would still apply.</p>
     <div class="hero-actions">
-      <a class="primary-action" href={base + '/explore/'}><span>Enter the Atlas</span><b>↗</b></a>
-      <a class="secondary-action" href={base + '/docs/'}><span>Canonical Docs</span><b>→</b></a>
+      <a class="primary-action" href={base + '/docs/en/introduction/'}><span>Read the story and example</span><b>↗</b></a>
+      <a class="secondary-action" href={base + '/docs/de/introduction/'} lang="de" hreflang="de"><span>Auf Deutsch lesen</span><b>→</b></a>
     </div>
   </div>
 </section>

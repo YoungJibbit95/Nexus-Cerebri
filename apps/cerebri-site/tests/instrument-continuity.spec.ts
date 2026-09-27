@@ -68,12 +68,12 @@ test('measurement moves the lattice while notation retains its physical endpoint
   await page.goto(prefix + '/');
   const surface = page.locator('.interval-inspection');
   const endpoint = await surface.locator('.compression-start i').elementHandle();
-  await surface.getByRole('button', { name: 'Compress geometry to notation', exact: true }).click();
+  await surface.getByRole('button', { name: 'Show the interval notation', exact: true }).click();
   await expect(surface.locator('.compression-start i')).toHaveCSS('border-radius', '0px');
   expect(await endpoint!.evaluate(el => el === document.querySelector('.compression-start i'))).toBe(true);
   const instant = page.locator('.exact-instant');
   const left = await instant.evaluate(el => getComputedStyle(el).left);
-  await page.getByRole('button', { name: 'Reveal measurement lattice', exact: true }).click();
+  await page.getByRole('button', { name: 'Show whole-second markers', exact: true }).click();
   await expect(page.locator('.measurement-lattice')).toHaveCSS('transform', 'none');
   expect(await instant.evaluate(el => getComputedStyle(el).left)).toBe(left);
   await page.locator('#math-shift').selectOption('-1');

@@ -16,11 +16,11 @@ export type SemanticLegendItem = {
 };
 
 export const plannerSemanticLegend: SemanticLegendItem[] = [
-  { kind: 'scope', label: 'Scope', detail: 'where search may occur' },
-  { kind: 'fact', label: 'Known state', detail: 'supplied reality' },
-  { kind: 'constraint', label: 'Hard constraint', detail: 'must not be violated' },
-  { kind: 'preference', label: 'Preference', detail: 'orders valid candidates' },
-  { kind: 'candidate', label: 'Candidate', detail: 'considered placement' },
-  { kind: 'violation', label: 'Rejected', detail: 'failed validity' },
-  { kind: 'result', label: 'First result', detail: 'Rust-produced order' }
+  { kind: 'scope', label: 'Time window', detail: 'limits this search' },
+  { kind: 'fact', label: 'Known appointment', detail: 'occupies this time' },
+  { kind: 'constraint', label: 'Required rule', detail: 'every option must pass' },
+  { kind: 'preference', label: 'Preference', detail: 'helps compare valid options' },
+  { kind: 'candidate', label: 'Candidate', detail: 'one possible appointment' },
+  { kind: 'violation', label: 'Rejected', detail: 'fails a required check' },
+  { kind: 'result', label: 'First proposal', detail: 'first in the planner’s order' }
 ];
