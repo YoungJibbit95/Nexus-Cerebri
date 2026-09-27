@@ -12,8 +12,8 @@ Angenommen, der Planer schlägt 10:00 Uhr vor. Bevor etwas geändert wird, könn
 anderer Termin hinzukommen, eine Berechtigung entzogen werden oder eine erforderliche
 Bestätigung fehlen. Der frühere Vorschlag beantwortet keine dieser Fragen von allein.
 
-Die aktuelle Rust-Implementierung bildet die Schritte durch unterschiedliche Typen ab.
-Jeder spätere Typ entsteht erst nach den zugehörigen Prüfungen:
+Die aktuelle Rust-Implementierung bildet diese Schritte durch unterschiedliche Typen ab.
+Ein Vorschlag lässt sich nicht direkt an den Executor übergeben:
 
 1. **Vorschlagen — `ProposedPlan`.** Eine mögliche Platzierung beschreiben. Die Prüfung
    einzelner Kandidaten während der Suche macht daraus noch keine Erlaubnis zum Handeln.

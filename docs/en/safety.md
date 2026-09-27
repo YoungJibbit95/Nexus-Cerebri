@@ -11,8 +11,8 @@ Suppose the planner suggests 10:00. Before a change is made, another appointment
 occupy that time, a permission could be withdrawn, or a required confirmation could be
 missing. The earlier suggestion cannot settle any of those questions by itself.
 
-The current Rust implementation represents the steps with different types. Each later
-type can only be obtained through the corresponding checks:
+The current Rust implementation represents these steps with different types. A proposal
+cannot be passed directly to the executor:
 
 1. **Propose — `ProposedPlan`.** Describe a possible placement. Candidate checks during
    search do not turn this proposal into permission to act.
