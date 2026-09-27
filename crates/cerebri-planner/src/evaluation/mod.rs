@@ -1,8 +1,9 @@
-//! Synthetic evaluation contract foundations (Slice 2, Phase A).
+//! Synthetic evaluation contracts and partial Phase-B canonical foundations.
 //!
-//! These types validate wire contracts. They do not certify lifecycle/collection validity,
-//! authenticate artifacts, canonicalize a scenario, compute fingerprints, or replay planning.
-//! Planning, ranking, admission and execution retain their existing authorities.
+//! Canonical values, closed rule grammars, candidate/hypothesis identities and shared
+//! admission-work measurement are implemented. Whole-scenario graph/BSF/DI/DO projection,
+//! lifecycle/collection validation, artifact authentication and replay remain pending.
+//! Planning, ranking, admission thresholds and execution retain their authorities.
 
 // A closed wire struct must deserialize from a map, never a positional JSON array.
 // The helper remains typed and streaming; no untyped JSON intermediate is used.
@@ -37,15 +38,23 @@ macro_rules! deserialize_object_via {
     };
 }
 
+mod admission_work;
 mod artifact;
+mod canonical;
+mod canonical_rules;
 mod episode;
+mod fingerprint;
 mod observation;
 mod primitives;
 mod tokens;
 mod wire;
 
+pub use admission_work::*;
 pub use artifact::*;
+pub use canonical::*;
+pub use canonical_rules::*;
 pub use episode::*;
+pub use fingerprint::*;
 pub use observation::*;
 pub use primitives::*;
 pub use tokens::*;
