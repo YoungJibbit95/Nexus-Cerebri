@@ -131,15 +131,8 @@ for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1100 });
     await page.goto(prefix + '/');
     await page.evaluate(() => document.fonts.ready);
-    await page.locator('.observatory-track').evaluate((el, target) => {
-      const rect = el.getBoundingClientRect();
-      const surface = el.querySelector('.observatory')!;
-      const top = Number.parseFloat(getComputedStyle(surface).top);
-      window.scrollTo({ top: scrollY + rect.top - top + (target + .1) / 7 * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
-    }, phase);
-    // Scene 0 is also the initial state, so an attribute assertion alone can pass
-    // before the scroll listener's requestAnimationFrame has processed the new position.
-    // Wait for two paint frames so the scroll-driven Svelte state and sticky layout settle.
+    await page.locator('.scene-controls button').nth(phase).click();
+    // Allow responsive scene layout and the observer's frame to settle before capture.
     await page.evaluate(() => new Promise<void>(resolve =>
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
     ));

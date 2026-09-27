@@ -6,6 +6,8 @@
   import SemanticLegend from './SemanticLegend.svelte';
   import CandidateField from './CandidateField.svelte';
   import CandidateDecisionPlane from './CandidateDecisionPlane.svelte';
+  import RejectionWitness from './RejectionWitness.svelte';
+  let inspected = $state(planner.conflicts.rejections.at(-1)!.start);
   const selectedLabel = timeLabel(ranked[0].start);
   const validCount = ranked.length;
   const rejectedCount = planner.conflicts.rejections.length;
@@ -26,15 +28,23 @@
       else flowStage = 3;
     };
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
-    update(); window.addEventListener('scroll', schedule, {passive:true}); window.addEventListener('resize', schedule); motion.addEventListener('change', schedule);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', schedule); motion.removeEventListener('change', schedule); };
+    let visible = false;
+    const activity = () => {
+      window.removeEventListener('scroll', schedule);
+      if (visible && !document.hidden) { window.addEventListener('scroll', schedule, { passive: true }); schedule(); }
+      else cancelAnimationFrame(frame);
+    };
+    const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; activity(); });
+    observer.observe(host);
+    update(); window.addEventListener('resize', schedule); motion.addEventListener('change', schedule); document.addEventListener('visibilitychange', activity);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); window.removeEventListener('resize', schedule); motion.removeEventListener('change', schedule); document.removeEventListener('visibilitychange', activity); };
   });
 </script>
 <div bind:this={host} class="planning-instrument" data-exhausted={exhausted} data-flow-root="planning" data-flow-stage={flowStage} data-motion={reducedMotion ? 'reduced' : 'full'}>
   <div class="instrument-meta"><span>{validCount} valid / {rejectedCount} rejected</span><span>NO PREFERRED TIME SUPPLIED</span></div>
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
   <div class="workbench-entry"><span>{candidateIdentity(ranked[0].start)} · {selectedLabel} UTC</span><i aria-hidden="true"></i><small>SAME FIELD · EXACT COORDINATES</small></div>
-  <CandidateField />
+  <CandidateField {inspected} />
   <ol class="sr-candidates" aria-label="Evaluated candidate intervals">
     {#each candidates as candidate}
       <li>
@@ -51,6 +61,7 @@
   </ol>
 
 
+  <RejectionWitness bind:inspected />
   <section class="semantic-flow" aria-label="Candidate to authority flow">
     <div class:reached={flowStage >= 0} class:current={flowStage === 0} class="flow-node candidates" data-flow-node="candidates">
       <span class="flow-index">01</span>

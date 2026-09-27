@@ -21,14 +21,12 @@
 <section data-world="planning" class="intent-section cosmic-section" aria-labelledby="intent-title">
   <div class="intent-nebula" aria-hidden="true"></div>
   <div class="section-copy intent-copy">
-    <span class="section-index">AN EXAMPLE YOU CAN CHECK</span>
-    <span class="kicker">30 MINUTES BETWEEN 09:00 AND 12:00 UTC</span>
-    <h2 id="intent-title">Where can it fit?<br /><em>{evaluated} possible starts.</em></h2>
+    <span class="section-index">CONTINUE THE SEARCH / INSPECT THE RESULT</span>
+    <span class="kicker">VALIDITY → ORDERING → PROPOSAL</span>
+    <h2 id="intent-title">From possible times.<br /><em>To one proposal.</em></h2>
     <p>
-      The planner checks start times every {request.granularity / 60} minutes.
-      Starts that overlap the existing 09:00–10:00 appointment are rejected.
-      The last possible start is 11:30, so the full {request.duration.value.knowledge.data / 60} minutes fit before 12:00.
-      The results below come from running the Rust planner on this example’s structured input.
+      Keep the same {evaluated} possible starts in view. First inspect an overlap, then compare two valid options.
+      Rust checks the rules and puts the remaining options in order. The same input gives the same result: this is deterministic planning.
     </p>
   </div>
 
@@ -45,40 +43,12 @@
         <div class="depth-technical"><small>PREFERRED START</small><strong>{preferenceSource ? 'Preference source: ' + preferenceSource : 'None supplied. The observation records missing distance as None.'}</strong></div>
       </div>
 
-      <div class="intent-axis" aria-hidden="true"><span>APPOINTMENT DETAILS</span><i></i><span>PLANNING RESULT</span></div>
-      <div class="intent-flow">
-        <article class="intent-node">
-          <span class="intent-planet cpir-orb" aria-hidden="true"></span>
-          <small>01 · NEW APPOINTMENT</small>
-          <strong>{request.duration.value.knowledge.data / 60} minutes</strong>
-          <span>Between {formatTime(scopeStart)} and {formatTime(scopeEnd)} UTC</span>
-          <i class="node-state">CPIR input</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>list starts</span><b></b></div>
-        <article class="intent-node">
-          <span class="intent-planet search-orb" aria-hidden="true"></span>
-          <small>02 · POSSIBLE STARTS</small>
-          <strong>{evaluated} times checked</strong>
-          <span>One start every {request.granularity / 60} minutes</span>
-          <i class="node-state">within window</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>check</span><b></b></div>
-        <article class="intent-node">
-          <span class="intent-planet" aria-hidden="true"></span>
-          <small>03 · CHECK FOR CONFLICTS</small>
-          <strong>{feasibleCount} valid · {rejectedCount} rejected</strong>
-          <span>Overlapping times are rejected</span>
-          <i class="node-state">checked</i>
-        </article>
-        <div class="intent-trace" aria-hidden="true"><i></i><span>compare</span><b></b></div>
-        <article class="intent-node intent-resolved">
-          <span class="intent-planet proof-orb" aria-hidden="true"></span>
-          <small>04 · PROPOSED START</small>
-          <strong>{winner ? formatTime(new Date(winner.start).getTime()) + ' UTC' : 'See result'}</strong>
-          <span>A proposal; nothing has been booked</span>
-          <i class="node-state">proposed</i>
-        </article>
-      </div>
+      <dl class="fixture-readout" aria-label="Planning fixture overview">
+        <div><dt>Request</dt><dd>{request.operation} · {request.duration.value.knowledge.data / 60} minutes</dd></div>
+        <div><dt>Evaluated</dt><dd>{evaluated} positions</dd></div>
+        <div><dt>Result</dt><dd>{feasibleCount} valid · {rejectedCount} rejected</dd></div>
+        <div><dt>First proposal</dt><dd>{winner ? formatTime(new Date(winner.start).getTime()) + ' UTC' : 'See result'}</dd></div>
+      </dl>
 
       <PlanningInstrument />
 
@@ -103,3 +73,9 @@
     {/if}
   </VisualizationFrame>
 </section>
+
+<style>
+  .fixture-readout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem;margin:1.5rem 0 0;padding:1.5rem 0;border-block:1px solid var(--line)}.fixture-readout dt{font:.8125rem var(--mono);color:var(--text-3);margin-bottom:.75rem}.fixture-readout dd{margin:0;font-size:1.125rem;font-weight:600;line-height:1.5}.fixture-readout>div:last-child dd{color:var(--cyan)}
+  @media(max-width:760px){.fixture-readout{grid-template-columns:1fr 1fr;gap:1.5rem 1rem}.fixture-readout dd{font-size:1rem}}
+  @media(max-width:350px){.fixture-readout{grid-template-columns:1fr}}
+</style>

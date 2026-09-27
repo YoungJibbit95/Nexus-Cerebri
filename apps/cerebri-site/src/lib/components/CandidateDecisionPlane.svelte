@@ -5,20 +5,30 @@
   let manual = $state<number | null>(null);
   let inspected = $state(decisiveIndex);
   let mounted = $state(false);
+  let active = $state(false);
+  let host: HTMLElement;
   const mode = $derived(manual ?? (flowStage < 1 ? 0 : flowStage < 2 ? 1 : 2));
   const terminal = Math.max(0, decisiveIndex);
-  onMount(() => { mounted = true; });
+  onMount(() => {
+    mounted = true;
+    let visible = false;
+    const update = () => active = visible && !document.hidden;
+    const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; update(); });
+    observer.observe(host);
+    document.addEventListener('visibilitychange', update);
+    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', update); };
+  });
   $effect(() => {
     if (!mounted) return;
-    if (reducedMotion || mode !== 1) { inspected = terminal; return; }
+    if (reducedMotion || mode !== 1 || !active) { inspected = terminal; return; }
     inspected = 0;
     const timers = Array.from({ length: terminal }, (_, index) => setTimeout(() => inspected = index + 1, (index + 1) * 650));
     return () => timers.forEach(clearTimeout);
   });
 </script>
 
-<section class="deterministic-comparator" aria-label="Deterministic comparator" data-mode={mode} data-inspected={inspected} data-motion={reducedMotion ? 'reduced' : 'full'}>
-  <header><small>DETERMINISTIC COMPARATOR</small><h3>Why does 10:00 come before 10:15?</h3><p>Both options pass the checks. Compare their values from left to right: the first difference decides their order. These values and the order come from Rust.</p></header>
+<section bind:this={host} class="deterministic-comparator" aria-label="Deterministic comparator" data-mode={mode} data-inspected={inspected} data-motion={reducedMotion ? 'reduced' : 'full'}>
+  <header><small>DETERMINISTIC COMPARATOR</small><h3>Why does 10:00 come before 10:15?</h3><p>Both options pass the checks. Compare one field at a time: the first difference decides which option comes first. These values and the order come from Rust.</p></header>
   <div class="representation-controls" role="group" aria-label="Candidate representation">
     {#each ['Candidate capsules', 'Inspect comparison', 'Resolve proposal'] as label, index}<button aria-pressed={mode === index} onclick={() => manual = index}>{label}</button>{/each}
     {#if manual !== null}<button class="follow-scroll" onclick={() => manual = null}>Follow scroll</button>{/if}

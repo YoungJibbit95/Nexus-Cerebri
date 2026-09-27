@@ -1,0 +1,20 @@
+/* The assembly and temporal field share the same keyed candidate elements. */
+.core-assembly{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none;opacity:0;transition:opacity 500ms}
+.core-plate{position:absolute;inset:18% 16%;border:1px solid var(--line-strong);background:linear-gradient(125deg,rgba(27,69,99,.8),rgba(6,17,36,.85));transform:translateZ(calc((var(--plate) - 1)*55px));transition:transform 1000ms var(--ease-resolve),background 600ms;box-shadow:0 12px 30px rgba(0,0,0,.1)}
+.core-plate:nth-child(2){border-color:rgba(32,216,255,.65);background:linear-gradient(125deg,rgba(15,89,113,.5),rgba(5,25,40,.85))}
+.core-plate span{position:absolute;left:12px;top:12px;font:.8125rem var(--mono);color:var(--text-2);opacity:0;transition:opacity 450ms 500ms}.core-plate i{position:absolute;inset:12px;border-block:1px solid rgba(121,193,214,.1)}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .core-assembly{opacity:1}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .coordinate-volume{transform:rotateX(52deg) rotateZ(-23deg)}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .coordinate-axis{opacity:0}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .candidate-lanes li{left:var(--core-x);top:var(--core-y);width:10%;height:14px;transform:translateZ(62px)}
+.candidate-coordinate[data-context=hero][data-phase='1'] .candidate-lanes li{transform:translateZ(112px)}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .candidate-capsule{width:100%;height:14px;border:1px solid rgba(97,233,255,.6);border-radius:1px;background:linear-gradient(90deg,rgba(32,216,255,.4),rgba(32,216,255,.07))}
+.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .capsule-origin{width:4px;height:4px;box-shadow:none}
+.candidate-coordinate[data-context=hero] .optical-aperture,.candidate-coordinate[data-context=hero] .calibration-plane{display:none}
+.candidate-coordinate[data-context=hero][data-phase='1'] .coordinate-volume{transform:rotateX(38deg) rotateZ(-12deg)}
+.candidate-coordinate[data-context=hero][data-phase='1'] .core-plate{transform:translateZ(calc((var(--plate) - 1)*105px));background:rgba(8,31,51,.7)}
+.candidate-coordinate[data-context=hero][data-phase='1'] .core-plate span{opacity:1}
+.candidate-coordinate[data-context=hero][data-phase='3'] .coordinate-busy,.candidate-coordinate[data-context=hero][data-phase='4'] .coordinate-busy{opacity:1}
+.candidate-coordinate[data-context=hero][data-phase='0'] .mobile-busy-key,.candidate-coordinate[data-context=hero][data-phase='1'] .mobile-busy-key,.candidate-coordinate[data-context=hero][data-phase='2'] .mobile-busy-key{visibility:hidden}
+@media(max-width:760px){.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']){height:25rem}.core-plate{inset:20% 0}.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .coordinate-volume{inset:1rem 24%}.core-plate span{font-size:.75rem;overflow-wrap:anywhere;right:12px}.candidate-coordinate[data-context=hero]:is([data-phase='0'],[data-phase='1']) .candidate-capsule{width:100%!important}}
+@media(prefers-reduced-motion:reduce){.core-assembly,.core-plate,.core-plate span{transition:none}.candidate-coordinate[data-context=hero] .coordinate-volume{transition:none}}

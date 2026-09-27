@@ -17,7 +17,7 @@
 </script>
 
 <section data-world="measurement" class="math-inspection" id="mathematical-inspection" aria-labelledby="math-title" data-motion={reduced ? 'reduced' : 'full'}>
-  <header class="math-heading"><div><span class="kicker">A CLOSER LOOK AT TIME</span><h2 id="math-title">When do appointments overlap?</h2></div><p>Explore why one appointment can start exactly when another ends, and how a preferred time affects the comparison.</p></header>
+  <header class="math-heading"><div><span class="kicker">A CLOSER LOOK AT TIME</span><h2 id="math-title">When do appointments overlap?</h2></div><p>Inspect why the 10:00 proposal can start exactly when the existing appointment ends. Then explore separate examples for preferred times and time measurement.</p></header>
   <IntervalGeometry />
   <PreferredDistanceView />
   <MeasurementInspection />
