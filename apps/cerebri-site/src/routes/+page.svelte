@@ -51,7 +51,7 @@
 <section class="metrics" aria-label="Repository authority">
   <div class="metrics-intro">
     <span class="kicker">PROJECT STATUS</span>
-    <h2>Available to explore.<br /><em>Still in development.</em></h2>
+    <h2>Available to explore. <em>Still in development.</em></h2>
   </div>
   <div class="metric-orbit" aria-hidden="true"><i></i><span></span></div>
   <article><small>SOFTWARE</small><strong>{runtimeData.metadata.softwareVersion}</strong><span>{runtimeData.metadata.releaseStatus} · release checks in progress</span></article>
