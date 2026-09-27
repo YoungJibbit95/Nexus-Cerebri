@@ -1,14 +1,59 @@
----
-lang: en
----
-# Deterministic planner integration
+<!-- doc: planner-integration; lang: en; counterpart: ../de/planner-integration.md -->
+# How Cerebri compares possible times
 
-## Simple
+Cerebri looks for a time that fits the supplied information and required rules. It then
+compares the remaining options in a fixed order. With the same input, the current planner
+returns the same order. This is what **deterministic planning** means here.
 
-Existing daily/weekly series can now block planning slots. A series definition, its
-individual occurrences and an editable planning object are different concepts.
-The Lab displays actual Rust results, including skipped DST dates, unknown availability,
-dependency evidence and the complete candidate ordering key.
+## Follow one appointment
+
+The [website example](../../examples/request.json) needs a 30-minute appointment between
+09:00 and 12:00 UTC. An existing appointment occupies 09:00–10:00. Possible starts are
+15 minutes apart, so the planner checks 11 starts, from 09:00 through 11:30.
+
+Four options overlap the existing appointment and are rejected. Seven remain, starting
+at 10:00 or later. Each possible placement is called a **candidate**. The example has no
+preferred start, and its other comparison values are equal, so the earlier start comes
+first: 10:00 UTC. Nothing is booked by this result.
+
+## A preference helps choose among valid options
+
+A preferred start is a wish, such as 10:45. A required rule is a condition every accepted
+option must satisfy, such as avoiding an occupied time. A preference cannot excuse a
+rule violation.
+
+The separate [preferred-start example](../../examples/02-ranking-preferred-start.json)
+shows this comparison. The planner first compares distance from the preferred start,
+then the number of changes, the amount of time moved, the start itself and the object ID.
+The first difference decides the order. These are calculated values, not learned scores.
+
+## How much of the search was checked?
+
+The result reports both what was found and how far the search went. Read them together:
+
+- `ProvenOptimal`: all starts in the declared grid were checked and at least one valid
+  option was found. The first option is best under the current comparison rules **within
+  that grid**. This says nothing about times outside the search window or between its steps.
+- `Complete`: the grid was fully checked and no valid option was found.
+- `BestFound`: the search does not establish either of those complete conclusions. It may
+  have reached its candidate limit or been unable to start. Check the outcome, validation
+  report and evaluated count; the label alone does not mean a solution exists.
+
+Missing required information is reported as `InsufficientInformation`. Cerebri does not turn
+unknown availability into free time. Changing the search window, rules or supplied
+information means asking a new planning question.
+
+## What about repeating appointments?
+
+Existing daily or weekly series can contribute occupied times. The planner derives their
+individual occurrences for the requested period before searching. A weekly rule, its
+Tuesday occurrence and a new appointment to place are different things.
+
+This does not create a new repeating series or rearrange several appointments together.
+The automatic search currently places one target against the supplied context.
+
+[Input explained](cpir.md) · [Time and availability](temporal.md) ·
+[From a proposal to a permitted change](safety.md)
 
 ## Technical
 
@@ -95,7 +140,8 @@ Old imported Lab outputs lacking `ranking_features` reject. Existing numeric can
 and the Rust `RankingFeatures` compatibility helper remain. This is an additive provisional
 output change; strict consumers must update. JavaScript guards retain their safe-integer
 display limit; actual core time distances fit it, while Rust accepts the full u64 wire domain.
-There is no ML, training, telemetry, EvaluationEpisode, Nexus, learned search or provider work.
+This ranking contract adds no learning, training, telemetry, episode collection, learned
+search or provider integration. The separate evaluation foundations are described below.
 No raw content/identifiers are features. See [ADR-0014](../architecture/decisions/ADR-0014-ranking-feature-contract.md).
 
 At most 32 series, 1,024 occurrences, 36,600 examined dates shared across series, 256 graph
@@ -132,4 +178,4 @@ capture, telemetry and learning remain absent. Newly closed rule bytes await tar
 qualification.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
-[Temporal reference](temporal.md) · [CPIR reference](cpir.md)
+[Temporal reference](temporal.md) · [CPIR reference](cpir.md) · [Deutsch](../de/planner-integration.md)

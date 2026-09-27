@@ -1,14 +1,64 @@
----
-lang: de
----
-# Deterministische Planner-Integration
+<!-- doc: planner-integration; lang: de; counterpart: ../en/planner-integration.md -->
+# Wie Cerebri mögliche Zeiten vergleicht
 
-## Einfach
+Cerebri sucht eine Zeit, die zu den übergebenen Informationen und verbindlichen Regeln
+passt. Anschließend vergleicht es die übrigen Möglichkeiten in einer festen Reihenfolge.
+Bei gleichen Eingaben liefert der aktuelle Planer dieselbe Reihenfolge. Das bedeutet hier
+**deterministische Planung**.
 
-Bestehende tägliche/wöchentliche Serien können Planungszeiten blockieren. Seriendefinition,
-einzelne Vorkommen und veränderbare Planungsobjekte sind unterschiedliche Begriffe.
-Das Lab zeigt echte Rust-Ergebnisse: übersprungene DST-Tage, unbekannte Verfügbarkeit,
-Abhängigkeitsbelege und den vollständigen Sortierschlüssel der Kandidaten.
+## Ein Termin als Beispiel
+
+Das [Beispiel der Website](../../examples/request.json) sucht 30 Minuten zwischen 09:00
+und 12:00 Uhr UTC. Ein vorhandener Termin belegt 09:00–10:00 Uhr. Mögliche Startzeiten
+liegen jeweils 15 Minuten auseinander. So prüft der Planer 11 Starts von 09:00 bis 11:30 Uhr.
+
+Vier Möglichkeiten überschneiden sich mit dem vorhandenen Termin und scheiden aus.
+Sieben bleiben übrig, alle ab 10:00 Uhr. Jede mögliche Platzierung heißt **Kandidat**.
+Im Beispiel gibt es keine Wunschzeit, und die übrigen Vergleichswerte sind gleich.
+Deshalb steht der frühere Start vorn: 10:00 Uhr UTC. Gebucht wird dadurch noch nichts.
+
+## Wünsche helfen bei der Auswahl gültiger Möglichkeiten
+
+Eine bevorzugte Startzeit ist ein Wunsch, etwa 10:45 Uhr. Eine verbindliche Regel muss
+jede zulässige Möglichkeit erfüllen, etwa einen belegten Zeitraum freizuhalten.
+Ein Wunsch kann keinen Regelverstoß ausgleichen.
+
+Das separate [Beispiel mit Wunschzeit](../../examples/02-ranking-preferred-start.json)
+zeigt diesen Vergleich. Der Planer vergleicht zuerst den Abstand zur Wunschzeit, danach
+die Anzahl der Änderungen, die zeitliche Verschiebung, den Start selbst und die Objekt-ID.
+Der erste Unterschied entscheidet die Reihenfolge. Das sind berechnete Werte, keine
+erlernten Bewertungen.
+
+## Wie viel wurde tatsächlich geprüft?
+
+Das Ergebnis nennt sowohl den Ausgang als auch den Umfang der Suche. Beides gehört zusammen:
+
+- `ProvenOptimal`: Alle Starts im vorgegebenen Zeitraster wurden geprüft, und mindestens
+  eine zulässige Möglichkeit wurde gefunden. Nach den aktuellen Vergleichsregeln steht
+  die beste Möglichkeit **innerhalb dieses Rasters** vorn. Über Zeiten außerhalb des
+  Suchfensters oder zwischen den Rasterschritten sagt das nichts aus.
+- `Complete`: Das Raster wurde vollständig geprüft, ohne eine zulässige Möglichkeit zu finden.
+- `BestFound`: Die Suche belegt keine dieser beiden vollständigen Aussagen. Sie kann ihre
+  Kandidatengrenze erreicht haben oder gar nicht erst gestartet sein. Deshalb gehören der
+  Ausgang, der Prüfbericht und die Zahl geprüfter Starts dazu. Der Name allein bedeutet
+  nicht, dass eine Lösung vorliegt.
+
+Fehlende notwendige Informationen werden als `InsufficientInformation` gemeldet. Aus unbekannter
+Verfügbarkeit macht Cerebri keine freie Zeit. Ein anderes Suchfenster, andere Regeln oder
+andere Eingaben ergeben eine neue Planungsfrage.
+
+## Was ist mit wiederkehrenden Terminen?
+
+Bestehende tägliche oder wöchentliche Serien können Zeiten belegen. Vor der Suche leitet
+der Planer ihre einzelnen Termine für den angefragten Zeitraum ab. Eine Wochenregel,
+ihr konkreter Termin am Dienstag und ein neu zu platzierender Termin sind unterschiedliche Dinge.
+
+Dadurch wird keine neue Terminserie erstellt, und es werden nicht mehrere Termine
+gemeinsam umgeplant. Die automatische Suche platziert derzeit ein Ziel anhand der
+übergebenen Ausgangslage.
+
+[Eingaben verstehen](cpir.md) · [Zeit und Verfügbarkeit](temporal.md) ·
+[Vom Vorschlag zur erlaubten Änderung](safety.md)
 
 ## Technisch
 
@@ -27,6 +77,12 @@ Horizont, Ausschnitt und Quellrevision. Doppelte Serien und Kollisionen mit Obje
 Occurrence-IDs brechen die Kompilierung atomar ab. Aufrufer dürfen dasselbe externe
 Vorkommen nicht zusätzlich als Objekt unter einer anderen Identität einspeisen.
 Provider-Abgleich bleibt spätere Arbeit.
+
+Bei einer doppelten lokalen Uhrzeit behalten Earlier/Later-Auswahlen dieselbe nominelle
+Occurrence-ID; UTC-Zeiträume und Auflösungsbelege unterscheiden sich. Die Planung nutzt
+die validierte unveränderliche Kompilierungssicht. Compilerfehler dürfen nicht auf die
+ältere Planung ohne zeitliche Quelldaten zurückfallen. Die Lifecycle-Validierung prüft
+den aktuellen Snapshot unabhängig und kompiliert ihn erneut.
 
 Alle gelieferten Event/Task-Objekte und kompilierten Vorkommen blockieren konservativ
 Überlappungen, auch außerhalb des Änderungsscopes. Unvollständige Abdeckung liefert einen
@@ -99,9 +155,11 @@ Alte importierte Lab-Ergebnisse ohne `ranking_features` werden abgelehnt. Bisher
 Kandidatenfelder und der Rust-Kompatibilitätshelfer `RankingFeatures` bleiben erhalten.
 Strikte Konsumenten müssen diese additive vorläufige Ausgabeerweiterung berücksichtigen.
 JavaScript-Guards behalten ihre Safe-Integer-Anzeigegrenze; tatsächliche Core-Zeitabstände
-passen hinein, während Rust den vollständigen u64-Wertebereich akzeptiert. Kein ML, Training,
-Telemetrie, EvaluationEpisode, Nexus, gelernte Suche oder Provider-Arbeit. Rohinhalte und
-Identifikatoren sind keine Features. Siehe [ADR-0014](../architecture/decisions/ADR-0014-ranking-feature-contract.md).
+passen hinein, während Rust den vollständigen u64-Wertebereich akzeptiert. Dieser
+Ranking-Vertrag ergänzt weder Lernen und Training noch Telemetrie, das Sammeln von
+Evaluationsläufen, gelernte Suche oder Anbieteranbindungen. Die getrennten
+Evaluationsgrundlagen sind unten beschrieben. Rohinhalte und Identifikatoren sind keine
+Features. Siehe [ADR-0014](../architecture/decisions/ADR-0014-ranking-feature-contract.md).
 
 Maximal 32 Serien, 1.024 Vorkommen, 36.600 gemeinsam geprüfte Tage, 256 Graphknoten und
 1.024 Constraints. Die vorhandene kombinierte Arbeitsgrenze von 1.000.000 schließt Vorkommen
@@ -145,4 +203,4 @@ Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die neu ge
 Regel-Bytes benötigen noch eine gezielte unabhängige Qualifikation.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
-[Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md)
+[Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md) · [English](../en/planner-integration.md)

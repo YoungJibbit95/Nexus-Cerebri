@@ -79,10 +79,17 @@ The [ranking observations](../architecture/decisions/ADR-0014-ranking-feature-co
 describe calculated comparison values and their sources. They do not change the fixed
 ordering and are not a trained scoring model.
 
-The [evaluation foundations, Phase A](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
-define data types and validate the wire format of synthetic records. They do not yet
-collect planner observations, compute fingerprints or replay earlier runs. Complete
-semantic validation also remains future work.
+The [evaluation foundations](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
+define data types and validate the wire format of synthetic records. Phase A is complete.
+The partial Phase-B work adds consistent representations of values and rules, fingerprints
+for individual candidates and hypotheses, and a shared calculation of request work limits.
+A fingerprint is a calculated identifier for comparing the represented content.
+
+This is not yet a complete record of a planning run. Whole-scenario and decision
+fingerprints, full semantic validation, automatic collection of planner observations and
+replay of earlier runs remain unfinished. The
+[Phase-B checkpoint](../development/progress/2026-09-27-evaluation-phase-b-checkpoint.md)
+lists the exact boundary; it does not claim that Phase B is complete.
 
 [cerebri-ml](../../crates/cerebri-ml/src/lib.rs) contains metadata and interfaces for models
 and datasets. Those definitions do not provide a training run, a usable model or a
