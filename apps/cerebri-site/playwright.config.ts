@@ -11,6 +11,8 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:' + port,
+    // Keep Skia's CPU path consistent across hosts; screenshot hashes remain exact.
+    launchOptions: { args: ['--disable-skia-runtime-opts'] },
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
   },
