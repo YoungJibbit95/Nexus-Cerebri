@@ -71,6 +71,8 @@ for (const width of [1440, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(prefix + '/');
+    const authorityCaption = page.locator('.authority-plane > span');
+    expect(await authorityCaption.evaluate(node => Number.parseFloat(getComputedStyle(node).height) - Number.parseFloat(getComputedStyle(node).lineHeight))).toBeLessThanOrEqual(1);
     await page.evaluate(() => document.documentElement.style.fontSize = '200%');
     const fieldCollisions = await page.locator('.planning-instrument .candidate-coordinate').evaluate(root => {
       const labels = [...root.querySelectorAll<HTMLElement>('.candidate-identity,.candidate-coordinate-label,.candidate-state,.coordinate-axis small,.coordinate-busy span')].filter(node => node.getClientRects().length && getComputedStyle(node).opacity !== '0');

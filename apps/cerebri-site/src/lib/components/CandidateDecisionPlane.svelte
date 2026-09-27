@@ -76,7 +76,7 @@
     .record-dimensions .decisive.active{position:relative}.record-dimensions .decisive.active::after{content:'FIRST DIFFERENCE';position:absolute;right:8px;bottom:3px;font:.8125rem var(--mono);color:var(--cyan)}
     [data-mode='0'] .decision-record{top:2rem}[data-mode='0'] .decision-record:not(.winner){top:8rem}
     [data-mode='2'] .decision-record.winner{top:10rem;left:4%;width:54%}[data-mode='2'] .winner .persistent-candidate{width:100%;left:0}[data-mode='2'] .winner .representation-label{left:0;transition:none}
-    .proposal-destination{top:auto;bottom:3.5rem;right:38%}.authority-plane{width:24%;height:8rem;padding:.75rem .5rem}.authority-plane span{font-size:.8125rem;overflow-wrap:anywhere}.authority-plane small{font-size:.8125rem;overflow-wrap:anywhere}.proposal-destination b{display:none}
+    .proposal-destination{top:auto;bottom:3.5rem;right:38%}.authority-plane{width:32%;height:8rem;padding:.75rem .5rem}.authority-plane span{font-size:.8125rem;overflow-wrap:anywhere}.authority-plane small{font-size:.8125rem;overflow-wrap:anywhere}.proposal-destination b{display:none}
     .representation-controls{gap:4px}.representation-controls button{padding-inline:6px;font-size:.8125rem}
   }
   @media(prefers-reduced-motion:reduce){.deterministic-comparator *{transition:none!important}.decision-aperture{display:none}.record-dimensions{transform:none!important}[data-mode='1'] .comparator-row.examined{border-top-color:var(--cyan)}}
