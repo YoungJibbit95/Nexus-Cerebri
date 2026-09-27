@@ -1,12 +1,18 @@
 // Exact hashes are renderer/platform dependent. Keep each platform independently reviewed.
 export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, string>>> = {
   linux: {
+    'architecture-mobile': '6651197f36989ba9814497211f3997560dc33e735550113d4c940d171219deb5',
+    'architecture-technical': '886d4c3ba1eef2b974849ae71fda333d7727e3d234e0a0c18427260ec24cf07e',
+    'architecture-concept': '9e61a7ca992271534a299daaa3339e61a4e864df8ee8b8659b199030f804c37f',
+    'cpir-mobile': '1939f8459f253a18af8c0e02aba5e736af09776766d673122c5678be6b9e963b',
+    'cpir-technical': '3ed740b95a02d35f562b881ef6e450e544ac3133a390acfa4e152e49c436fd47',
+    'cpir-concept': '2e16881c5d41f9af4f595d413f5e557b20d21adb0a9d2d400377bfeb4b0ae1d4',
     '1024': '76eeab72611cf8f18cee611a782facaebb196aca5bf7f32d89901816a93a8393',
     '1440': '1cdd91ca7a5837b73c7277bf1063875c2e39f0b6e7b7a1a873f3e8c509ac52a8',
     '390': 'e8f40f496bfdaf92b78ad2bb902c3b445427f36ebab00c6976ef23a000edba57',
     '768': 'bc06db0de720d5df40b89a288bc3589e14d99547d2d98833f72bcb42e23a989a',
-    'calibration-0-1440': '3e831907dff8b16dc7ffe04b9746253603adf7475661b6f7ff6e8303ef079863',
-    'calibration-0-390': '1878da75e4ff6c3491198a0e68cef71a057f20ec781e88a60c6a3b8697f42c58',
+    'calibration-0-1440': '85ba6171ed42c7653c4f7ee4eb0347c4742641acf4bb0b43f422be009ac7c169',
+    'calibration-0-390': '63025a1823229317ff0085155b39ca211602b7c454ade2faf4e024347f746dbd',
     'calibration-6-1440': '4a72bba18e213eeaa48dc469ded9a228e777d6e276ce2f9de562c7002e520525',
     'calibration-6-390': '8a01435110fbd9c7f716d81f8b677126d1c7c00a9f81b4129c9f33d1677fecf2',
     'decision-1440': '2b0aaaf25047439d56d4bb2b854027e2cfcdbd29d26052e14ff27e5af3cc6b19',
@@ -16,11 +22,17 @@ export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, str
     'math-768': 'dd9552142417d4edc3a964fc01a43cdcb3b99cbcd35002f39724f925fef21f36',
     'proposal-1440': '8e4bcca7f66a6b44aa696fd66e9a7337ad0c9370c6aedd7901d2e016de2eacb1',
     'proposal-390': 'abbef488c3955964570d439d82f73de9b8cdafa97671827e6e5f6bf82f74ce1f',
-    'technical-1440': '010134e832408faeafd164869d1d49a849750d59c36ee806c62e23abd71f66f8',
-    'technical-390': '02ebbeac661163ea0f2b631e9039da9015abc3337591a451dd30b54cfcf9309c',
-    'technical-768': '20e85dd4976a52bd5df09c3c9a4df60466726efab07c03c61f4205f727f89317'
+    'technical-1440': '847a102b238ca62b5200eccb71ac8a8c8f954907583afcfa0b7747af92f49a0a',
+    'technical-390': 'de1f37a5a0f06dd178b8f396615b2129194d7acfce5bbeca07d50809468e523a',
+    'technical-768': 'd87a0c74a05df91a0f7089b0c8fa662743e677444c3a22bcd6cc96a114a1236d'
   },
   win32: {
+    'architecture-mobile': 'd1094fafc7b319bc2f19b304158741cd0534ff63ea636e28f88515e422fd758e',
+    'architecture-technical': '962accf8cb3682b98b844300cf02dbcc47dfb72652f20ec374be8086668d6b26',
+    'architecture-concept': '85dfb16ab29d97193a56cedd7bc31fd14b75fcf43e43dbb0f730ec10916d9954',
+    'cpir-mobile': '9704b6306526ee34a5a55be148523ba90652b933f4555898621c7b0167afce47',
+    'cpir-technical': '9eb4e73f2f551cebd675db0f91261526890194bdd7072268b5ad14103ae73b76',
+    'cpir-concept': 'c7d6bbd70a29ecfaa40348cc59e58c4037a17613e6820acb4d9bb6d68f0f9f1e',
     '1024': 'ee1d1756c8b955526692ce5f5c9be10fab294b41e7b837d661ccd5ee32955f40',
     '1440': 'eac6033c39667c75dab45182b38bfb081812195114d1f5ceda946aa2d7cf9f14',
     '390': '9bcad055f5fc8fe74dcf09e3c302028f836121feeda57e8dbd0204d76cb89735',
@@ -36,8 +48,8 @@ export const visualBaselines: Partial<Record<NodeJS.Platform, Record<string, str
     'math-768': '53da68fd5e1441678ac151a9383b4f7277baea8549cd610950c59f023888c158',
     'proposal-1440': 'd244fcc74fce2f2c49660307189f3e9de9027157dd4ff9a73fc2109eb5a213a0',
     'proposal-390': 'faee559e07feb19d46ce1cc42071a1a1055ac97614fc91ab47bb567709be1163',
-    'technical-1440': 'a0eeea2aa698a5905e8e1bffb91450e3655868db93972ff553fc0d95b80581f3',
-    'technical-390': 'd905795752593239cc6cbf6529790b66f0955da7269af323bfd99350a5dfa562',
-    'technical-768': '58d9d5c0aee7c31cf8b8b7e584cf690661ada5a1280f12b1ff9c523e6c2e187a'
+    'technical-1440': '7b2a06b726e34fc6804ada5bb0f2fba0ac2c473b2b88f5754d8123dbac190ae0',
+    'technical-390': '38b5d314edf288f4395527ec1e208434cf03721ba95847ee51ca6e2da87524aa',
+    'technical-768': 'c7999dd5629253341b8e5fcd73d8ce5d1e4e24ed3ade390df3b651f55d646f5b'
   }
 };

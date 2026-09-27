@@ -1,0 +1,14 @@
+.page-hero:is([data-section="cpir"],[data-section="architecture"]) { isolation:isolate; }
+.page-hero:is([data-section="cpir"],[data-section="architecture"]) .principle-list { border-radius:0; border:0; border-left:1px solid rgba(131,200,213,.28); background:transparent; box-shadow:none; }
+.page-hero:is([data-section="cpir"],[data-section="architecture"]) .page-hero-index { display:none; }
+.section-primer[data-primer="cpir"] { border:0; border-radius:0; border-block:1px solid rgba(131,200,213,.22); box-shadow:none; background:transparent; margin-bottom:70px; }
+.section-primer[data-primer="cpir"]::before,.section-primer[data-primer="cpir"] .primer-path { display:none; }
+.section-primer[data-primer="cpir"] .primer-steps article { border:0; border-radius:0; border-bottom:1px solid rgba(131,200,213,.18); background:transparent; }
+.section-visual-wrap:is([data-section="cpir"],[data-section="architecture"]) .visual-frame { border:0; border-radius:0; background:linear-gradient(180deg,rgba(5,18,36,.82),rgba(5,14,30,.9)); box-shadow:none; }
+.section-visual-wrap:is([data-section="cpir"],[data-section="architecture"]) .visual-space { display:none; }
+.section-visual-wrap:is([data-section="cpir"],[data-section="architecture"]) .visual-body { padding:35px 28px; }
+.section-visual-wrap:is([data-section="cpir"],[data-section="architecture"]) .visual-heading { border-top:1px solid rgba(131,200,213,.3); }
+@media(max-width:700px) {
+  .section-visual-wrap:is([data-section="cpir"],[data-section="architecture"]) .visual-body { padding:28px 6px; }
+  .section-primer[data-primer="cpir"] { padding-inline:4px; }
+}

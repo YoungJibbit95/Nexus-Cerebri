@@ -40,39 +40,6 @@
     <div class="atlas-node n6 future"><b>R</b><strong>Research</strong><small>future learning</small><em>outside core</em></div>
     <span class="map-coordinate map-x">X / ownership</span><span class="map-coordinate map-y">Y / authority</span>
   </div>
-{:else if visual === 'cpir'}
-  <div class="cpir-structure">
-    <svg class="cpir-constellation-lines" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><path d="M120 130 C300 40 420 120 520 185 S770 260 880 110"/><path d="M170 450 C320 330 480 360 590 410 S790 470 900 350"/></svg>
-    <div class="cpir-spine"><span>CPIR {runtimeData.metadata.cpirVersion}</span><i></i><small>structured evidence envelope</small><em>What planning is allowed to know and use</em></div>
-    <div class="cpir-layer identity-layer">
-      <div class="layer-label"><span>01</span><small>REQUEST IDENTITY</small></div><em class="plain-label">What should be done?</em>
-      <strong>{request.request_id}</strong><p>{request.operation} → {request.target_ids?.[0]}</p>
-    </div>
-    <div class="cpir-layer knowledge-layer">
-      <div class="layer-label"><span>02</span><small>KNOWLEDGE + PROVENANCE</small></div><em class="plain-label">Which facts and sources count?</em>
-      <div class="knowledge-state"><i></i><strong>{request.context.objects?.[0]?.time?.value?.knowledge?.state}</strong><span>≠ unresolved</span></div>
-      <p>{request.context.objects?.[0]?.time?.provenance} · processing {request.context.objects?.[0]?.time?.value?.processing}</p>
-    </div>
-    <div class="cpir-scope-boundary">
-      <span class="scope-title">03 / SCOPE BOUNDARY</span><em class="plain-label">Where does the allowed planning space end?</em>
-      <div><small>TIME RANGE</small><strong>{time(request.scope.time_range.start)}—{time(request.scope.time_range.end)} UTC</strong></div>
-      <div><small>CALENDAR IDS</small><strong>{request.scope.calendar_ids === null ? 'omitted / null' : 'populated'}</strong></div>
-      <div><small>OBJECT IDS</small><strong>{request.scope.object_ids === null ? 'omitted / null' : 'populated'}</strong></div>
-      <div><small>MAX MUTATIONS</small><strong>{request.scope.max_mutations}</strong></div>
-    </div>
-    <div class="cpir-layer policy-layer">
-      <div class="layer-label"><span>04</span><small>POLICY</small></div><em class="plain-label">Which rules apply?</em>
-      <strong>{request.policy.snapshot.mode}</strong><p>confirm mutations · {String(request.policy.snapshot.confirmation.all_mutations)}</p>
-    </div>
-    <div class="cpir-layer capability-layer">
-      <div class="layer-label"><span>05</span><small>CAPABILITY / SEPARATE</small></div><em class="plain-label">What may this planner propose?</em>
-      <strong>{request.planning_capability.plan ? 'PLAN' : 'NO PLAN'}</strong><p>{request.planning_capability.mutations?.[0]?.kind}</p>
-    </div>
-    <div class="cpir-layer budget-layer">
-      <div class="layer-label"><span>06</span><small>SEARCH BUDGET</small></div><em class="plain-label">How much search is allowed?</em>
-      <strong>{request.budget.max_candidates}</strong><p>candidates · {request.granularity}s grid</p>
-    </div>
-  </div>
 {:else if visual === 'planning'}
   <div class="planning-field">
     <div class="planning-header"><div><small>SEARCH SPACE</small><strong>{time(request.scope.time_range.start)} → {time(request.scope.time_range.end)} UTC</strong><span>The planner may only choose inside this window.</span></div><div><small>ASSESSMENT</small><strong>{planner.assessment ?? 'Assessment'}</strong><span class="technical-only">Rust planner claim for this bounded run</span></div></div>
@@ -127,17 +94,6 @@
       {/each}
     </div>
     <div class="executor-boundary"><span>PLANNER</span><i></i><b>EXECUTOR BOUNDARY</b><i></i><span>EXECUTION</span></div>
-  </div>
-{:else if visual === 'architecture'}
-  <div class="architecture-map">
-    <div class="architecture-orbits" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="authority-arrow" aria-hidden="true"><span>authority flows directionally</span><i></i></div>
-    <div class="layer transports"><small>05 / THIN TRANSPORTS</small><div><strong>REST API</strong><strong>Node bridge</strong><strong>Site fixtures</strong></div></div>
-    <div class="layer facade"><small>04 / AUTHORITY BOUNDARY</small><div><strong>core facade</strong></div></div>
-    <div class="layer planner-layer"><small>03 / BOUNDED SEARCH</small><div><strong>planner</strong></div></div>
-    <div class="layer middle"><small>02 / SEMANTIC + CONSTRAINT LAYERS</small><div><strong>constraints</strong><strong>semantics</strong><strong>preferences</strong></div></div>
-    <div class="layer foundation"><small>01 / FOUNDATIONS</small><div><strong>types</strong><strong>temporal</strong></div></div>
-    <div class="research-orbit future"><span>RESEARCH</span><small>not a production dependency</small></div>
   </div>
 {:else if visual === 'roadmap'}
   <div class="roadmap-strata">
