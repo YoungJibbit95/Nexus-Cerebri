@@ -1,7 +1,7 @@
 # ADR-0015: Deterministic evaluation contract foundations
 
 Date: 2026-09-27
-Status: Accepted architecture authority; Phase A contract foundations implemented
+Status: Accepted architecture authority; Phase A complete, Phase B partially implemented
 
 ## Authority and scope
 
@@ -17,10 +17,19 @@ Phase A implements foundational types and wire validation only. This extends Mas
 section 27 without changing planning authority. The corrected source closes the four
 previous wire gaps; no missing definition was reconstructed or new architecture introduced.
 
+The subsequent Phase-B source is
+`NEXUS_CEREBRI_INTELLIGENCE_ARCHITECTURE_v1.2.6_CONSOLIDATED (2).md`, SHA-256
+`007fdbab8630ecd8119215f329d7e9e36d73076de1bef885f1055c859da2edab`.
+Sections 17.3/17.5 close previously unspecified constraint and recurrence variant bytes.
+Section 64 explicitly requires targeted independent canonicalization re-qualification of
+those new bytes. That qualification is pending; implementation evidence does not supply it.
+Phase-A contracts and existing architecture vector bytes are unchanged.
+
 ## Recorded contract
 
 - Place the module in `cerebri-planner::evaluation`; introduce no workspace crate or
-  dependency-layer change. No current planner/REST/Node/Lab path calls these components.
+  dependency-layer change. Only the existing planner metadata admission gate now calls
+  the shared work measurement; REST/Node/Lab have no evaluation capture integration.
 - Required-nullable fields reject absence, accept explicit null where permitted and
   validate typed values. Closed component structures reject unknown fields.
 - EvaluationEpisode has a distinct editable wire type and immutable, fallibly constructed
@@ -58,7 +67,29 @@ previous wire gaps; no missing definition was reconstructed or new architecture 
   requiring a reused planner context to postdate the child start. Lineage cause/reason
   derivation, interaction reduction and parent-collection validation remain Phase C.
 - Pin workspace serde_json to `=1.0.151`, preserving Cargo.lock, as required by the
-  qualified admission-work metric. Existing admission code remains unchanged.
+  qualified admission-work metric. Phase B extracts the existing admission calculation
+  into a shared pure observation without changing thresholds or the serialization metric.
+
+## Partial Phase-B checkpoint
+
+- CanonicalValueV1 has explicit tag ranks, numeric/recursive payload comparison, source
+  collection normalization and strict canonical collection import validation. JSON strings
+  retain their exact Unicode content; semantic object entries sort by UTF-8 key bytes.
+- The final JCS writer handles the contract's string/boolean/array/object subset; numbers
+  and null reject. Semantic integers use decimal strings. JCS member order uses UTF-16
+  code units; fixed canonical member names are ASCII, so their UTF-8 order is identical.
+  It does not normalize graphs, semantic sets or identities on behalf of callers.
+- All 14 constraint rules use explicit `kind` tokens and direct payload fields. Temporal
+  series/rules use the separate top-level recurrence grammar with `frequency`, bounded
+  decimal `every`/`count`, and ordered unique weekdays. This is not graph SERIES projection.
+- Candidate fingerprints accept exactly one positive placement and exclude run-local IDs
+  and policy/lifecycle outcomes by construction. Pure hypothesis/set/visit helpers implement
+  HBytes, duplicate rejection and the three separate digest domains, without running search.
+- PlannerAdmissionWork uses the same pinned compact typed-request serialization as the
+  planner gate. B is measured only on complete serialization, 1..=262144; W=B*M must be
+  <=16777216 for admission. Failure observations contain no invented byte count or W.
+  Imported observations still require budget validation and authenticated source remeasurement
+  at the later DecisionInput/replay boundary.
 
 ## Compatibility and remaining work
 
@@ -69,9 +100,10 @@ their authorities. There is no release, tag, Product Capture, telemetry, ML or p
 
 The complete Episode wire shape and Phase-A domain conversion now exist. Wire validity
 is not final record-local semantic/R0 validity, proof of authenticated hashes or a behavioral
-evaluation eligibility claim. There is no JCS writer, canonical graph, fingerprint computation,
-production observation/capture, interaction reducer, collection validation or replay runner.
-Phases B–E remain unstarted; Phase A completion does not authorize starting them in this session.
+evaluation eligibility claim. Graph canonicalization, complete PlanningRequest/BSF projection,
+DecisionInput, DecisionObservation and their end-to-end vectors remain Phase-B work.
+There is no production observation/capture, interaction reducer, collection validation or
+replay runner. Phase B is partial; Phases C–E remain unstarted.
 Later phases must preserve the existing trusted planning boundary rather than treating
 structural component decoding as source verification or planning truth.
 
@@ -81,6 +113,9 @@ See the [completion record](../../development/progress/2026-09-27-evaluation-pha
 for executed tests, base reconciliation and the exact boundary of this checkpoint.
 The new contract tests cover malformed JSON, missing/null/value, numeric boundaries,
 variant shapes, paths/roles, independent schema tokens and structural roundtrips.
+
+The [Phase-B checkpoint](../../development/progress/2026-09-27-evaluation-phase-b-checkpoint.md)
+records canonical grammar, byte-oracle and admission-work tests and the exact remaining scope.
 
 [Master](../specifications/master-v0.4.md) · [ADR-0013](ADR-0013-planner-resource-admission.md)
 · [ADR-0014](ADR-0014-ranking-feature-contract.md)

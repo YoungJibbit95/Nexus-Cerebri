@@ -15,3 +15,4 @@ Create dated/monthly development logs for meaningful implementation, experiment,
 - [2026-09-27 — Concept-to-CPIR explanation](2026-09-27-concept-to-cpir-copy.md)
 - [2026-09-27 — Architecture ownership explanation](2026-09-27-architecture-copy.md)
 - [2026-09-27 — Research explanation and public-copy integration](2026-09-27-research-copy.md)
+- [2026-09-27 — Evaluation canonicalization: partial Phase B checkpoint](2026-09-27-evaluation-phase-b-checkpoint.md)

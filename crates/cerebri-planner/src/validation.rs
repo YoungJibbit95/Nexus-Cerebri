@@ -258,20 +258,5 @@ pub(crate) fn validate_and_compile(
 /// cardinality bound: evidence, scope/grant lists and strings also cost work when
 /// requests are hashed or constraints cloned for every candidate (ADR-0013).
 fn metadata_work_admitted(request: &PlanningRequest) -> bool {
-    struct Counter(usize);
-    impl std::io::Write for Counter {
-        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
-            if bytes.len() > (256 * 1024) - self.0 {
-                return Err(std::io::Error::other("planner input limit"));
-            }
-            self.0 += bytes.len();
-            Ok(bytes.len())
-        }
-        fn flush(&mut self) -> std::io::Result<()> {
-            Ok(())
-        }
-    }
-    let mut counter = Counter(0);
-    serde_json::to_writer(&mut counter, request).is_ok()
-        && (counter.0 as u64) * u64::from(request.budget.max_candidates) <= 16 * 1024 * 1024
+    crate::evaluation::PlannerAdmissionWorkObservationV0_1::measure(request).admitted()
 }
