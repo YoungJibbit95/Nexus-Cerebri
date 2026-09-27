@@ -137,6 +137,12 @@ for (const width of [1440, 390]) {
       const top = Number.parseFloat(getComputedStyle(surface).top);
       window.scrollTo({ top: scrollY + rect.top - top + (target + .1) / 7 * (rect.height - surface.getBoundingClientRect().height), behavior: 'instant' });
     }, phase);
+    // Scene 0 is also the initial state, so an attribute assertion alone can pass
+    // before the scroll listener's requestAnimationFrame has processed the new position.
+    // Wait for two paint frames so the scroll-driven Svelte state and sticky layout settle.
+    await page.evaluate(() => new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    ));
     await expect(page.locator('.observatory')).toHaveAttribute('data-scene', String(phase));
     const name = `calibration-${phase}-${width}`;
     const screenshot = await page.locator('.observatory').screenshot({ path: test.info().outputPath(name + '.png'), animations: 'disabled', style: '.site-header{visibility:hidden!important}' });
