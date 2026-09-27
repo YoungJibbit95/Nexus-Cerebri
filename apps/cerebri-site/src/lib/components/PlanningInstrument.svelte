@@ -41,7 +41,7 @@
   });
 </script>
 <div bind:this={host} class="planning-instrument" data-exhausted={exhausted} data-flow-root="planning" data-flow-stage={flowStage} data-motion={reducedMotion ? 'reduced' : 'full'}>
-  <div class="instrument-meta"><span>{validCount} valid / {rejectedCount} rejected</span><span>PREFERENCE FIELD / NONE IN THIS FIXTURE</span></div>
+  <div class="instrument-meta"><span>{validCount} valid / {rejectedCount} rejected</span><span>NO PREFERRED TIME SUPPLIED</span></div>
   <SemanticLegend items={plannerSemanticLegend} compact label="Planning visual grammar" />
   <div class="workbench-entry"><span>{candidateIdentity(ranked[0].start)} · {selectedLabel} UTC</span><i aria-hidden="true"></i><small>SAME FIELD · EXACT COORDINATES</small></div>
   <CandidateField {inspected} />
@@ -66,15 +66,15 @@
     <div class:reached={flowStage >= 0} class:current={flowStage === 0} class="flow-node candidates" data-flow-node="candidates">
       <span class="flow-index">01</span>
       <i aria-hidden="true"></i>
-      <strong>Feasible candidates</strong>
-      <small>{validCount} valid after hard-rule checks</small>
+      <strong>Valid options</strong>
+      <small>{validCount} pass the required checks</small>
     </div>
     <div class:reached={flowStage >= 1} class="flow-link" aria-hidden="true"><span></span><i></i></div>
     <div class:reached={flowStage >= 1} class:current={flowStage === 1} class="flow-node comparator" data-flow-node="comparator">
       <span class="flow-index">02</span>
       <i aria-hidden="true"></i>
-      <strong>Compare ordering keys</strong>
-      <small>Inspect the Rust-produced order</small>
+      <strong>Compare options</strong>
+      <small>See why one comes first</small>
     </div>
     <div class:reached={flowStage >= 2} class="flow-link" aria-hidden="true"><span></span><i></i></div>
     <div class:reached={flowStage >= 2} class:current={flowStage === 2} class="flow-node proposal" data-flow-node="proposal">
@@ -87,16 +87,16 @@
     <div class:reached={flowStage >= 3} class:current={flowStage === 3} class="flow-node authority" data-flow-node="authority">
       <span class="flow-index">04</span>
       <i aria-hidden="true"></i>
-      <strong>Authority boundary</strong>
-      <small>Validation and authorization stay separate</small>
+      <strong>Before execution</strong>
+      <small>Still needs validation and authorization</small>
     </div>
   </section>
 
   <CandidateDecisionPlane {flowStage} {reducedMotion} />
-  <div class="proposal-boundary" aria-label={"Selected proposal at " + selectedLabel + " UTC stops before a separate authority gate."}>
-    <span><b>{candidateIdentity(ranked[0].start)} · {selectedLabel} UTC</b><small>SELECTED PROPOSAL</small></span><i aria-hidden="true"></i><span class="authority-label"><b>AUTHORITY GATE</b><small>SEPARATE STATE</small></span><span><b>EXECUTION</b><small>not implied by planning</small></span>
+  <div class="proposal-boundary" aria-label={"Selected proposal at " + selectedLabel + " UTC still needs validation and authorization."}>
+    <span><b>{candidateIdentity(ranked[0].start)} · {selectedLabel} UTC</b><small>SELECTED PROPOSAL</small></span><i aria-hidden="true"></i><span class="authority-label"><b>PERMISSION CHECK</b><small>STILL REQUIRED</small></span><span><b>EXECUTION</b><small>nothing has been booked</small></span>
   </div>
-  <section class="authority-lifecycle" aria-label="Planner authority boundary"><div><small>AUTHORITY LIFECYCLE</small><strong>The current planning fixture stops at ProposedPlan.</strong><p>Validation, action translation, authorization and execution are stronger downstream states. A first-ranked candidate does not grant any of them.</p></div><AuthorityRail currentStage="proposal" label="The current fixture reaches proposal only; later authority states are separate" /></section>
+  <section class="authority-lifecycle" aria-label="Planner authority boundary"><div><small>BEFORE ANYTHING IS BOOKED</small><strong>This example produces a proposal.</strong><p>Before a calendar can change, the plan must be validated, translated into actions and authorized. The executor checks it again before making a change.</p></div><AuthorityRail currentStage="proposal" label="The current fixture reaches proposal only; later authority states are separate" /></section>
 </div>
 <style>
   .planning-instrument{position:relative;display:grid;gap:24px;padding-top:26px;min-width:0}

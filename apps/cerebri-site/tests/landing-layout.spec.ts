@@ -126,6 +126,9 @@ for (const width of [1440, 390]) {
     await page.evaluate(() => document.fonts.ready);
     const name = `${section}-${width}`;
     const selector = section === 'rejection' ? '.rejection-witness' : '.intent-field';
+    await page.locator(selector).scrollIntoViewIfNeeded();
+    // The native scroll updates the chapter backdrop through an IntersectionObserver.
+    await expect(page.locator('body')).toHaveAttribute('data-instrument-world', 'planning');
     const screenshot = await page.locator(selector).screenshot({ path: test.info().outputPath(name + '.png'), animations: 'disabled', style: '.site-header,.skip-link{visibility:hidden!important}' });
     await test.info().attach(name + '.png', { body: screenshot, contentType: 'image/png' });
     expect(createHash('sha256').update(screenshot).digest('hex')).toBe(visualBaselines[process.platform]?.[name]);

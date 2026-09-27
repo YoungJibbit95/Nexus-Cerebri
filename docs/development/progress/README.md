@@ -11,4 +11,8 @@ Create dated/monthly development logs for meaningful implementation, experiment,
 - [2026-09-26 — Repository hardening](2026-09-26-repository-hardening.md)
 - [2026-09-26 — Final governance cleanup](2026-09-26-final-governance-cleanup.md)
 - [2026-09-27 — Evaluation foundations: partial Phase A checkpoint](2026-09-27-evaluation-phase-a-checkpoint.md)
+- [2026-09-27 — Public planning explanation: first copy revision](2026-09-27-public-copy.md)
+- [2026-09-27 — Concept-to-CPIR explanation](2026-09-27-concept-to-cpir-copy.md)
+- [2026-09-27 — Architecture ownership explanation](2026-09-27-architecture-copy.md)
+- [2026-09-27 — Research explanation and public-copy integration](2026-09-27-research-copy.md)
 - [2026-09-27 — Evaluation canonicalization: partial Phase B checkpoint](2026-09-27-evaluation-phase-b-checkpoint.md)

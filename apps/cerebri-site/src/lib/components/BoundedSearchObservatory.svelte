@@ -13,9 +13,9 @@
   const scenes = [
     { name: 'The instrument', title: 'A possibility has a place.', text: `${candidates.length} positions form one compact assembly. Open it to see the time, state and rules that give each position meaning.` },
     { name: 'Open the structure', title: 'Separate the layers. Keep the objects.', text: 'The assembly opens along a shared axis. These are conceptual layers of the example, not a diagram of Rust modules.' },
-    { name: 'Time', title: 'Give possibility a coordinate.', text: 'Each point settles onto a possible start time. The positions come from the declared grid in this planning result.' },
+    { name: 'Time', title: 'Give possibility a coordinate.', text: `Each point settles onto a possible start time, ${request.granularity / 60} minutes apart. Duration, occupied times and rules arrive in separate data fields called CPIR; the current planner does not read a sentence.` },
     { name: 'Scope & state', title: 'The search has a boundary.', text: `The time window is ${timeLabel(request.scope.time_range.start)}–${timeLabel(request.scope.time_range.end)} UTC. The supplied appointment occupies ${timeLabel(knownRange.start)}–${timeLabel(knownRange.end)}. Scope limits the search; it does not grant permission.` },
-    { name: 'Candidates', title: 'A start becomes an interval.', text: `The new appointment needs ${request.duration.value.knowledge.data / 60} minutes. Each point extends into that duration, so its whole range can be checked against known state.` },
+    { name: 'Candidates', title: 'A start becomes an interval.', text: `The new appointment needs ${request.duration.value.knowledge.data / 60} minutes. Each point extends into that duration. The last possible start is ${timeLabel(candidates.at(-1)!.start)}, so the whole appointment fits before ${timeLabel(request.scope.time_range.end)}.` },
     { name: 'Validity', title: 'The conflict becomes visible.', text: `${planner.conflicts.rejections.length} intervals cross known busy time. Their cuts retain the evidence of rejection. The other ${ranked.length} pass these checks; preference never makes a conflict valid.` },
     { name: 'Inspect the result', title: 'Keep the valid possibilities.', text: `${ranked.length} candidates remain. ${candidateIdentity(ranked[0].start)} starts at ${timeLabel(ranked[0].start)} UTC and is first in the Rust-produced order. Below, inspect why it comes first and where its authority ends.` }
   ];
@@ -62,19 +62,24 @@
 </script>
 
 <div class="observatory-track" class:static-view={!pinned} bind:this={host} id="planning-journey">
-  <section class="observatory" class:calibrated={scene === 6} data-scene={scene} data-motion={reducedMotion ? 'reduced' : 'full'} aria-label="Bounded search observatory">
+  <section class="observatory" class:calibrated={scene === 6} data-scene={scene} data-motion={reducedMotion ? 'reduced' : 'full'} aria-label="Appointment search: bounded search observatory">
     <div class="arrival-copy">
       {@render children?.()}
       <div class="scene-explanation" id="scene-explanation">
-        <span class="scene-number">0{scene + 1} / {scenes[scene].name}</span>
-        <h2>{scenes[scene].title}</h2>
-        <p>{scenes[scene].text}</p>
+        <!-- Reserve the tallest explanation so a scene change cannot move its scroll boundaries. -->
+        {#each scenes as step, index}
+          <div class="scene-copy" class:current={scene === index} aria-hidden={scene !== index}>
+            <span class="scene-number">0{index + 1} / {step.name}</span>
+            <h2>{step.title}</h2>
+            <p>{step.text}</p>
+          </div>
+        {/each}
       </div>
     </div>
     <div class="arrival-instrument">
-      <div class="calibration-caption"><span>REAL / CURRENT PLANNING FIXTURE</span><small>{request.duration.value.knowledge.data / 60} MIN · {candidates.length} POSITIONS</small></div>
+      <div class="calibration-caption"><span>REAL / APPOINTMENT EXAMPLE</span><small>{request.duration.value.knowledge.data / 60} MIN · {candidates.length} POSITIONS</small></div>
       <CandidateField phase={scene} context="hero" />
-      <div class="identity-handoff" class:resolved={scene === 6}><span>{candidateIdentity(ranked[0].start)}</span><i aria-hidden="true"></i><b>{timeLabel(ranked[0].start)} UTC</b><small>{scene < 6 ? 'CONCEPTUAL ASSEMBLY · ACTUAL CANDIDATE POSITIONS' : 'SAME COORDINATES · CONTINUE TO INSPECTION'}</small></div>
+      <div class="identity-handoff" class:resolved={scene === 6}><span>{candidateIdentity(ranked[0].start)}</span><i aria-hidden="true"></i><b>{timeLabel(ranked[0].start)} UTC</b><small>{scene < 6 ? 'CONCEPTUAL ASSEMBLY · ACTUAL CANDIDATE POSITIONS' : 'SAME OPTION · EXPLORE THE RESULT'}</small></div>
     </div>
     <div class="scene-controls" role="group" aria-label="Planning journey stages">
       {#each scenes as step, index}
@@ -90,7 +95,7 @@
   .observatory{position:sticky;top:var(--observatory-top,145px);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:2rem 3rem;width:100%;isolation:isolate}
   .arrival-copy{align-self:center;min-width:0}.arrival-instrument{min-width:0;align-self:center}
   .calibration-caption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:0 6%;font:.75rem var(--mono);color:var(--text-3)}.calibration-caption span{color:var(--cyan)}.calibration-caption small{font:inherit}
-  .scene-explanation{border-top:1px solid var(--line-strong);padding-top:1.25rem;margin-top:1.75rem;min-height:12rem}.scene-number{font:.8125rem var(--mono);color:var(--cyan);text-transform:uppercase;letter-spacing:.05em}.scene-explanation h2{font-size:clamp(1.25rem,2vw,1.65rem);line-height:1.2;letter-spacing:-.025em;margin:1rem 0 .7rem}.scene-explanation p{font-size:1rem;line-height:1.65;color:var(--text-3);margin:0;max-width:48ch}
+  .scene-explanation{display:grid;border-top:1px solid var(--line-strong);padding-top:1.25rem;margin-top:1.75rem;min-height:12rem}.scene-copy{grid-area:1/1;visibility:hidden}.scene-copy.current{visibility:visible}.scene-number{font:.8125rem var(--mono);color:var(--cyan);text-transform:uppercase;letter-spacing:.05em}.scene-explanation h2{font-size:clamp(1.25rem,2vw,1.65rem);line-height:1.2;letter-spacing:-.025em;margin:1rem 0 .7rem}.scene-explanation p{font-size:1rem;line-height:1.65;color:var(--text-3);margin:0;max-width:48ch}
   .identity-handoff{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 6%;font:.8125rem var(--mono);color:var(--text-3)}.identity-handoff>span{color:var(--cyan)}.identity-handoff i{flex:1;min-width:24px;border-top:1px solid var(--line-strong)}.identity-handoff b{font-weight:400;color:var(--text-1)}.identity-handoff small{width:100%;font:.6875rem/1.6 var(--mono);letter-spacing:.04em}
   .scene-controls{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:1rem}.scene-controls button{display:flex;align-items:center;gap:9px;background:none;border:1px solid transparent;border-bottom-color:var(--line);border-radius:0;min-height:44px;padding:10px 12px;color:var(--text-3);font:.8125rem var(--sans);cursor:pointer}.scene-controls button span{font:.6875rem var(--mono);color:var(--text-3)}.scene-controls button[aria-pressed=true]{border-color:var(--line-strong);color:var(--text-1);background:rgba(32,216,255,.055)}.scene-controls button[aria-pressed=true] span{color:var(--cyan)}.follow-scroll{margin-left:auto}
   .static-view{height:auto}.static-view .observatory{position:relative;top:auto}

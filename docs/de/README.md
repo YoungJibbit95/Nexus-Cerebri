@@ -2,9 +2,11 @@
 
 Software 0.2.0, Temporal-Core-Forschungsmeilenstein; Spezifikation 0.4; CPIR 0.2 (legacy 0.1).
 
+- [Wie Nexus Cerebri einen Termin plant](introduction.md)
 - [Foundation und Architektur](foundation.md)
 - [CPIR und Schnittstellen](cpir.md)
 - [Tests und Entwicklung](development.md)
+- [Lernweg und Forschungsfragen](research.md)
 - [English](../en/README.md)
 - [Projektübersicht](../../README.md)
 

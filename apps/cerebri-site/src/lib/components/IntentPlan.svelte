@@ -14,7 +14,7 @@
   const scopeEnd = new Date(request.scope.time_range.end).getTime();
   const formatTime = (instant: number) => new Date(instant).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
   const preferenceSource = winnerFeatures?.preferred_start_source ?? null;
-  const visualAlternative = 'A bounded temporal coordinate shows the structured CPIR request, ' + evaluated + ' evaluated candidate intervals, ' + rejectedCount + ' overlap rejections, ' + feasibleCount + ' valid candidates and the selected proposal stopping before a separate authority gate.';
+  const visualAlternative = 'The planner checks ' + evaluated + ' possible start times for a ' + request.duration.value.knowledge.data / 60 + '-minute appointment. ' + rejectedCount + ' overlap the existing appointment and are rejected. ' + feasibleCount + ' pass the checks. The first option becomes a proposal; nothing is booked.';
   let expanded = $state(false);
 </script>
 
@@ -25,22 +25,22 @@
     <span class="kicker">VALIDITY → ORDERING → PROPOSAL</span>
     <h2 id="intent-title">From possible times.<br /><em>To one proposal.</em></h2>
     <p>
-      Keep the same {evaluated} positions in view. First inspect a conflict, then compare two valid candidates.
-      Every classification and ordering key below is a result from the Rust planner.
+      Keep the same {evaluated} possible starts in view. First inspect an overlap, then compare two valid options.
+      Rust checks the rules and puts the remaining options in order. The same input gives the same result: this is deterministic planning.
     </p>
   </div>
 
   <VisualizationFrame
     kind="REAL"
-    label="Current CPIR planning fixture"
-    caption="Generated from examples/request.json and the Rust planner during the site build."
+    label="A 30-minute appointment: input and result"
+    caption="The website build runs the Rust planner on examples/request.json (CPIR 0.2). The browser displays that result."
     textAlternative={visualAlternative}
   >
     <div class="intent-field fixture-field">
       <div class="trajectory-glow" aria-hidden="true"></div>
       <div class="intent-stage-summary">
-        <div><small>CURRENT FIXTURE</small><strong>{formatTime(scopeStart)}–{formatTime(scopeEnd)} UTC · {request.duration.value.knowledge.data / 60} minute target · {request.granularity / 60} minute grid</strong></div>
-        <div class="depth-technical"><small>ORDERING STATE</small><strong>{preferenceSource ? 'Preferred-start source: ' + preferenceSource : 'No preferred-start evidence; absent distance stays None in the feature contract.'}</strong></div>
+        <div><small>EXAMPLE INPUT</small><strong>{formatTime(scopeStart)}–{formatTime(scopeEnd)} UTC · {request.duration.value.knowledge.data / 60}-minute appointment · starts every {request.granularity / 60} minutes</strong></div>
+        <div class="depth-technical"><small>PREFERRED START</small><strong>{preferenceSource ? 'Preference source: ' + preferenceSource : 'None supplied. The observation records missing distance as None.'}</strong></div>
       </div>
 
       <dl class="fixture-readout" aria-label="Planning fixture overview">
@@ -56,19 +56,19 @@
         <span>{planner.assessment ?? 'SEARCH ASSESSMENT'}</span>
         <p>
           {planner.search_space?.exhausted
-            ? 'The declared grid was fully traversed. The assessment applies to this discrete grid and the current deterministic objective.'
-            : 'The declared grid was not fully traversed, so the result is not a proof over every declared position.'}
+            ? 'Every start in this grid was checked. The first proposal ranks best under the stated comparison rules. This claim applies only to this grid and these rules.'
+            : 'The search stopped before checking every start in the grid. A better option may remain among the unchecked times.'}
         </p>
       </div>
     </div>
 
     <button class="inspect-button" aria-expanded={expanded} onclick={() => (expanded = !expanded)}>
-      <span>{expanded ? 'Hide structured evidence' : 'Inspect structured evidence'}</span><i aria-hidden="true">{expanded ? '−' : '+'}</i>
+      <span>{expanded ? 'Hide input and result data' : 'Show input and result data'}</span><i aria-hidden="true">{expanded ? '−' : '+'}</i>
     </button>
     {#if expanded}
       <div class="evidence-grid">
-        <div><small>SCOPE / CANONICAL INPUT</small><pre><code>{JSON.stringify(request.scope, null, 2)}</code></pre></div>
-        <div><small>SELECTED CANDIDATE / RUST OUTPUT</small><pre><code>{JSON.stringify(planner.candidates?.[0] ?? planner, null, 2)}</code></pre></div>
+        <div><small>SEARCH LIMITS / CPIR INPUT</small><pre><code>{JSON.stringify(request.scope, null, 2)}</code></pre></div>
+        <div><small>FIRST CANDIDATE / RUST RESULT</small><pre><code>{JSON.stringify(planner.candidates?.[0] ?? planner, null, 2)}</code></pre></div>
       </div>
     {/if}
   </VisualizationFrame>

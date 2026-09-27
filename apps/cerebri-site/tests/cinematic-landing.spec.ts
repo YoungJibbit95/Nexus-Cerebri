@@ -7,6 +7,21 @@ import { visualBaselines } from './visual-baselines';
 
 const prefix = process.env.CEREBRI_BASE_PATH ?? '';
 
+test('explanation length cannot shift the native scroll scene boundaries', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.goto(prefix + '/');
+  await page.evaluate(() => document.fonts.ready);
+  const scene = page.locator('.observatory');
+  const heights: number[] = [];
+  for (let stage = 0; stage < 7; stage++) {
+    await scene.locator('.scene-controls button').nth(stage).click();
+    await expect(scene).toHaveAttribute('data-scene', String(stage));
+    await expect(scene.locator('.scene-explanation').getByRole('heading')).toHaveCount(1);
+    heights.push(await scene.evaluate(element => element.getBoundingClientRect().height));
+  }
+  expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(1);
+});
+
 test('manual scene inspection survives fast scrolling, resizing and reduced motion', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.goto(prefix + '/');

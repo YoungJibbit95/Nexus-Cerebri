@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { visualBaselines } from './visual-baselines';
 
 const prefix = process.env.CEREBRI_BASE_PATH ?? '';
-const routes = ['/', '/explore/', '/cpir/', '/planning/', '/time/', '/safety/', '/architecture/', '/lab/', '/roadmap/', '/developers/', '/docs/'];
+const routes = ['/', '/explore/', '/cpir/', '/planning/', '/time/', '/safety/', '/architecture/', '/lab/', '/roadmap/', '/developers/', '/docs/', '/docs/de/introduction/', '/docs/en/introduction/', '/docs/de/research/', '/docs/en/research/'];
 
 test('all primary knowledge routes prerender and expose a heading', async ({ page }) => {
   for (const route of routes) {
@@ -34,10 +34,10 @@ test('homepage reflects the current structured deterministic planning boundary',
   const heroHeading = page.locator('h1').first();
   await expect(heroHeading).toContainText('A plan you');
   await expect(heroHeading).toContainText('can inspect.');
-  await expect(page.getByText('Current CPIR planning fixture', { exact: true })).toBeVisible();
+  await expect(page.getByText('A 30-minute appointment: input and result', { exact: true })).toBeVisible();
   await expect(page.getByText('11 positions', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('7 valid / 4 rejected', { exact: true })).toBeVisible();
-  await expect(page.getByText('Structured evidence. Bounded search. Explicit authority.', { exact: true })).toBeVisible();
+  await expect(page.getByText('See the options. Check the result.', { exact: true })).toBeVisible();
   await expect(page.getByText(/It can explore meaning and ambiguity/i)).toHaveCount(0);
   await expect(page.getByText(/HUMAN \/ PROBABILISTIC/i)).toHaveCount(0);
 });
@@ -47,7 +47,7 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
 
   const observatory = page.locator('.observatory');
   await expect(observatory).toBeVisible();
-  await expect(observatory).toHaveAttribute('aria-label', /Bounded search observatory/);
+  await expect(observatory).toHaveAttribute('aria-label', /Appointment search/);
 
   const candidates = page.locator('ol[aria-label="Evaluated candidate intervals"] > li');
   await expect(candidates).toHaveCount(11);
@@ -56,8 +56,8 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   await expect(page.locator('.planning-instrument .candidate-lanes li[data-state="selected"]')).toHaveCount(1);
 
   const authorityBoundary = page.locator('.proposal-boundary');
-  await expect(authorityBoundary).toHaveAttribute('aria-label', /Selected proposal at 10:00 UTC stops before a separate authority gate/);
-  await expect(authorityBoundary.getByText('AUTHORITY GATE', { exact: true })).toBeVisible();
+  await expect(authorityBoundary).toHaveAttribute('aria-label', /proposal at 10:00 UTC still needs validation and authorization/);
+  await expect(authorityBoundary.getByText('PERMISSION CHECK', { exact: true })).toBeVisible();
   await expect(authorityBoundary.getByText('EXECUTION', { exact: true })).toBeVisible();
 
   const instrument = page.locator('.planning-instrument');
@@ -70,15 +70,15 @@ test('semantic planning visuals preserve candidate and authority distinctions', 
   const semanticFlow = instrument.getByRole('region', { name: /Candidate to authority flow/i });
   await expect(semanticFlow).toBeVisible();
   await expect(semanticFlow.locator('[data-flow-node]')).toHaveCount(4);
-  await expect(semanticFlow.locator('[data-flow-node="candidates"]')).toContainText('7 valid after hard-rule checks');
-  await expect(semanticFlow.locator('[data-flow-node="comparator"]')).toContainText('Rust-produced order');
+  await expect(semanticFlow.locator('[data-flow-node="candidates"]')).toContainText('7 pass the required checks');
+  await expect(semanticFlow.locator('[data-flow-node="comparator"]')).toContainText('See why one comes first');
   await expect(semanticFlow.locator('[data-flow-node="proposal"]')).toContainText('10:00 UTC remains a proposal');
-  await expect(semanticFlow.locator('[data-flow-node="authority"]')).toContainText('authorization stay separate');
+  await expect(semanticFlow.locator('[data-flow-node="authority"]')).toContainText('Still needs validation and authorization');
 
   const comparator = instrument.getByRole('region', { name: /Deterministic comparator/i });
   await expect(comparator).toBeVisible();
   await expect(comparator.locator('.comparator-row.decisive')).toHaveAttribute('data-key-field', 'start');
-  await expect(comparator.locator('.comparator-resolution')).toContainText('First differing key:');
+  await expect(comparator.locator('.comparator-resolution')).toContainText('First difference:');
 
   const lifecycle = instrument.getByRole('region', { name: /Planner authority boundary/i });
   await expect(lifecycle).toBeVisible();
@@ -106,7 +106,7 @@ test('structured evidence inspection is keyboard operable', async ({ page }) => 
   await expect(inspect).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(inspect).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByText('SCOPE / CANONICAL INPUT', { exact: true })).toBeVisible();
+  await expect(page.getByText('SEARCH LIMITS / CPIR INPUT', { exact: true })).toBeVisible();
 });
 
 test('homepage and planning surface meet the serious axe floor', async ({ page }) => {
@@ -115,8 +115,8 @@ test('homepage and planning surface meet the serious axe floor', async ({ page }
     if (route === '/') {
       const releaseStatus = page.getByRole('group', { name: 'Release status' });
       await expect(releaseStatus.getByText('Published release: None', { exact: true })).toBeVisible();
-      await expect(releaseStatus.getByText('Unreleased · qualification in progress', { exact: true })).toBeVisible();
-      await expect(releaseStatus.getByText('CPIR 0.2', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('In development · release checks in progress', { exact: true })).toBeVisible();
+      await expect(releaseStatus.getByText('Input format: CPIR 0.2', { exact: true })).toBeVisible();
     }
     const results = await new AxeBuilder({ page }).analyze();
     const blocking = results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical');
