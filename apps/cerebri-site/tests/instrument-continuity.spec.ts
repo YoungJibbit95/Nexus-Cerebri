@@ -89,7 +89,7 @@ test('chapter environment follows navigation and releases its state on another r
   await page.locator('.technical-inspection>summary').click();
   await page.locator('.projection-value').scrollIntoViewIfNeeded();
   await expect(page.locator('body')).toHaveAttribute('data-instrument-world', 'technical');
-  await page.getByRole('link', { name: 'Explore Cerebri', exact: true }).click();
+  await page.getByRole('link', { name: 'Inspect the structured request', exact: true }).click();
   await expect(page.locator('body')).not.toHaveAttribute('data-instrument-world');
 });
 
