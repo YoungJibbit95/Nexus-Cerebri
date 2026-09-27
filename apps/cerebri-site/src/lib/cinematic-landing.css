@@ -1,5 +1,7 @@
 /* Homepage composition. Domain instruments retain their own geometry and tokens. */
-.instrument-story .finale-copy p{text-align:left}
+.instrument-story .finale-copy{text-align:center;margin-inline:auto}
+.instrument-story .finale-copy p{text-align:center;margin-inline:auto}
+.instrument-story .home-finale .hero-actions{justify-content:center}
 .instrument-story .finale-copy p a{color:var(--cyan);text-decoration:underline;text-underline-offset:.2em}
 .research-horizon{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4rem;padding-block:4rem;border-top:1px dashed var(--line-strong)}.research-horizon h2{font-size:clamp(2rem,4vw,3.5rem);line-height:1.1;margin:1rem 0}.research-horizon p{font-size:1rem;line-height:1.7;color:var(--text-3);max-width:54ch}.research-horizon a{display:inline-flex;align-items:center;gap:1rem;min-height:44px;color:var(--cyan)}.research-frontier{align-self:center}.research-frontier>span,.research-frontier>small{font:.8125rem/1.6 var(--mono);color:var(--text-3)}.research-frontier>small{color:var(--violet)}.research-frontier>strong{font-size:1.25rem;line-height:1.4}.frontier-line{display:flex;align-items:center;margin:2rem 0;height:36px}.frontier-line i{position:relative;width:58%;border-top:1px solid var(--cyan)}.frontier-line i::after{content:'';position:absolute;right:0;top:-15px;height:30px;border-left:2px solid var(--cyan)}.frontier-line b{width:36%;margin-left:6%;border-top:1px dashed var(--violet)}
 @media(max-width:760px){.research-horizon{grid-template-columns:1fr;gap:2rem;padding-block:3rem}}
