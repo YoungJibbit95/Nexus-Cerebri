@@ -3,6 +3,7 @@
 node_modules/
 *.node
 .env
+/docs/development/communication/
 .env.*
 !.env.example
 *.pem

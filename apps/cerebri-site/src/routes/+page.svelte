@@ -111,7 +111,7 @@
   <div class="finale-copy">
     <span class="kicker">THE PROJECT’S BEGINNING</span>
     <h2>Why I started<br /><em>Nexus Cerebri.</em></h2>
-    <p>I wanted to understand how neural networks learn. The <a href="https://www.nature.com/articles/323533a0">1986 backpropagation paper by David E. Rumelhart, Geoffrey E. Hinton and Ronald J. Williams</a> helped draw me into the mathematics. Following each operation turned equations I found intimidating into steps I could understand.</p>
+    <p>I wanted to understand how neural networks learn. The <a href="https://www.nature.com/articles/323533a0">1986 backpropagation paper by David E. Rumelhart, Geoffrey E. Hinton and Ronald J. Williams</a> helped me getting curious about the mathematics. Following each operation turned equations I found intimidating into steps I could understand.</p>
     <p>Cerebri became a way to keep learning by building and testing a real system. Planning gave me a concrete problem: what is already known, which rules must hold, and why does one option come before another? Scheduling is the first example; the longer-term aim is planning software for different applications.</p>
     <p>The planner shown here follows fixed rules. Later, I want to explore how learned methods could help it find and compare options. The <a href={base + '/docs/en/research/'}>learning and research path</a> explains those questions and the checks that would still apply.</p>
     <div class="hero-actions">
