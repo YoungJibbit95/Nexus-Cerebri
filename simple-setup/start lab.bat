@@ -1,0 +1,1 @@
+npm --prefix apps/cerebri-lab run dev
