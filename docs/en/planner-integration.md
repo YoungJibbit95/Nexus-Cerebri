@@ -174,8 +174,10 @@ scalar/manifest, provenance and run-binding components in Rust. Partial Phase B 
 value/rule grammars, pure candidate/hypothesis fingerprints and shared admission-work measurement.
 Phase B.1 adds bounded graph canonicalization with a payload-aware labeling interface.
 Phase B.2 adds complete BaseScenario/BSF projection with separate identity/revision bindings.
-DecisionInput/DecisionObservation projection, semantic lifecycle/collection validation and
-replay remain unfinished. Planner and transport behavior is unchanged; live
+Phase B.3 adds DecisionInput/D1 from a fresh BSF, its bindings, typed request inputs and
+shared admission-work measurement; artifact semantic identities are explicit trusted inputs.
+DecisionObservation, semantic lifecycle/collection validation and replay remain unfinished.
+Planner and transport behavior is unchanged; live
 capture, telemetry and learning remain absent. The targeted independent Data/Hard-Math
 qualification of the rule byte grammar is complete; overall Phase B remains partial.
 

@@ -2,7 +2,7 @@
 //!
 //! Canonical values, closed rule grammars, candidate/hypothesis identities and shared
 //! admission-work measurement, canonical graph labeling and complete BaseScenario/BSF
-//! projection are implemented. DI/DO projection, lifecycle/collection validation,
+//! and DecisionInput/D1 projection are implemented. DO projection, lifecycle/collection validation,
 //! artifact authentication and replay remain pending.
 //! Planning, ranking, admission thresholds and execution retain their authorities.
 
@@ -43,6 +43,7 @@ mod admission_work;
 mod artifact;
 mod canonical;
 mod canonical_rules;
+mod decision_input;
 mod episode;
 mod fingerprint;
 mod graph;
@@ -60,13 +61,17 @@ pub use admission_work::*;
 pub use artifact::*;
 pub use canonical::*;
 pub use canonical_rules::*;
+pub use decision_input::*;
 pub use episode::*;
 pub use fingerprint::*;
 pub use graph::*;
 pub use graph_recurrence::*;
 pub use observation::*;
 pub use primitives::*;
-pub use scenario::{BaseScenarioPayloadV1, BaseScenarioProjectionV1, RevisionBindingV1};
+pub use scenario::{
+    BaseScenarioPayloadV1, BaseScenarioProjectionV1, CanonicalPreferenceEvidenceV1,
+    RevisionBindingV1,
+};
 pub use scenario_duration::*;
 pub use tokens::*;
 pub use wire::*;

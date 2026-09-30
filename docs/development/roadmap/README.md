@@ -33,8 +33,11 @@ adds canonical value/rule grammars, candidate/hypothesis fingerprints and shared
 measurement. The [B.1 graph checkpoint](../progress/2026-09-30-evaluation-phase-b1-graph.md)
 adds bounded graph canonicalization and its payload-aware interface. The
 [B.2 BaseScenario checkpoint](../progress/2026-09-30-evaluation-phase-b2-base-scenario.md)
-adds complete BSF projection and identity/revision bindings. DecisionInput/D1 is next;
-DecisionObservation/O1/O2 remains later Phase-B work;
+adds complete BSF projection and identity/revision bindings; B.2 is independently qualified
+as recorded by the maintainer's B.3 handoff. The
+[B.3 checkpoint](../progress/2026-09-30-evaluation-phase-b3-decision-input.md) implements
+DecisionInput/D1 without claiming independent B.3 qualification. Phase B remains partial;
+DecisionObservation/O1/O2 is next and Phase C remains unstarted;
 semantic lifecycle/collection validation, production observations and replay are unimplemented.
 ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
