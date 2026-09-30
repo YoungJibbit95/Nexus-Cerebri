@@ -39,6 +39,17 @@ This changelog maintains two independent histories:
 **Release qualification:** `Undergoing release qualification`
 **Published release:** `None`
 
+### 2026-09-30 — Application integration foundation
+
+- Add the independently versioned Integration 0.1 manifest and non-executing single-event
+  suggestion profile in Rust core, exposed by additive REST and Node process entry points.
+- Require CPIR 0.2, explicit temporal coverage and zero mutation authority. Preserve the
+  unchanged planner result, existing lifecycle and legacy transport contracts.
+- Add a bounded/cancellable host-side Node client, synthetic conformance/negative tests,
+  DE/EN reference and a concrete Nexus Ecosystem consumer implementation prompt.
+- Independent Architecture/Security qualification remains pending. No rollout, execution,
+  production evaluation collection, software version change or release publication.
+
 ### 2026-09-27 — Synthetic evaluation contract foundations (Phase A complete)
 
 - Apply the corrected consolidated v1.2.6 authority: closed Episode schema object,

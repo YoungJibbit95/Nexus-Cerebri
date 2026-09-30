@@ -1,4 +1,5 @@
 // Provisional process bridge, with all planning delegated to the Rust core.
+export { CerebriBridgeError, describeIntegration, suggest } from './integration.mjs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 const defaultBinary = fileURLToPath(new URL(

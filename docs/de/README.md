@@ -20,6 +20,9 @@ kein Bestandteil des heutigen Planers.
 
 ## Weiter erkunden
 
+- [Eine Anwendung verbinden](application-integration.md) beschreibt den begrenzten
+  Vorschlagsvertrag, Node-/REST-Zugänge und den nächsten Nexus-Verbraucherschritt.
+
 - [Architektur](foundation.md) erklärt, welches Rust-Paket für welche Berechnung zuständig
   ist und wie API, Lab und Website darauf zugreifen.
 - [Das Lab ausprobieren und lokal entwickeln](development.md) erklärt, wie du Ergebnisse

@@ -126,6 +126,7 @@ dependencies = [
  "cerebri-planner",
  "cerebri-temporal",
  "cerebri-types",
+ "serde",
  "serde_json",
 ]
 
@@ -157,6 +158,7 @@ name = "cerebri-node"
 version = "0.2.0"
 dependencies = [
  "cerebri-core",
+ "serde_json",
 ]
 
 [[package]]

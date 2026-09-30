@@ -1,5 +1,6 @@
 //! Synchronous planning facade shared by Rust, REST and the Node bridge.
 //! No database, HTTP, provider schema, executor, clock or filesystem dependency.
+pub mod integration;
 use cerebri_planner::{BaselinePlanner, Planner};
 pub use cerebri_planner::{PlanningRequest, PlanningResult, ValidationReport};
 pub use cerebri_temporal::{TemporalRequest, TemporalResult};
