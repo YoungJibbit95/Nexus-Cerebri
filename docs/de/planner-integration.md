@@ -196,11 +196,12 @@ Die abgeschlossenen [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-e
 aus Slice 2, Phase A ergänzen den geschlossenen Episode-Wire-Vertrag, einen separaten
 wire-validierten Domain-Container und strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
 in Rust. Der partielle Phase-B-Stand ergänzt kanonische Wert-/Regel-Grammatiken, reine
-Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Die vollständige
-Graph-/BSF-, DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-
+Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Phase B.1 ergänzt
+begrenzte Graph-Kanonisierung mit einer Schnittstelle für die vollständige Payload. Die vollständige
+BSF-, DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-
 Validierung und Replay sind noch nicht fertig. Planner- und Transportverhalten bleiben unverändert;
-Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die neu geschlossenen
-Regel-Bytes benötigen noch eine gezielte unabhängige Qualifikation.
+Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die gezielte unabhängige
+Data-/Hard-Math-Qualifikation der Regel-Byte-Grammatik ist abgeschlossen; Phase B bleibt partiell.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md) · [English](../en/planner-integration.md)

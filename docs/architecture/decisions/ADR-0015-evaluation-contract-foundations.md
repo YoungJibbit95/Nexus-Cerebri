@@ -22,7 +22,10 @@ The subsequent Phase-B source is
 `007fdbab8630ecd8119215f329d7e9e36d73076de1bef885f1055c859da2edab`.
 Sections 17.3/17.5 close previously unspecified constraint and recurrence variant bytes.
 Section 64 explicitly requires targeted independent canonicalization re-qualification of
-those new bytes. That qualification is pending; implementation evidence does not supply it.
+those new bytes. The maintainer has supplied both independent results:
+`SLICE 2 PHASE-B BYTE GRAMMAR DATA QUALIFIED` and
+`SLICE 2 PHASE-B BYTE GRAMMAR HARD-MATH QUALIFIED`; the targeted section 64 gate is closed.
+This records external qualification, not implementation self-certification.
 Phase-A contracts and existing architecture vector bytes are unchanged.
 
 ## Recorded contract
@@ -91,6 +94,22 @@ Phase-A contracts and existing architecture vector bytes are unchanged.
   Imported observations still require budget validation and authenticated source remeasurement
   at the later DecisionInput/replay boundary.
 
+## Phase B.1 graph checkpoint
+
+The closed graph registry and SERIES intrinsic recurrence projection now exist separately
+from the top-level temporal grammar. Identity-based relations create missing reference-only
+vertices. Explicit edge/direction ranks, stable partition refinement and exhaustive
+individualization use the existing canonical values and final JCS writer. An explicit DFS
+stack enforces the 100000-state bound without recursive process-stack growth; failure
+returns no partial labeling and never changes planner admission or feasibility.
+
+The caller-supplied complete-payload renderer determines the minimum labeling. A synthetic
+external target REF tests symmetry breaking; source-ID binding bytes break ties only after
+equal complete payloads. The graph-only helper exists for G1/G2/G3 conformance, not as the
+normative BSF criterion. Full PlanningRequest/BSF projection is not implemented here.
+RFC 8785/JCS property ordering is UTF-16; semantic CanonicalValue object-key ordering
+remains UTF-8. The existing writer already implements that distinction correctly.
+
 ## Compatibility and remaining work
 
 Existing CPIR, RankingFeatureSet, preference resolution, candidate ordering, search,
@@ -100,8 +119,9 @@ their authorities. There is no release, tag, Product Capture, telemetry, ML or p
 
 The complete Episode wire shape and Phase-A domain conversion now exist. Wire validity
 is not final record-local semantic/R0 validity, proof of authenticated hashes or a behavioral
-evaluation eligibility claim. Graph canonicalization, complete PlanningRequest/BSF projection,
-DecisionInput, DecisionObservation and their end-to-end vectors remain Phase-B work.
+evaluation eligibility claim. Complete PlanningRequest/BSF projection, identity/revision
+binding integration, DecisionInput, DecisionObservation and their end-to-end vectors remain
+Phase-B work after B.1 graph canonicalization.
 There is no production observation/capture, interaction reducer, collection validation or
 replay runner. Phase B is partial; Phases C–E remain unstarted.
 Later phases must preserve the existing trusted planning boundary rather than treating
@@ -116,6 +136,9 @@ variant shapes, paths/roles, independent schema tokens and structural roundtrips
 
 The [Phase-B checkpoint](../../development/progress/2026-09-27-evaluation-phase-b-checkpoint.md)
 records canonical grammar, byte-oracle and admission-work tests and the exact remaining scope.
+The [B.1 graph checkpoint](../../development/progress/2026-09-30-evaluation-phase-b1-graph.md)
+records the bounded continuation and its executed gates. Phase D is replay; Phase E is
+integration, documentation and qualification preparation.
 
 [Master](../specifications/master-v0.4.md) · [ADR-0013](ADR-0013-planner-resource-admission.md)
 · [ADR-0014](ADR-0014-ranking-feature-contract.md)

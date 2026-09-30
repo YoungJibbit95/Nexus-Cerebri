@@ -88,7 +88,7 @@ pub struct EvaluationEpisodeWireV0_1 {
 ///
 /// This is NOT a replay/lifecycle proof. Phase C must add record-local semantic and
 /// collection validation before Episodes can feed lifecycle or behavioral evaluation;
-/// Phase B supplies fingerprint computation and Phase E authenticates replay evidence.
+/// Phase B supplies fingerprint computation and Phase D authenticates replay evidence.
 /// There is no production capture, execution or behavioral-evaluation consumer here.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(

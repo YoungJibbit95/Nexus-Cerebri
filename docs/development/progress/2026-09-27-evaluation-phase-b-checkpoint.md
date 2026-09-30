@@ -1,5 +1,9 @@
 # Slice 2: partial Phase-B canonicalization checkpoint
 
+Historical checkpoint. The subsequent [B.1 graph checkpoint](2026-09-30-evaluation-phase-b1-graph.md)
+records implementation progress and the maintainer-supplied closure of the targeted
+section 64 Data/Hard-Math gate; the pending statements below describe this earlier date.
+
 Date: 2026-09-27. Software 0.2.0 remains unreleased. Phase A remains complete;
 **Phase B is not complete. Phases C, D and E are unstarted.**
 
