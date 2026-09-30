@@ -80,7 +80,8 @@ generated output; staging receives its own bounded ignore entry.
 Startup uses `spawn`, no shell, a hidden Windows console, `127.0.0.1:0` and the
 packaged `CEREBRI_LAB_DIST`. Split stdout is parsed for the strict printed IPv4
 loopback address; malformed/external addresses fail closed. `/health` confirms
-actual API metadata before `/lab/` loads. The total startup deadline is 15 seconds;
+actual API metadata before `/lab/` loads. The native title separately displays
+actual desktop and Core versions. The total startup deadline is 15 seconds;
 health is separately bounded within it. The API's typed `router_with_lab_dir`
 preserves the development `router()` default and all endpoint semantics.
 
@@ -130,7 +131,7 @@ Executed successfully:
   960×640 and 820×900 with no document overflow. This is bounded accessibility
   evidence, not exhaustive assistive-technology qualification.
 - Actual packaged Windows x64 smoke succeeds. It checks bundled API/renderer,
-  complete Planner/Temporal JSON parity, actual health, Understand/Research,
+  complete Planner/Temporal JSON parity, actual health, all three depths,
   second-instance rejection, real API termination/error/restart and absence of
   both owned API PIDs after exit. Resource and evidence paths contain spaces.
 - Windows NSIS artifact builds and artifact verification succeeds. Installer

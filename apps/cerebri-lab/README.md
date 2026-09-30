@@ -215,7 +215,8 @@ Electron resolves this from `process.resourcesPath`, launches the API with
 and `CEREBRI_LAB_DIST` pointing to the packaged Lab. It parses the printed
 `CEREBRI_LISTEN_ADDR`, checks `/health` and then loads `/lab/`. Startup is bounded
 to 15 seconds, including health verification. The UI displays actual API health
-metadata. An unexpected API exit presents an error with bounded stderr diagnostics
+metadata. The native window title shows the actual desktop and Core software
+versions separately, including a future mismatch. An unexpected API exit presents an error with bounded stderr diagnostics
 and an explicit **Restart local core** action; no automatic restart loop runs.
 
 The single-instance lock focuses/restores the existing window on a second launch.

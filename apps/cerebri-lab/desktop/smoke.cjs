@@ -50,6 +50,7 @@ child.once('close', async (code) => {
     assert.equal(proof.childStopped, true);
     assert.equal(proof.renderer, true);
     assert.equal(proof.depthParity, true);
+    assert.equal(proof.security, true);
     assert.equal(await secondary, true, 'Second launch was not rejected by the single-instance lock.');
     assert.equal(proof.singleInstance, true);
     assert.equal(proof.crashRecovery, true);

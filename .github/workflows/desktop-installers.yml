@@ -52,6 +52,8 @@ jobs:
       - name: Smoke packaged application (Linux virtual display)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y xvfb x11-utils
           # Permit Chromium's user-namespace sandbox on this disposable CI runner.
           # The packaged app and desktop entry retain sandboxing; no --no-sandbox.
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then

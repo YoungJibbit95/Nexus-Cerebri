@@ -5,7 +5,7 @@ const { layout, OwnedCore, allowedNavigation } = require('./runtime.cjs');
 
 const smoke = process.argv.includes('--smoke-test');
 const smokeSecond = process.argv.includes('--smoke-second-instance');
-let window, core, origin, quitting = false, shutdown, retryTimer, connecting = false;
+let window, core, origin, apiVersion, quitting = false, shutdown, retryTimer, connecting = false;
 let smokeVerifying = false, secondObserved = false, failureShown;
 const controlledPages = new Set();
 function escape(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
@@ -25,6 +25,8 @@ function createWindow() {
     webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, backgroundThrottling: !smoke },
   });
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  window.webContents.on('page-title-updated', event => event.preventDefault());
+  window.setTitle(`Cerebri Lab desktop ${app.getVersion()} · Core ${apiVersion ?? 'connecting'}`);
   const navigation = (event, target) => {
     if (target === 'cerebri-local:restart' && controlledPages.has(window.webContents.getURL()) && app.isPackaged) {
       event.preventDefault(); if (!connecting) void connect(); return;
@@ -48,14 +50,18 @@ async function connect() {
     if (app.isPackaged) {
       core ??= new OwnedCore(layout(process.resourcesPath), { onCrash: (error) => { failureShown = showFailure(error); } });
       origin = await core.start();
+      apiVersion = core.health.software_version;
       if (smoke) console.log('CEREBRI_DESKTOP_CORE_PID=' + core.pid);
     } else {
       origin = 'http://127.0.0.1:3000';
       const response = await fetch(origin + '/health', { signal: AbortSignal.timeout(2000), redirect: 'error' });
-      if (!response.ok || (await response.json()).status !== 'ok') throw new Error('Development API health check failed.');
+      const health = await response.json();
+      if (!response.ok || health.status !== 'ok') throw new Error('Development API health check failed.');
+      apiVersion = health.software_version;
     }
     if (!quitting && window && !window.isDestroyed()) {
       await window.loadURL(origin + '/lab/');
+      window.setTitle(`Cerebri Lab desktop ${app.getVersion()} · Core ${apiVersion}`);
       if (smoke && !smokeVerifying) await runSmoke();
     }
   } catch (error) {
@@ -74,6 +80,8 @@ async function capture(name) {
 async function runSmoke() {
   if (!app.isPackaged) throw new Error('Smoke requires an unpacked packaged application.');
   smokeVerifying = true;
+  const preferences = window.webContents.getLastWebPreferences();
+  if (preferences.nodeIntegration || !preferences.contextIsolation || !preferences.sandbox || app.commandLine.hasSwitch('no-sandbox')) throw new Error('Desktop renderer security invariant failed.');
   const wait = async (condition) => {
     const deadline = Date.now() + 15000;
     while (!condition()) { if (Date.now() > deadline) throw new Error('Desktop lifecycle verification timed out.'); await new Promise(resolve => setTimeout(resolve, 50)); }
@@ -92,10 +100,13 @@ async function runSmoke() {
     if (document.querySelectorAll('pre').length) throw new Error('Understand exposes raw JSON');
     if (!document.querySelector('.authority-rail').textContent.includes('Proposal ≠ execution')) throw new Error('Authority boundary missing');
     const counts = [...document.querySelectorAll('.run-flow strong')].map(item => item.textContent);
-    button('Research').click();
-    await wait(() => [...document.querySelectorAll('details.json-panel')].some(item => item.querySelector('summary').textContent.includes('Complete PlanningResult')));
-    const rendered = JSON.parse([...document.querySelectorAll('details.json-panel')].find(item => item.querySelector('summary').textContent.includes('Complete PlanningResult')).querySelector('pre').textContent);
-    if (JSON.stringify(rendered) !== JSON.stringify(planner)) throw new Error('Renderer/planner parity failed');
+    for (const depth of ['Technical', 'Research']) {
+      button(depth).click();
+      await wait(() => [...document.querySelectorAll('details.json-panel')].some(item => item.querySelector('summary').textContent.includes('Complete PlanningResult')));
+      const panel = [...document.querySelectorAll('details.json-panel')].find(item => item.querySelector('summary').textContent.includes('Complete PlanningResult'));
+      if (panel.open !== (depth === 'Research')) throw new Error('Depth disclosure failed');
+      if (JSON.stringify(JSON.parse(panel.querySelector('pre').textContent)) !== JSON.stringify(planner)) throw new Error('Renderer/planner parity failed');
+    }
     button('Understand').click();
     return { health, planner, counts, renderer: true, depthParity: true };
   })()`);
@@ -145,7 +156,7 @@ async function runSmoke() {
   await capture('electron-recovered.png');
   const pid = core.pid;
   await core.stop();
-  console.log('CEREBRI_DESKTOP_SMOKE_OK=' + JSON.stringify({ ...proof, temporal, pid, pids: [firstPid, pid], singleInstance: secondObserved, crashRecovery: true, macActivation, linuxDesktop, childStopped: core.state === 'stopped', origin }));
+  console.log('CEREBRI_DESKTOP_SMOKE_OK=' + JSON.stringify({ ...proof, temporal, pid, pids: [firstPid, pid], desktopVersion: app.getVersion(), security: true, singleInstance: secondObserved, crashRecovery: true, macActivation, linuxDesktop, childStopped: core.state === 'stopped', origin }));
   await exit(0);
 }
 async function exit(code = 0) {
