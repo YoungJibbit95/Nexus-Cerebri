@@ -1,9 +1,10 @@
-//! Synthetic evaluation contracts and partial Phase-B canonical foundations.
+//! Synthetic evaluation contracts and Phase-B canonical projections.
 //!
 //! Canonical values, closed rule grammars, candidate/hypothesis identities and shared
 //! admission-work measurement, canonical graph labeling and complete BaseScenario/BSF
-//! and DecisionInput/D1 projection are implemented. DO projection, lifecycle/collection validation,
-//! artifact authentication and replay remain pending.
+//! and DecisionInput/D1 and DecisionObservation/O1/O2 projections are implemented.
+//! Lifecycle/collection validation, artifact authentication and replay remain pending.
+//! Independent B.4 and complete Phase-B qualification remain separate gates.
 //! Planning, ranking, admission thresholds and execution retain their authorities.
 
 // A closed wire struct must deserialize from a map, never a positional JSON array.
@@ -42,8 +43,10 @@ macro_rules! deserialize_object_via {
 mod admission_work;
 mod artifact;
 mod canonical;
+mod canonical_input;
 mod canonical_rules;
 mod decision_input;
+mod decision_observation;
 mod episode;
 mod fingerprint;
 mod graph;
@@ -62,6 +65,7 @@ pub use artifact::*;
 pub use canonical::*;
 pub use canonical_rules::*;
 pub use decision_input::*;
+pub use decision_observation::*;
 pub use episode::*;
 pub use fingerprint::*;
 pub use graph::*;

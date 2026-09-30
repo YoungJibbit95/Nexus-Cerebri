@@ -36,8 +36,11 @@ adds bounded graph canonicalization and its payload-aware interface. The
 adds complete BSF projection and identity/revision bindings; B.2 is independently qualified
 as recorded by the maintainer's B.3 handoff. The
 [B.3 checkpoint](../progress/2026-09-30-evaluation-phase-b3-decision-input.md) implements
-DecisionInput/D1 without claiming independent B.3 qualification. Phase B remains partial;
-DecisionObservation/O1/O2 is next and Phase C remains unstarted;
+DecisionInput/D1; B.3 is independently qualified per the maintainer's B.4 handoff.
+The [B.4 checkpoint](../progress/2026-09-30-evaluation-phase-b4-decision-observation.md)
+implements DecisionObservation/O1/O2 through deterministic display-policy L. This is the
+final planned Phase-B implementation checkpoint; independent B.4 and full Phase-B
+qualification remain pending. Phase C remains unstarted;
 semantic lifecycle/collection validation, production observations and replay are unimplemented.
 ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;

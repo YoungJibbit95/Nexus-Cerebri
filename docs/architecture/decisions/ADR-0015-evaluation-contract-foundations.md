@@ -1,7 +1,7 @@
 # ADR-0015: Deterministic evaluation contract foundations
 
 Date: 2026-09-27
-Status: Accepted architecture authority; Phase A complete, Phase B partially implemented
+Status: Accepted architecture authority; Phase A complete, Phase B implemented; independent B.4/full Phase-B qualification pending
 
 ## Authority and scope
 
@@ -141,7 +141,20 @@ Artifact semantic identities are explicit trusted inputs; resolver authenticatio
 later work. E2 model/experiment are NONE. Imported payloads reject noncanonical collection
 order and inconsistent work/budget values. D1 is an external byte/digest oracle whose
 prevalidated work observation is accepted only through the lower-level conformance boundary.
-This is implementation evidence, not independent B.3 Data/Hard-Math qualification.
+B.3 Data/Hard-Math qualification was supplied by the maintainer's B.4 handoff;
+PR #46 merged on its green required head before B.4 began.
+
+## Phase B.4 DecisionObservation checkpoint
+
+The [B.4 checkpoint](../../development/progress/2026-09-30-evaluation-phase-b4-decision-observation.md)
+adds pure native-observation projection through deterministic display-policy L, exact
+SEARCHED/NOT_ADMITTED branches, one validated CandidateId-to-CandidateFingerprint map
+and strict digest imports. Search materialization, supplied ranks and product references
+are checked without changing search, admission or ranking. O1/O2 remain external byte/digest
+oracles. Exposure D/O never enters the constructor or digest. Native projection verifies
+placement fingerprints; lower-level conformance inputs retain O1's prevalidated identities.
+This is the final planned Phase-B implementation checkpoint, not independent B.4 or
+complete Phase-B qualification. Those reviews remain separate.
 
 ## Compatibility and remaining work
 
@@ -153,10 +166,11 @@ their authorities. There is no release, tag, Product Capture, telemetry, ML or p
 The complete Episode wire shape and Phase-A domain conversion now exist. Wire validity
 is not final record-local semantic/R0 validity, proof of authenticated hashes or a behavioral
 evaluation eligibility claim. Complete PlanningRequest/BSF projection and identity/revision
-bindings are implemented in B.2; DecisionInput/D1 is implemented in B.3.
-DecisionObservation/O1/O2 is the next Phase-B checkpoint.
+bindings are implemented in B.2; DecisionInput/D1 is implemented in B.3 and
+DecisionObservation/O1/O2 in B.4.
 There is no production observation/capture, interaction reducer, collection validation or
-replay runner. Phase B is partial; Phases C–E remain unstarted.
+replay runner. Phase-B implementation is complete; independent B.4/full Phase-B
+qualification remains pending. Phases C–E remain unstarted.
 Later phases must preserve the existing trusted planning boundary rather than treating
 structural component decoding as source verification or planning truth.
 
