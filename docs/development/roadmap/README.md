@@ -31,8 +31,10 @@ see [the completion record](../progress/2026-09-27-evaluation-phase-a-completion
 Episode wire/domain types exist. The [partial Phase-B checkpoint](../progress/2026-09-27-evaluation-phase-b-checkpoint.md)
 adds canonical value/rule grammars, candidate/hypothesis fingerprints and shared admission-work
 measurement. The [B.1 graph checkpoint](../progress/2026-09-30-evaluation-phase-b1-graph.md)
-adds bounded graph canonicalization and its payload-aware interface. Full
-BSF/DecisionInput/DecisionObservation projection remains unfinished;
+adds bounded graph canonicalization and its payload-aware interface. The
+[B.2 BaseScenario checkpoint](../progress/2026-09-30-evaluation-phase-b2-base-scenario.md)
+adds complete BSF projection and identity/revision bindings. DecisionInput/D1 is next;
+DecisionObservation/O1/O2 remains later Phase-B work;
 semantic lifecycle/collection validation, production observations and replay are unimplemented.
 ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;

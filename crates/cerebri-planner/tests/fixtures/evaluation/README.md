@@ -17,4 +17,14 @@ exact bytes and SHA-256 with the domain prefix
 | G3 | `42b7ee4c83a8068476b40ca563c80f34ce8df25dc8922f6a9b65070c2f8dac8e` |
 
 The graph-only oracle helper does not define BSF labeling. Complete external semantic
-REF relations must enter through the payload-aware renderer in the later B.2 checkpoint.
+REF relations enter through the complete BaseScenario renderer in B.2.
+
+## BaseScenario B1
+
+`b1.json` is the exact external literal from section 56.4 of the same authority,
+verified against that document: 2003 UTF-8 bytes, no BOM or trailing newline. Its
+semantic source is constructed separately in `evaluation_scenario.rs`; production
+serialization never generates the expected fixture.
+
+Domain: `nexus-cerebri:base-scenario-fingerprint:v1\0` (a terminating NUL byte).
+Expected digest: `9989e8381324dea03f300aec98ba28cfb4851a941eb8cd0f2e85682adb504b0c`.
