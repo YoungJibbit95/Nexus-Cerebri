@@ -197,9 +197,10 @@ aus Slice 2, Phase A ergänzen den geschlossenen Episode-Wire-Vertrag, einen sep
 wire-validierten Domain-Container und strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
 in Rust. Der partielle Phase-B-Stand ergänzt kanonische Wert-/Regel-Grammatiken, reine
 Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Phase B.1 ergänzt
-begrenzte Graph-Kanonisierung mit einer Schnittstelle für die vollständige Payload. Die vollständige
-BSF-, DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-
-Validierung und Replay sind noch nicht fertig. Planner- und Transportverhalten bleiben unverändert;
+begrenzte Graph-Kanonisierung mit einer Schnittstelle für die vollständige Payload. Phase B.2
+ergänzt die vollständige BaseScenario-/BSF-Projektion und separate Identity-/Revision-Bindings.
+DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-Validierung
+und Replay sind noch nicht fertig. Planner- und Transportverhalten bleiben unverändert;
 Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die gezielte unabhängige
 Data-/Hard-Math-Qualifikation der Regel-Byte-Grammatik ist abgeschlossen; Phase B bleibt partiell.
 

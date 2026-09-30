@@ -1,8 +1,9 @@
 //! Synthetic evaluation contracts and partial Phase-B canonical foundations.
 //!
 //! Canonical values, closed rule grammars, candidate/hypothesis identities and shared
-//! admission-work measurement are implemented. Whole-scenario graph/BSF/DI/DO projection,
-//! lifecycle/collection validation, artifact authentication and replay remain pending.
+//! admission-work measurement, canonical graph labeling and complete BaseScenario/BSF
+//! projection are implemented. DI/DO projection, lifecycle/collection validation,
+//! artifact authentication and replay remain pending.
 //! Planning, ranking, admission thresholds and execution retain their authorities.
 
 // A closed wire struct must deserialize from a map, never a positional JSON array.
@@ -49,6 +50,9 @@ mod graph_recurrence;
 mod graph_registry;
 mod observation;
 mod primitives;
+mod scenario;
+mod scenario_duration;
+mod source_graph;
 mod tokens;
 mod wire;
 
@@ -62,6 +66,8 @@ pub use graph::*;
 pub use graph_recurrence::*;
 pub use observation::*;
 pub use primitives::*;
+pub use scenario::{BaseScenarioPayloadV1, BaseScenarioProjectionV1, RevisionBindingV1};
+pub use scenario_duration::*;
 pub use tokens::*;
 pub use wire::*;
 

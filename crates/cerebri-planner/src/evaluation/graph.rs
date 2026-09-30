@@ -261,7 +261,7 @@ impl CanonicalGraphSourceV1 {
     /// labeling. The renderer must be pure, deterministic, use canonical JCS bytes,
     /// include the graph and every semantic external REF, and exclude opaque IDs.
     /// Source IDs participate only in the secondary tie-break after payload equality.
-    /// Phase B.2 will supply the actual BaseScenario renderer; this is not BSF support.
+    /// BaseScenarioProjectionV1 supplies the complete BaseScenario renderer.
     pub fn canonicalize_with_payload<F>(
         &self,
         render: F,
