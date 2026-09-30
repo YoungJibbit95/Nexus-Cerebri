@@ -2,8 +2,13 @@
 use axum::{
     Json, Router,
     extract::DefaultBodyLimit,
+    extract::rejection::JsonRejection,
+    http::StatusCode,
     response::Redirect,
     routing::{get, post},
+};
+use cerebri_core::integration::{
+    self, SuggestionOutcome, SuggestionRejection, SuggestionRequest, SuggestionResponse,
 };
 use cerebri_core::{
     PlanningRequest, PlanningResult, TemporalRequest, TemporalResult, ValidationReport,
@@ -18,9 +23,32 @@ pub fn router() -> Router {
         .route("/v1/validate",post(validate))
         .route("/v1/plan",post(plan))
         .route("/v1/temporal",post(temporal))
+        .route("/v1/integration/manifest", get(|| async { Json(integration::describe()) }))
+        .route("/v1/integration/suggestions", post(suggest))
         .route("/lab",get(|| async { Redirect::permanent("/lab/") }))
         .nest_service("/lab/", ServeDir::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../cerebri-lab/dist")))
-        .layer(DefaultBodyLimit::max(256 * 1024))
+        .layer(DefaultBodyLimit::max(integration::MAX_INTEGRATION_REQUEST_BYTES))
+}
+async fn suggest(
+    input: Result<Json<SuggestionRequest>, JsonRejection>,
+) -> (StatusCode, Json<SuggestionResponse>) {
+    let response = match input {
+        Ok(Json(request)) => integration::suggest(request),
+        Err(error) => {
+            let status = error.status();
+            let code = if status == StatusCode::PAYLOAD_TOO_LARGE {
+                SuggestionRejection::RequestTooLarge
+            } else {
+                SuggestionRejection::InvalidRequest
+            };
+            return (status, Json(SuggestionResponse::rejected(code)));
+        }
+    };
+    let status = match &response.outcome {
+        SuggestionOutcome::Planned { .. } => StatusCode::OK,
+        SuggestionOutcome::Rejected { .. } => StatusCode::UNPROCESSABLE_ENTITY,
+    };
+    (status, Json(response))
 }
 async fn temporal(Json(request): Json<TemporalRequest>) -> Json<TemporalResult> {
     Json(cerebri_core::inspect_temporal(request))

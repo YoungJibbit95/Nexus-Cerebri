@@ -582,6 +582,14 @@ One core, multiple interfaces:
 
 Transport contains no planning logic.
 
+The additive application integration foundation provides a manifest and a separately
+versioned single-event suggestion profile in `cerebri-core::integration`, exposed through
+REST and the Node process bridge. It admits only nonmutating CPIR 0.2 FIND_SLOT requests
+with explicit temporal coverage and delegates unchanged to the existing planner.
+[Proposed ADR-0016](../decisions/ADR-0016-application-suggestion-boundary.md) records this
+bounded implementation and its pending independent qualification; it supersedes no
+accepted lifecycle, authority or planning rule. This is not production rollout or release.
+
 Candidate output includes the Rust-produced `ranking_features` observation contract
 (ADR-0014); REST, Node and Lab expose it without recomputing ranking semantics.
 
@@ -708,6 +716,8 @@ Canonical authorities:
 - **Model version:** immutable ModelRegistry metadata/artifact ID.
 - **Ranking feature schema:** `RankingFeatureSchemaVersion` / `RANKING_FEATURE_SCHEMA_V0_1` in cerebri-preferences; serialized as candidate `ranking_features.schema_version`, independent of CPIR/software/API/model/dataset/specification versions.
 - **Dataset version:** dataset manifest metadata/checksum.
+- **Application integration version:** `IntegrationVersion` / `INTEGRATION_V0_1` in
+  `cerebri-core::integration`, independent of the software, REST, CPIR and evaluation axes.
 - **Specification revision:** document front matter/header, e.g. `0.2`; no software compatibility guarantee is implied.
 
 README surfaces the software version/status and links the current specification revision.

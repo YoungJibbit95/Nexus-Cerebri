@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './integration.test.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { plan } from './index.mjs';

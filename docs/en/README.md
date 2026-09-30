@@ -19,6 +19,9 @@ explicit rules. Neural learning is a research direction, not part of today's pla
 
 ## Go further
 
+- [Connect an application](application-integration.md) describes the bounded suggestion
+  contract, Node/REST entry points and the next Nexus consumer milestone.
+
 - [Architecture](foundation.md) explains which Rust package owns each calculation and
   how the API, Lab and website use it.
 - [Try the Lab and develop locally](development.md) explains how to inspect results and

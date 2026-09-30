@@ -22,5 +22,6 @@ Historical release statements retain their original date and do not set current 
 | [ADR-0013](ADR-0013-planner-resource-admission.md) | Bound planner metadata work and materialized evidence | Accepted | Planner admission limits and materialized evidence budgets |
 | [ADR-0014](ADR-0014-ranking-feature-contract.md) | Versioned deterministic ranking observations | Accepted | Ranking feature schema 0.1, required-nullable output and provenance; extends ADR-0012 |
 | [ADR-0015](ADR-0015-evaluation-contract-foundations.md) | Deterministic evaluation contract foundations | Accepted architecture; Phase A, B.1 and B.2 complete, Phase B partial | Synthetic Episode contracts, graph/BSF projection, bindings and admission work; DI/DO/lifecycle/replay pending |
+| [ADR-0016](ADR-0016-application-suggestion-boundary.md) | Application-independent suggestion boundary | Proposed; implementation for review | Integration 0.1 manifest, non-executing single-event profile, REST/Node host boundary |
 
 [Decision template](ADR-TEMPLATE.md) · [Documentation authority](../../README.md)

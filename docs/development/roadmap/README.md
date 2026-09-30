@@ -40,6 +40,20 @@ ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
 the dated entries below preserve earlier milestone context.
 
+## 2026-09-30 application integration foundation
+
+The maintainer-directed application slice adds the Integration 0.1 manifest and one
+non-executing single-event suggestion profile over existing Rust planning, with REST and
+bounded/cancellable Node transport. It introduces no Nexus-specific domain type, solver
+change, execution, production collection or learned component. See
+[ADR-0016](../../architecture/decisions/ADR-0016-application-suggestion-boundary.md),
+[the reference](../../en/application-integration.md),
+[implementation evidence](../progress/2026-09-30-application-integration.md) and
+[the Nexus consumer prompt](../prompts/nexus-ecosystem-integration-foundation.md).
+Independent Architecture/Security qualification is pending; existing evaluation work and
+release qualification remain separate. The next consumer milestone is an offline Nexus
+adapter and trusted host boundary demonstrated against synthetic Rust fixtures, not rollout.
+
 ## 2026-09-20 status
 
 Foundation (internal 0.1.0) and the bounded Temporal Core milestone are implemented.
