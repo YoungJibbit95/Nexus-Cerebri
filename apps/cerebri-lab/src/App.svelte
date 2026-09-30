@@ -10,6 +10,7 @@
   import OutputConsole from './components/OutputConsole.svelte';
   import InspectorViews from './components/InspectorViews.svelte';
   import TemporalView from './components/TemporalView.svelte';
+  import TraceView from './components/TraceView.svelte';
   import CompilationPanel from './components/CompilationPanel.svelte';
   import DependencyPanel from './components/DependencyPanel.svelte';
   import JsonPanel from './components/JsonPanel.svelte';
@@ -34,6 +35,7 @@
   let result = $state<PlanningResult | null>(null);
   let validation = $state<ValidationReport | null>(null);
   let selected = $state(0);
+  let rejected = $state<number | null>(null);
   let busy = $state(false);
   let api = $state('Checking API');
   let version = $state('');
@@ -45,6 +47,7 @@
   const titles: Record<LabView, [string, string]> = {
     Planner: ['Make planning visible.', 'Explore possibilities. Inspect every decision.'],
     Temporal: ['Time deserves a closer look.', 'Inspect recurrence, availability and explicit DST decisions.'],
+    Compilation: ['From a rule to occupied time.', 'Explore the source, materialization and visibility of planner occupancy.'],
     Trace: ['Every decision has a reason.', 'Follow evidence from request to proposal.'],
     Semantics: ['Meaning, with its evidence.', 'Keep facts and inference in clear view.'],
     Preferences: ['Understand the tradeoffs.', 'Transparent priorities. Explainable costs.'],
@@ -73,10 +76,12 @@
     try { localStorage.setItem(DEPTH_STORAGE_KEY, next); } catch { /* Persistence is optional. */ }
   }
   function loadDemo() {
+    rejected = null;
     request = demo(); requestLabel = 'Synthetic focus session'; result = null; resultRequest = null; validation = null; selected = 0; runId = 0;
     status = 'Synthetic request loaded with an explicit 10:45 UTC preference.'; error = false; log('lab', status);
   }
   function loadScenario(file: string) {
+    rejected = null;
     request = scenarioRequest(file); requestLabel = file.replace('.json', '').replaceAll('-', ' ');
     result = null; resultRequest = null; validation = null; selected = 0; runId = 0; error = false;
     status = `Synthetic scenario loaded: ${requestLabel}. Run the Rust planner to inspect the result.`;
@@ -85,6 +90,7 @@
   async function importRequest(file: File) {
     try {
       const parsed = parseRequest(await readJsonFile(file, 256 * 1024));
+      rejected = null;
       request = parsed; requestLabel = file.name; result = null; resultRequest = null; validation = null; selected = 0; runId = 0;
       status = 'CPIR imported. Use Validate CPIR for authoritative Rust validation.'; error = false; log('lab', status, { file: file.name, request_id: parsed.request_id });
     } catch (reason) { fail(reason); }
@@ -92,6 +98,7 @@
   async function importResult(file: File) {
     try {
       result = parseResult(await readJsonFile(file)); resultRequest = null; validation = null; selected = 0; runId = 0;
+      rejected = null;
       status = 'PlanningResult imported. Its source request is not attached.'; error = false;
       log('planner', `Imported result: ${file.name}`, result, 'success');
     } catch (reason) { fail(reason); }
@@ -104,6 +111,7 @@
       api = 'Connected';
       if (action === 'plan') {
         result = parseResult(data); resultRequest = snapshot; validation = result.validation; selected = 0; runId++;
+        rejected = null;
         status = `${readable(result.outcome)} · ${result.candidates.length} feasible candidates · ${result.search_space.evaluated} evaluated positions.`;
         log('planner', status, data, 'success');
       } else {
@@ -126,9 +134,9 @@
       <input bind:this={resultInput} class="visually-hidden" tabindex="-1" type="file" accept=".json,application/json" aria-label="Import PlanningResult" onchange={(event) => { const file = event.currentTarget.files?.[0]; if (file) void importResult(file); event.currentTarget.value = ''; }} />
       <div class="workspace-controls"><div class="view-context"><span class="status-dot" class:online={result !== null}></span>{result ? 'RESULT LOADED' : 'READY TO EXPLORE'}<span class="context-separator">/</span>{mode === 'Simple' ? 'Visualize → explain → inspect' : `Input CPIR ${request.schema_version.major}.${request.schema_version.minor}`}</div></div>
       <DepthControl {mode} onchange={changeDepth} />
-      <p class="status-message" class:error role="status">{status}</p>
+      <p class="status-message" class:error role="status">{error && mode === 'Simple' ? 'This input could not be loaded or evaluated. Check the input and local API connection; Technical depth shows the exact diagnostic.' : status}</p>
       {#if view === 'Planner'}
-        <div class="planner-workbench"><RequestPanel {request} label={requestLabel} {busy} {validation} {mode} ondemo={loadDemo} onscenario={loadScenario} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><PlannerScene request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} {mode} {runId} /></div>
+        <div class="planner-workbench"><RequestPanel {request} label={requestLabel} {busy} {validation} {mode} ondemo={loadDemo} onscenario={loadScenario} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><PlannerScene request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} {mode} {runId} {rejected} onreject={(index) => rejected = index} /></div>
         {#if result && mode === 'Simple' && (!result.candidates.length || result.validation.issues.length || result.dependency_graph.issues.length)}<p class="status-message">{readable(result.validation.state)} · {result.validation.issues.length} validation issues · {result.dependency_graph.issues.length} dependency issues. Switch to Technical for exact diagnostics.</p>{/if}
         {#if result && mode !== 'Simple'}
           <InspectorDrawer title="Validation, compilation and dependency evidence" open={mode === 'Research'}>
@@ -139,6 +147,9 @@
           <section class="research-context"><p>Optimality covers the bounded discrete grid, stated objective and stable tie breaks. It does not prove a continuous-time or global scheduling optimum.</p><JsonPanel title="Complete PlanningResult / all returned source data" value={result} />{#if resultRequest}<JsonPanel title="Exact request sent for this result" value={resultRequest} />{/if}</section>
         {/if}
       {:else if view === 'Temporal'}<TemporalView {mode} onlog={log} />
+      {:else if view === 'Compilation'}
+        {#if result?.compilation}<CompilationPanel compiled={result.compilation} {mode} />{:else}<section class="panel inspector-panel"><h2>No compiled snapshot is attached.</h2><p class="panel-description">Run a Planner request with temporal context. Its returned compiled snapshot supplies this instrument.</p><button class="secondary" disabled={busy} onclick={() => { loadScenario('recurrence-busy.json'); view = 'Planner'; }}>Load recurrence planning scenario</button></section>{/if}
+      {:else if view === 'Trace'}<TraceView {result} request={resultRequest} {mode} {selected} onselect={(index) => selected = index} {rejected} onreject={(index) => rejected = index} />
       {:else}<InspectorViews {view} {result} request={resultRequest ?? request} {mode} sourceAttached={!result || resultRequest !== null} />{/if}
       <OutputConsole {entries} {mode} onclear={() => entries = []} />
       <footer class="workspace-footer"><span>Neural intuition. Symbolic verification.</span><span>Built in the open · Human + AI collaboration</span></footer>

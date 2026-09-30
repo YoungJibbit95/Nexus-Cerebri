@@ -63,6 +63,13 @@ try {
   const exported = await downloadEvent;
   assert.deepEqual(JSON.parse(await readFile(await exported.path(), 'utf8')), result);
   async function depth(name) { await page.getByRole('button', { name: new RegExp('0[123] ' + name) }).click(); }
+  async function l3Accessibility() {
+    for (const theme of ['light', 'dark']) {
+      await page.getByRole('button', { name: new RegExp('Switch to ' + theme + ' theme') }).click();
+      const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      assert.deepEqual(report.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })), []);
+    }
+  }
   for (const name of ['Technical', 'Research']) {
     await depth(name);
     const payload = page.locator('details.json-panel').filter({ hasText: 'Complete PlanningResult / all returned source data' }).locator('pre');
@@ -115,10 +122,38 @@ try {
   await page.getByRole('button', { name: 'Preferences', exact: true }).click();
   await capture('preferences.png');
   await page.getByRole('button', { name: 'Trace', exact: true }).click();
+  assert.equal(await page.getByLabel('Inspect rejection', { exact: true }).inputValue(), '0');
+  await page.getByLabel('Inspect rejection', { exact: true }).selectOption('1');
+  await page.getByRole('button', { name: 'Planner', exact: true }).click();
+  assert.equal(await page.getByLabel('Inspect rejection', { exact: true }).inputValue(), '1');
+  await page.getByRole('button', { name: 'Trace', exact: true }).click();
+  await capture('trace-selected-rejection.png');
+  await l3Accessibility();
+  await depth('Research');
+  const traceResult = page.locator('details.json-panel').filter({ hasText: 'Complete PlanningResult / all returned source data' }).locator('pre');
+  assert.deepEqual(JSON.parse(await traceResult.textContent()), result);
+  await page.locator('.rejection-evidence').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: join(evidence, 'trace-research-evidence.png'), animations: 'disabled' });
+  await depth('Technical');
   await capture('trace.png');
   await page.getByRole('button', { name: 'Temporal', exact: true }).click();
   await page.getByRole('button', { name: 'Inspect temporal data', exact: true }).click();
-  await page.getByText('2 visible occurrences · 1 skipped', { exact: false }).waitFor();
+  await page.locator('.temporal-story').getByText('2 visible occurrences · 1 skipped', { exact: false }).waitFor();
+  await depth('Understand');
+  assert.equal(await page.locator('pre').count(), 0);
+  for (const [step, state] of ['nominal', 'timezone', 'gap', 'policy', 'utc', 'availability'].entries()) {
+    await page.getByRole('navigation', { name: 'Temporal explanation steps' }).getByRole('button').nth(step).click();
+    assert.equal(await page.locator('.temporal-story').getAttribute('data-step'), String(step));
+    await page.locator('.clock-bridge').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(evidence, 'temporal-' + state + '.png'), animations: 'disabled' });
+  }
+  await page.getByText('This local point does not exist.', { exact: true }).waitFor();
+  for (const theme of ['light', 'dark']) {
+    await page.getByRole('button', { name: new RegExp('Switch to ' + theme + ' theme') }).click();
+    const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    assert.deepEqual(report.violations.map(({ id, nodes }) => ({ id, targets: nodes.map(({ target }) => target) })), []);
+  }
+  await depth('Technical');
   await capture('temporal-dst.png');
   await page.getByLabel('Source coverage', { exact: true }).selectOption('Incomplete');
   await page.getByRole('button', { name: 'Inspect temporal data', exact: true }).click();
@@ -127,6 +162,59 @@ try {
   assert.ok(await page.locator('.unknown-block').count() > 0);
   assert.equal(await page.locator('.free-block').count(), 0);
   await capture('temporal-incomplete.png');
+  const foldInput = JSON.parse(await readFile(join(root, 'examples/temporal-request.json'), 'utf8'));
+  foldInput.horizon = { start: '2026-10-24T00:00:00Z', end: '2026-10-27T00:00:00Z' };
+  foldInput.recurrences[0].start_date = '2026-10-24'; foldInput.recurrences[0].fold_policy = 'Later';
+  await page.getByLabel('Import temporal diagnostics request').setInputFiles({ name: 'fold.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(foldInput)) });
+  await page.getByRole('button', { name: 'Inspect temporal data', exact: true }).click();
+  await page.locator('.temporal-story').waitFor();
+  const foldOption = await page.getByLabel('Inspect nominal evidence').locator('option').filter({ hasText: 'Later Fold' }).getAttribute('value');
+  await page.getByLabel('Inspect nominal evidence').selectOption(foldOption);
+  await page.getByRole('navigation', { name: 'Temporal explanation steps' }).getByRole('button').nth(3).click();
+  await page.locator('.clock-bridge').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: join(evidence, 'temporal-fold-later.png'), animations: 'disabled' });
+  // Compiler visuals consume actual responses to these bounded source requests.
+  await page.getByRole('button', { name: 'Planner', exact: true }).click();
+  const compilationInput = JSON.parse(await readFile(join(root, 'examples/planner/recurrence-busy.json'), 'utf8'));
+  compilationInput.scope.time_range = { start: '2026-03-28T00:00:00Z', end: '2026-03-31T00:00:00Z' };
+  compilationInput.context.temporal.horizon = compilationInput.scope.time_range;
+  compilationInput.context.temporal.series[0].rule = { start_date: '2026-03-28', local_time: '02:30:00', timezone: 'Europe/Berlin', duration: 1800, pattern: { frequency: 'DAILY', every: 1 }, count: 3, until: null, gap_policy: 'Skip', fold_policy: 'Earlier' };
+  compilationInput.granularity = 3600;
+  async function importPlanner(input) {
+    await page.getByRole('button', { name: 'Import CPIR', exact: true }).click();
+    await page.getByLabel('Import CPIR request', { exact: true }).setInputFiles({ name: 'l3-source.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(input)) });
+    await page.locator('.status-message').filter({ hasText: 'CPIR imported.' }).waitFor();
+    return run();
+  }
+  const compilationResult = await importPlanner(compilationInput);
+  assert.equal(await page.locator('.rejection-evidence').count(), 0, 'New result resets shared rejection selection');
+  await page.getByRole('button', { name: 'Compilation', exact: true }).click();
+  await depth('Understand');
+  assert.equal(await page.locator('pre').count(), 0);
+  assert.equal(await page.locator('.occurrence-node').count(), compilationResult.compilation.occurrences.length);
+  assert.equal(await page.locator('.skip-node').count(), 1);
+  await capture('compilation-fanout.png');
+  await page.getByRole('navigation', { name: 'Compilation explanation steps' }).getByRole('button').nth(2).click();
+  await page.locator('.series-fanout').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: join(evidence, 'compilation-skip.png'), animations: 'disabled' });
+  await depth('Research');
+  assert.deepEqual(JSON.parse(await page.locator('details.json-panel').filter({ hasText: 'Compiled snapshot / complete source data' }).locator('pre').textContent()), compilationResult.compilation);
+  await page.getByRole('button', { name: 'Planner', exact: true }).click();
+  const clippingInput = JSON.parse(await readFile(join(root, 'examples/planner/recurrence-busy.json'), 'utf8'));
+  clippingInput.scope.time_range.start = '2026-10-01T10:30:00Z'; clippingInput.context.temporal.horizon.start = clippingInput.scope.time_range.start;
+  await importPlanner(clippingInput);
+  await page.getByRole('button', { name: 'Compilation', exact: true }).click();
+  await depth('Technical');
+  await page.getByText('The horizon clips this occurrence.', { exact: false }).waitFor();
+  await page.locator('.clipping-instrument').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: join(evidence, 'compilation-clipped.png'), animations: 'disabled' });
+  await l3Accessibility();
+  for (const width of [1600, 1366, 960, 820]) {
+    await page.setViewportSize({ width, height: width === 1366 ? 768 : width === 960 ? 640 : 900 });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'L3 controls fit at ' + width);
+    if (width === 960 || width === 820) await capture('compilation-' + width + '.png');
+  }
+  await page.setViewportSize({ width: 1600, height: 900 });
   await page.reload();
   assert.equal(await page.locator('.app-shell').getAttribute('data-depth'), 'Technical');
   await page.getByRole('combobox', { name: /Source scenario/ }).selectOption('hard-rejection.json');
@@ -142,6 +230,14 @@ try {
   const reducedResult = await run(reducedPage);
   assert.deepEqual(reducedResult, result);
   assert.equal(await reducedPage.locator('.planner-scene').getAttribute('data-stage'), '5');
+  await reducedPage.getByRole('button', { name: 'Temporal', exact: true }).click();
+  await reducedPage.getByRole('button', { name: 'Inspect temporal data', exact: true }).click();
+  await reducedPage.locator('.temporal-story').waitFor();
+  await reducedPage.getByRole('navigation', { name: 'Temporal explanation steps' }).getByRole('button').nth(5).click();
+  assert.equal(await reducedPage.locator('.temporal-story').getAttribute('data-step'), '5');
+  await reducedPage.getByText('No UTC occurrence', { exact: true }).waitFor();
+  assert.equal(await reducedPage.locator('.nominal-point').evaluate(element => getComputedStyle(element).transitionDuration), '0s');
+  await reducedPage.getByRole('button', { name: 'Planner', exact: true }).click();
   await reducedPage.getByRole('button', { name: 'Replay explanation', exact: true }).click();
   assert.equal(await reducedPage.locator('.planner-scene').getAttribute('data-stage'), '5');
   // Source-less imported results never borrow facts or preferences from the current request.
@@ -150,8 +246,15 @@ try {
   await reducedPage.getByText('Imported result: no matching source request is attached.', { exact: false }).waitFor();
   assert.equal(await reducedPage.locator('.time-field .busy-block').count(), 0);
   assert.equal(await reducedPage.locator('.time-field .preference-marker').count(), 0);
+  await reducedPage.getByRole('button', { name: 'Trace', exact: true }).click();
+  await reducedPage.getByText('Imported result: its source CPIR is not attached.', { exact: false }).waitFor();
+  assert.equal(await reducedPage.getByRole('navigation', { name: 'Trace evidence stages' }).getByRole('button').filter({ hasText: 'CPIR' }).count(), 0);
+  await reducedPage.getByRole('button', { name: 'Planner', exact: true }).click();
+  await reducedPage.getByRole('button', { name: 'Import result', exact: true }).click();
+  await reducedPage.getByLabel('Import PlanningResult', { exact: true }).setInputFiles({ name: 'malformed.json', mimeType: 'application/json', buffer: Buffer.from('{"outcome":"Solution"}') });
+  await reducedPage.getByText('This input could not be loaded or evaluated.', { exact: false }).waitFor();
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ checked: ['real API counts', 'depth/data parity', 'shared selection', 'rejection/blocker evidence', 'keyboard', 'axe dark and light', '1600/1366/820 widths', 'DST and incomplete coverage', 'persistence', 'scenario loading and no solution', 'complete JSON export', 'reduced motion', 'source-less import'], evidence, result: { evaluated: result.search_space.evaluated, rejected: result.conflicts.rejections.length, feasible: result.candidates.length } }, null, 2));
+  console.log(JSON.stringify({ checked: ['real API counts', 'depth/data parity', 'shared Planner/Trace rejection identity and reset', 'rejection/blocker evidence', 'keyboard', 'axe Planner/Temporal/Compilation/Trace dark and light', '1600x900/1366x768/960x640/820 widths', 'manual DST gap/skip/fold and incomplete coverage', 'actual compilation fan-out/skips/clipping', 'persistence', 'scenario loading and no solution', 'complete JSON export', 'reduced motion', 'source-less import'], evidence, result: { evaluated: result.search_space.evaluated, rejected: result.conflicts.rejections.length, feasible: result.candidates.length } }, null, 2));
 } finally {
   await browser?.close();
   if (server.exitCode === null && server.signalCode === null) {

@@ -4,6 +4,7 @@
   "version": "0.2.0",
   "type": "module",
   "main": "desktop/main.cjs",
+  "desktopName": "dev.nexus.cerebri.lab.desktop",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -12,7 +13,12 @@
     "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "build": "vite build",
     "desktop:dev": "electron .",
-    "desktop:installer": "npm run build && electron-builder --publish never",
+    "desktop:api": "cargo build -p cerebri-api --release --locked",
+    "desktop:stage": "node desktop/stage.cjs",
+    "desktop:prepare": "npm run build && npm run desktop:api && npm run desktop:stage",
+    "desktop:dir": "npm run desktop:prepare && electron-builder --dir --publish never && npm run desktop:smoke",
+    "desktop:smoke": "node desktop/smoke.cjs",
+    "desktop:installer": "npm run desktop:dir && electron-builder --publish never && node desktop/verify-artifact.cjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
@@ -29,18 +35,26 @@
   "build": {
     "appId": "dev.nexus.cerebri.lab",
     "productName": "Cerebri Lab",
+    "executableName": "cerebri-lab",
     "directories": {
       "output": "desktop-dist"
     },
     "files": [
-      "desktop/main.cjs"
+      "desktop/*.cjs",
+      "!desktop/stage.cjs",
+      "!desktop/smoke.cjs",
+      "!desktop/verify-artifact.cjs",
+      "!node_modules/**/*"
     ],
+    "extraResources": [{ "from": "desktop/.stage/cerebri-runtime", "to": "cerebri-runtime", "filter": ["**/*"] }],
     "win": {
       "target": "nsis"
     },
     "linux": {
       "target": "AppImage",
-      "category": "Development"
+      "category": "Development",
+      "executableArgs": [],
+      "syncDesktopName": true
     },
     "mac": {
       "target": "dmg"

@@ -8,9 +8,10 @@
   import ScoreChart from './ScoreChart.svelte';
   import CandidateDetail from './CandidateDetail.svelte';
   import AuthorityRail from './AuthorityRail.svelte';
-  let { request, result, selected, onselect, mode, runId }: {
+  let { request, result, selected, onselect, mode, runId, rejected = null, onreject = () => {} }: {
     request: PlanningRequest | null; result: PlanningResult | null; selected: number;
     onselect: (index: number) => void; mode: ExplanationMode; runId: number;
+    rejected?: number | null; onreject?: (index: number | null) => void;
   } = $props();
   let stage = $state(STORY_LAST_STAGE);
   let reduced = $state(false);
@@ -27,7 +28,7 @@
   });
   $effect(() => {
     // A new API response may explain itself once. Any new selection/depth/result cancels stale work.
-    void selected; void mode; void result;
+    void selected; void rejected; void mode; void result;
     if (runId > 0 && runId !== lastRun && result) { lastRun = runId; playback.play(reduced); }
     else { lastRun = runId; playback.finish(); }
     return () => playback.cancel();
@@ -50,7 +51,7 @@
     {/if}
   </section>
   <AuthorityRail hasProposal={Boolean(result?.candidates.length)} hasResult={result !== null} />
-  <Timeline {request} {result} {selected} onselect={select} {mode} {stage} />
+  <Timeline {request} {result} {selected} onselect={select} {mode} {stage} {rejected} {onreject} />
   <ScoreChart {result} {selected} onselect={select} {mode} />
   <CandidateDetail candidate={result?.candidates[selected]} rank={selected + 1} {mode} hasResult={result !== null} />
 </div>

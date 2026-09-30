@@ -16,6 +16,11 @@ use cerebri_core::{
 use tower_http::services::ServeDir;
 
 pub fn router() -> Router {
+    router_with_lab_dir(concat!(env!("CARGO_MANIFEST_DIR"), "/../cerebri-lab/dist"))
+}
+
+/// Static asset location is an application integration input, never planner state.
+pub fn router_with_lab_dir(lab_dir: impl AsRef<std::path::Path>) -> Router {
     Router::new()
         .route("/health",get(|| async { Json(serde_json::json!({
             "status":"ok","software_version":env!("CARGO_PKG_VERSION"),"release_state":"research","cpir_schema":"0.2", "supported_cpir_schemas":["0.1","0.2"]
@@ -26,7 +31,7 @@ pub fn router() -> Router {
         .route("/v1/integration/manifest", get(|| async { Json(integration::describe()) }))
         .route("/v1/integration/suggestions", post(suggest))
         .route("/lab",get(|| async { Redirect::permanent("/lab/") }))
-        .nest_service("/lab/", ServeDir::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../cerebri-lab/dist")))
+        .nest_service("/lab/", ServeDir::new(lab_dir))
         .layer(DefaultBodyLimit::max(integration::MAX_INTEGRATION_REQUEST_BYTES))
 }
 async fn suggest(

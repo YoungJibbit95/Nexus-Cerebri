@@ -414,3 +414,60 @@ input:focus-visible, select:focus-visible, main:focus-visible { outline: 2px sol
 .app-shell[data-theme='light'] .time-field .candidate-block.first-proposal:not(.selected) { color: var(--text); }
 .out-of-scope-preference { display: block; padding: 7px; color: var(--preference); font-size: 10px; }
 /* Panels use solid instruments without additional backdrop compositor layers. */
+
+/* L3 instruments share the same fact/recurrence/constraint/coverage semantics. */
+.l3-instrument { border: 1px solid var(--line); border-radius: 14px; background: var(--surface-low); padding: 22px; margin: 20px 0; min-width: 0; }
+.l3-instrument h2, .trace-instrument h2 { font-size: 20px; }
+.manual-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 18px 0 12px; }
+.manual-steps button { display: flex; align-items: center; gap: 10px; text-align: left; min-height: 46px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: var(--surface); font-size: 12px; transition: border-color var(--motion-micro); }
+.manual-steps button small { font: 10px monospace; }
+.manual-steps button.active { color: var(--cyan); border-color: var(--cyan); }
+.l3-narration { border-left: 3px solid var(--cyan); padding: 15px 18px; margin: 18px 0; background: color-mix(in srgb, var(--cyan) 5%, transparent); }
+.l3-narration strong { font-size: 16px; font-weight: 500; }
+.l3-narration p { font-size: 13px; line-height: 1.7; margin-top: 8px; color: var(--muted); }
+.clock-bridge { padding: 24px; margin: 18px 0; border: 1px solid var(--line); border-radius: 12px; }
+.clock-axis { display: flex; justify-content: space-between; margin: 24px 0 12px; color: var(--muted); font: 11px monospace; }
+.clock-track { position: relative; height: 46px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); }
+.nominal-point { position: absolute; top: 4px; color: var(--recurrence); font-size: 26px; transform: translateX(-50%); z-index: 2; transition: transform var(--motion-state); }
+.nominal-point small { display: block; font: 11px monospace; }
+.nominal-point.resolved { transform: translate(-50%, 5px); }
+.clock-discontinuity { position: absolute; top: 0; height: 46px; width: 80px; transform: translateX(-50%); background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--danger) 16%, transparent), color-mix(in srgb, var(--danger) 16%, transparent) 4px, transparent 4px, transparent 8px); border-inline: 1px dashed var(--danger); color: var(--danger); }
+.clock-discontinuity strong { position: absolute; top: -20px; font-size: 10px; width: 80px; text-align: center; }
+.local-clock p { color: var(--muted); font-size: 12px; margin-top: 22px; }
+.timezone-bridge { display: flex; flex-direction: column; align-items: center; margin: 18px 0; gap: 6px; color: var(--recurrence); }
+.timezone-bridge > span { font-size: 28px; }
+.timezone-bridge strong { font-size: 14px; font-weight: 500; }
+.timezone-bridge small { font-size: 11px; }
+.resolution-branch { padding: 18px; border: 1px solid var(--recurrence); border-radius: 9px; color: var(--text); transition: border-color var(--motion-state), transform var(--motion-state); }
+.resolution-branch span { display: block; font-size: 11px; color: var(--recurrence); margin-bottom: 10px; }
+.resolution-branch strong { font-size: 23px; font-weight: 500; }
+.resolution-branch p { color: var(--muted); font-size: 12px; margin-top: 10px; }
+.clock-bridge.gap .resolution-branch { border-color: var(--danger); }
+.clock-bridge.gap .resolution-branch span { color: var(--danger); }
+.resolution-branch.emphasized { transform: translateX(3px); }
+.exact-interval { overflow-wrap: anywhere; font: 11px/1.8 monospace; color: var(--muted); margin: 14px 0; }
+.series-fanout { display: grid; grid-template-columns: minmax(170px, .75fr) minmax(0, 1.8fr); gap: 24px; align-items: start; margin: 25px 0; }
+.series-source { padding: 20px; border: 1px solid var(--recurrence); border-radius: 10px; background: color-mix(in srgb, var(--recurrence) 6%, transparent); overflow-wrap: anywhere; }
+.series-source span, .occurrence-node > span { display: block; font-size: 11px; color: var(--recurrence); margin-bottom: 9px; }
+.series-source strong { font-size: 17px; font-weight: 500; }
+.series-source p, .series-source small { display: block; color: var(--muted); font-size: 12px; line-height: 1.8; margin-top: 12px; }
+.fanout-branches { display: grid; gap: 10px; padding-left: 20px; border-left: 1px solid var(--recurrence); }
+.occurrence-node, .skip-node { position: relative; border: 1px solid var(--line); border-radius: 9px; padding: 16px; color: var(--text); background: var(--surface); text-align: left; min-width: 0; transition: border-color var(--motion-state); }
+.occurrence-node::before, .skip-node::before { content: ''; position: absolute; width: 20px; left: -21px; top: 24px; border-top: 1px solid var(--recurrence); }
+.occurrence-node.active { border-color: var(--recurrence); }
+.occurrence-node strong, .skip-node strong { display: block; font-size: 15px; font-weight: 500; }
+.occurrence-node small, .skip-node small { display: block; color: var(--muted); font-size: 11px; line-height: 1.7; margin-top: 8px; }
+.skip-node { border-color: var(--danger); }
+.skip-node > span { display: block; color: var(--danger); font-size: 11px; margin-bottom: 8px; }
+.clipping-instrument { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 20px; }
+.clipping-instrument h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+.clipping-instrument .timeline-row { grid-template-columns: 130px minmax(0, 1fr); margin: 12px 0; }
+.clipping-instrument .track { background: var(--surface); border: 1px solid var(--line); }
+.clipping-instrument .scope-block { border: 1px dashed var(--cyan); background: transparent; }
+.clipping-instrument .time-block { height: 25px; top: 3px; }
+.availability-timeline .busy-block { background: color-mix(in srgb, var(--fact) 18%, transparent); border-color: var(--fact); }
+.availability-timeline .free-block { background: color-mix(in srgb, var(--cyan) 15%, transparent); border-color: var(--cyan); }
+.availability-timeline .unknown-block { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--uncertainty) 22%, transparent), color-mix(in srgb, var(--uncertainty) 22%, transparent) 3px, transparent 3px, transparent 7px); border-color: var(--uncertainty); }
+.trace-instrument + .time-field, .trace-instrument ~ .comparison-instrument, .trace-instrument ~ .authority-rail { margin-top: 20px; }
+@media (max-width: 1100px) { .series-fanout { grid-template-columns: 1fr; } .l3-instrument { padding: 18px; } }
+@media (max-width: 700px) { .manual-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .clock-bridge { padding: 16px; } .clipping-instrument .timeline-row { grid-template-columns: 100px minmax(0, 1fr); } }

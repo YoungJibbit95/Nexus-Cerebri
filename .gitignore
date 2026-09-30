@@ -15,6 +15,8 @@ node_modules/
 .DS_Store
 .idea/
 dist/
+/apps/cerebri-lab/desktop-dist/
+/apps/cerebri-lab/desktop/.stage/
 /apps/cerebri-site/src/lib/generated/
 /apps/cerebri-site/static/nexus-cerebri-logo.png
 /apps/cerebri-site/test-results/

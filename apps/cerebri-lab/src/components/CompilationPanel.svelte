@@ -1,6 +1,8 @@
 <script lang="ts">
   import AvailabilityTimeline from './AvailabilityTimeline.svelte';
   import JsonPanel from './JsonPanel.svelte';
+  import CompilationStory from './CompilationStory.svelte';
+  import InspectorDrawer from './InspectorDrawer.svelte';
   import { readable } from '../lib/presentation.ts';
   import type { CompiledContextSnapshot } from '../lib/compilation.ts';
   import type { ExplanationMode } from '../lib/contracts.ts';
@@ -12,8 +14,10 @@
   <div class="panel-heading"><div><span class="eyebrow">CORE / COMPILED SNAPSHOT</span><h2 id="compilation-title">Occupancy and its source</h2></div><span class="badge subtle">Revision {compiled.source_revision}</span></div>
   <p class="panel-description">Materialized occurrences retain their series identity, full interval and visible horizon. These are source facts, separate from prospective planning objects.</p>
   <div class="temporal-summary"><span class="badge subtle">{compiled.availability.coverage} coverage</span><span>{compiled.series.length} series</span><span>{compiled.occurrences.length} occurrences</span><span>{skipped.length} DST skips</span></div>
+  <CompilationStory {compiled} {mode} />
   <AvailabilityTimeline availability={compiled.availability} />
   <p class="fine-print">Every occupied, free and unknown interval above comes from the compiler report. Incomplete coverage leaves the complement unknown.</p>
+  {#if mode !== 'Simple'}<InspectorDrawer title="Complete occurrence and skip evidence" open={mode === 'Research'}>
   {#if compiled.occurrences.length}
     <h3 class="subheading">Materialized occurrences</h3>
     <div class="table-wrap"><table><thead><tr><th>Occurrence / series</th><th>Local date / time</th><th>Full UTC interval</th><th>Visible UTC interval</th><th>Source / resolution</th></tr></thead><tbody>
@@ -27,5 +31,6 @@
     </tbody></table></div>
   {/if}
   <p class="fine-print">Technical tables show at most 100 occurrences and 100 skips; Research shows every row. Full identities, recurrence definitions, evidence and buffer/clipping traces remain in the structured report.</p>
+  </InspectorDrawer>{/if}
   <JsonPanel title="Compiled snapshot / complete source data" value={compiled} />
 </section>
