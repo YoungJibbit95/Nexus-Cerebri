@@ -61,7 +61,7 @@ Both exact bytes and the expected BSF pass:
 The prefix is `nexus-cerebri:base-scenario-fingerprint:v1\0`, ending in one NUL byte.
 See [fixture provenance](../../../crates/cerebri-planner/tests/fixtures/evaluation/README.md).
 
-The 16 scenario tests cover exact duration shapes and invalid ambiguity, all 14 constraint
+The initial 16 scenario tests cover exact duration shapes and invalid ambiguity, all 14 constraint
 variants, all optional scope dimensions, policy/capability semantics, metadata exclusions,
 temporal states and revisions, closed revision-binding wire shapes, duplicates/collisions,
 learned-source rejection, full external-reference renaming/permutation invariance,
@@ -70,7 +70,7 @@ G1/G2/G3 and all 11 existing graph integration tests passed unchanged.
 
 Focused command: `cargo test -p cerebri-planner --locked --test evaluation_scenario`:
 16 passed, including the real canonicalization-limit case.
-Executed local completion gates (all passed):
+Initial checkpoint completion gates (all passed):
 
 - `cargo fmt --check`.
 - `cargo check -p cerebri-planner --locked`.
@@ -115,6 +115,65 @@ final delivery; no pending/skipped check is claimed as successful here.
 - `docs/development/progress/README.md`
 - `docs/development/roadmap/README.md`
 - `docs/en/planner-integration.md`
+
+## PR #44 correction: preference precedence and compilation identity
+
+Continued the same open branch from `2b31dbacff42e8ee0ad889dc50d546e1a8edf13e`;
+base/main remained `510e17314af6ab76d3da5690af6f274ef46da2e2`. The authority digest
+was revalidated unchanged. This correction addresses only the two independently reported
+B.2 blockers under frozen PreferenceSource precedence and §§17.4/50/57.
+
+Preference entries now compare explicit architecture ranks 0/1/2/3/4, then canonical
+instant and evidence-ref set. Accepted E2 order is EXPLICIT_CURRENT_REQUEST,
+SESSION_CONTEXT, DEFAULT. Rank is internal only; the serialized source remains its token.
+Exact duplicates collapse and both learned sources still reject.
+
+The pre-BSF check reuses the existing pure, bounded `compile_snapshot` once and recognizes
+only `CompilationError::IdentityCollision` as `COMPILATION_IDENTITY_COLLISION`.
+This deliberately shares the complete native occurrence-identity authority instead of
+copying the hash algorithm or changing planner compilation. Other compilation errors
+are not propagated into fingerprintability failure. The existing direct declaration
+collision/duplicate checks remain in place. The extra bounded compilation is evaluation
+work only; it does not alter native planner behavior or emit observations.
+
+Four correction tests were added. Before the fix, the two preference-order assertions
+and reachable occurrence-collision assertion failed; the ordinary-error control passed.
+After the fix all four pass. The occurrence test first compiles a valid existing series,
+takes its actual generated OccurrenceId, then renames a PlanningObject to that exact ID:
+native compilation rejects with IdentityCollision and BaseScenario returns no payload/BSF.
+No occurrence hash is hardcoded.
+
+The positive preference oracle asserts the exact three-record token order and all six
+input permutations with duplicate entries. A second oracle checks mathematical instant
+ordering (2 before 10), evidence-set tie breaking, sorted/deduplicated references and
+absence of a serialized numeric rank. Six controls assert native HorizonMismatch,
+InputLimit, ProspectiveSeries, InvalidProvenance, temporal OccurrenceLimitExceeded and
+UnknownObjectTime while retaining a valid BaseScenario projection.
+
+Correction verification:
+
+- `cargo test -p cerebri-planner --locked --test evaluation_scenario correction_`:
+  all 4 new tests pass after demonstrating the failures on the old implementation.
+- `cargo test -p cerebri-planner --locked --test evaluation_scenario --test evaluation_graph`:
+  20 scenario and 11 graph tests pass, including both real state-limit cases.
+- `cargo test -p cerebri-planner --locked --test compilation --test boundedness`:
+  10 native compilation and 5 boundedness tests pass.
+- All local completion commands listed above were rerun successfully for the correction:
+  format, planner check, workspace build, strict all-feature Clippy, workspace tests,
+  Rustdoc, Node build/parity, repository check, documentation check/build and Git whitespace.
+  The workspace now passes 204 tests; Node passes 4 and repository checks pass 22.
+- B1 remains exactly 2003 bytes and
+  `9989e8381324dea03f300aec98ba28cfb4851a941eb8cd0f2e85682adb504b0c`.
+  G1/G2/G3, duration/binding tests and both canonicalization-limit tests pass unchanged.
+- Native compilation, occurrence-ID derivation, graph code, fixtures, dependencies and
+  versions have no diff. Actual correction-head remote CI is checked after push and
+  reported in the delivery; the known non-required homepage Visual baseline is untouched.
+
+Correction files only:
+
+- `crates/cerebri-planner/src/evaluation/scenario.rs`
+- `crates/cerebri-planner/tests/evaluation_scenario.rs`
+- `docs/development/progress/2026-09-30-evaluation-phase-b2-base-scenario.md`
 
 ## Remaining work
 

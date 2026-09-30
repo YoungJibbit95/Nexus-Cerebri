@@ -655,6 +655,243 @@ fn preferences_normalize_permitted_sources_and_reject_both_learned_sources() {
     }
 }
 
+#[test]
+fn correction_preferences_use_explicit_source_rank_not_token_lexicography() {
+    use cerebri_preferences::{PreferenceEvidence, PreferenceSource as P};
+    let mut r = b1();
+    r.preferences.preferences = [P::Default, P::SessionContext, P::ExplicitCurrentRequest]
+        .into_iter()
+        .map(|source| PreferenceEvidence {
+            source,
+            preferred_start: r.scope.time_range.start(),
+            evidence: vec![],
+        })
+        .collect();
+    let p = projection(&r);
+    let payload = serde_json::to_value(p.payload()).unwrap();
+    let at = json!({"unix_seconds":"0","nanoseconds":"000000000"});
+    assert_eq!(
+        payload["preferences"],
+        json!([
+            {"source":"EXPLICIT_CURRENT_REQUEST","preferred_start":at,"evidence_fact_refs":[]},
+            {"source":"SESSION_CONTEXT","preferred_start":at,"evidence_fact_refs":[]},
+            {"source":"DEFAULT","preferred_start":at,"evidence_fact_refs":[]}
+        ])
+    );
+    let canonical = ["EXPLICIT_CURRENT_REQUEST", "SESSION_CONTEXT", "DEFAULT"];
+    let mut lexical = canonical;
+    lexical.sort();
+    assert_ne!(
+        canonical, lexical,
+        "token lexicography must not define canonical precedence"
+    );
+    let expected = p.payload().canonical_bytes().unwrap();
+    let input = r.preferences.preferences.clone();
+    for order in [
+        [0, 1, 2],
+        [0, 2, 1],
+        [1, 0, 2],
+        [1, 2, 0],
+        [2, 0, 1],
+        [2, 1, 0],
+    ] {
+        r.preferences.preferences = order.into_iter().map(|i| input[i].clone()).collect();
+        r.preferences
+            .preferences
+            .push(r.preferences.preferences[0].clone());
+        assert_eq!(
+            projection(&r).payload().canonical_bytes().unwrap(),
+            expected
+        );
+    }
+}
+
+#[test]
+fn correction_preference_ties_use_instant_then_canonical_evidence_set() {
+    use cerebri_preferences::{PreferenceEvidence, PreferenceSource as P};
+    let mut r = b1();
+    let a = FactId::new("evidence-a").unwrap();
+    let b = FactId::new("evidence-b").unwrap();
+    r.context.facts = vec![
+        Fact {
+            id: a.clone(),
+            object_id: r.target_ids[0].clone(),
+            value: FactValue::ExternalLock,
+            provenance: Provenance::IntegrationFact,
+        },
+        Fact {
+            id: b.clone(),
+            object_id: r.target_ids[0].clone(),
+            value: FactValue::ExternalLock,
+            provenance: Provenance::SystemFact,
+        },
+    ];
+    let early = "1970-01-01T00:00:02Z".parse().unwrap();
+    let late = "1970-01-01T00:00:10Z".parse().unwrap();
+    r.preferences.preferences = vec![
+        PreferenceEvidence {
+            source: P::Default,
+            preferred_start: r.scope.time_range.start(),
+            evidence: vec![],
+        },
+        PreferenceEvidence {
+            source: P::ExplicitCurrentRequest,
+            preferred_start: late,
+            evidence: vec![a.clone()],
+        },
+        PreferenceEvidence {
+            source: P::ExplicitCurrentRequest,
+            preferred_start: early,
+            evidence: vec![b.clone()],
+        },
+        PreferenceEvidence {
+            source: P::ExplicitCurrentRequest,
+            preferred_start: early,
+            evidence: vec![b.clone(), a.clone(), b.clone()],
+        },
+        PreferenceEvidence {
+            source: P::ExplicitCurrentRequest,
+            preferred_start: early,
+            evidence: vec![a.clone(), a.clone()],
+        },
+        PreferenceEvidence {
+            source: P::ExplicitCurrentRequest,
+            preferred_start: early,
+            evidence: vec![a.clone()],
+        },
+    ];
+    let p = projection(&r);
+    let fact_alias = |id: &FactId| {
+        p.identity_bindings()
+            .iter()
+            .find(|binding| {
+                binding.identity_type == IdentityTypeV1::FactId
+                    && binding.source_id.as_str() == id.as_str()
+            })
+            .unwrap()
+            .alias
+            .clone()
+    };
+    let a_ref = fact_alias(&a);
+    let b_ref = fact_alias(&b);
+    assert!(a_ref < b_ref); // Distinct intrinsic provenance fixes the graph order.
+    let early = json!({"unix_seconds":"2","nanoseconds":"000000000"});
+    let late = json!({"unix_seconds":"10","nanoseconds":"000000000"});
+    assert_eq!(
+        serde_json::to_value(p.payload()).unwrap()["preferences"],
+        json!([
+            {"source":"EXPLICIT_CURRENT_REQUEST","preferred_start":early,"evidence_fact_refs":[a_ref]},
+            {"source":"EXPLICIT_CURRENT_REQUEST","preferred_start":early,"evidence_fact_refs":[a_ref,b_ref]},
+            {"source":"EXPLICIT_CURRENT_REQUEST","preferred_start":early,"evidence_fact_refs":[b_ref]},
+            {"source":"EXPLICIT_CURRENT_REQUEST","preferred_start":late,"evidence_fact_refs":[a_ref]},
+            {"source":"DEFAULT","preferred_start":{"unix_seconds":"0","nanoseconds":"000000000"},"evidence_fact_refs":[]}
+        ])
+    );
+    r.preferences.preferences.reverse();
+    for preference in &mut r.preferences.preferences {
+        preference.evidence.reverse();
+    }
+    assert_eq!(
+        projection(&r).payload().canonical_bytes().unwrap(),
+        p.payload().canonical_bytes().unwrap()
+    );
+}
+
+#[test]
+fn correction_materialized_occurrence_collision_matches_native_compilation() {
+    use cerebri_temporal::PlanningHorizon;
+    let mut r = temporal_request();
+    let horizon = PlanningHorizon(r.scope.time_range);
+    let compiled = compile_snapshot(&r.context, horizon).unwrap().unwrap();
+    let occurrence_id = compiled
+        .occurrences
+        .first()
+        .expect("reachable occurrence")
+        .id
+        .clone();
+    projection(&r); // The unmodified source is fingerprintable.
+    r.context.objects[0].id = PlanningObjectId::new(occurrence_id.as_str()).unwrap();
+    r.target_ids[0] = r.context.objects[0].id.clone();
+    assert_eq!(
+        compile_snapshot(&r.context, horizon),
+        Err(CompilationError::IdentityCollision(
+            occurrence_id.as_str().into()
+        ))
+    );
+    assert_eq!(
+        BaseScenarioProjectionV1::from_request(&r)
+            .err()
+            .map(|error| error.to_string()),
+        Some("COMPILATION_IDENTITY_COLLISION".into())
+    );
+}
+
+#[test]
+fn correction_ordinary_compilation_failures_remain_fingerprintable() {
+    use cerebri_temporal::{PlanningHorizon, TemporalError};
+    let original = temporal_request();
+    let horizon = PlanningHorizon(original.scope.time_range);
+    assert!(compile_snapshot(&original.context, horizon).is_ok());
+    let controls = [
+        (
+            (
+                "horizon mismatch",
+                (|r: &mut PlanningRequest| {
+                    r.context.temporal.as_mut().unwrap().horizon = PlanningHorizon(
+                        TimeRange::new(
+                            r.scope.time_range.start(),
+                            "1970-01-01T02:00:00Z".parse().unwrap(),
+                        )
+                        .unwrap(),
+                    );
+                }) as fn(&mut PlanningRequest),
+            ),
+            CompilationError::HorizonMismatch,
+        ),
+        (
+            ("input limit", |r: &mut PlanningRequest| {
+                r.context.temporal.as_mut().unwrap().limits.max_occurrences = 1025
+            }),
+            CompilationError::InputLimit,
+        ),
+        (
+            ("prospective", |r: &mut PlanningRequest| {
+                r.context.temporal.as_mut().unwrap().series[0].state = SeriesState::Prospective
+            }),
+            CompilationError::ProspectiveSeries(SeriesId::new("daily-existing").unwrap()),
+        ),
+        (
+            ("provenance", |r: &mut PlanningRequest| {
+                r.context.temporal.as_mut().unwrap().series[0].provenance =
+                    Provenance::ModelInference
+            }),
+            CompilationError::InvalidProvenance(SeriesId::new("daily-existing").unwrap()),
+        ),
+        (
+            ("expansion limit", |r: &mut PlanningRequest| {
+                r.context.temporal.as_mut().unwrap().limits.max_occurrences = 0
+            }),
+            CompilationError::Temporal(TemporalError::OccurrenceLimitExceeded),
+        ),
+        (
+            ("unknown object time", |r: &mut PlanningRequest| {
+                r.context.objects[0].revision = Some(Revision(1))
+            }),
+            CompilationError::UnknownObjectTime(PlanningObjectId::new("new-event").unwrap()),
+        ),
+    ];
+    for ((name, change), expected) in controls {
+        let mut r = original.clone();
+        change(&mut r);
+        assert_eq!(
+            compile_snapshot(&r.context, horizon),
+            Err(expected),
+            "{name}"
+        );
+        assert!(BaseScenarioProjectionV1::from_request(&r).is_ok(), "{name}");
+    }
+}
+
 fn temporal_request() -> PlanningRequest {
     use cerebri_temporal::{Coverage, ExpansionLimits, PlanningHorizon};
     let mut r = b1();

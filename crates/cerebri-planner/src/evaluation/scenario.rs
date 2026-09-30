@@ -48,6 +48,16 @@ pub(crate) fn preference_source(v: PreferenceSource) -> PreferenceSourceToken {
         PreferenceSource::Default => PreferenceSourceToken::Default,
     }
 }
+// Frozen architecture precedence, independent of token spelling and enum order.
+fn preference_source_rank(source: PreferenceSourceToken) -> u8 {
+    match source {
+        PreferenceSourceToken::ExplicitCurrentRequest => 0,
+        PreferenceSourceToken::SessionContext => 1,
+        PreferenceSourceToken::PersonalLearned => 2,
+        PreferenceSourceToken::GlobalLearned => 3,
+        PreferenceSourceToken::Default => 4,
+    }
+}
 fn mutation(v: MutationKind) -> MutationKindToken {
     match v {
         MutationKind::CreateEvent => MutationKindToken::CreateEvent,
@@ -153,9 +163,11 @@ pub(crate) fn preferences(
         }
         let at = instant(p.preferred_start)?;
         let evidence = fact_refs(b, &p.evidence)?;
-        entries.push((source.as_str(), at, evidence));
+        entries.push((source, at, evidence));
     }
-    entries.sort();
+    entries.sort_by(|(a, at, ar), (b, bt, br)| {
+        (preference_source_rank(*a), at, ar).cmp(&(preference_source_rank(*b), bt, br))
+    });
     entries.dedup();
     Ok(entries.into_iter().map(|(source,at,evidence)|json!({"source":source,"preferred_start":at,"evidence_fact_refs":evidence})).collect())
 }
@@ -301,6 +313,18 @@ fn pre_fingerprintability(request: &PlanningRequest) -> ProjectionResult<()> {
         return Err(EvaluationContractError(
             "learned preference source forbidden in E2",
         ));
+    }
+    // Native bounded compilation is the single occurrence-identity authority.
+    // Only IdentityCollision is a pre-BSF failure here. Ordinary representable
+    // compilation/admission failures remain fingerprintable under section 50.
+    if matches!(
+        compile_snapshot(
+            &request.context,
+            cerebri_temporal::PlanningHorizon(request.scope.time_range),
+        ),
+        Err(CompilationError::IdentityCollision(_))
+    ) {
+        return Err(EvaluationContractError("COMPILATION_IDENTITY_COLLISION"));
     }
     Ok(())
 }
