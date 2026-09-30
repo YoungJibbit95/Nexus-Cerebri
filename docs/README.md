@@ -8,6 +8,8 @@
 - [Testing standard](testing/testing-visualization-research-standard.md)
 - [Progress logs](development/progress/README.md), including [official site implementation](development/progress/2026-09-20-official-site.md)
 - Planner integration: [English](en/planner-integration.md) / [Deutsch](de/planner-integration.md)
+- Application integration: [English](en/application-integration.md) / [Deutsch](de/application-integration.md)
+- [Nexus consumer implementation prompt](development/prompts/nexus-ecosystem-integration-foundation.md)
 - [Deutsch](de/README.md) / [English](en/README.md)
 - [Historical specifications](archive/specifications/README.md)
 
