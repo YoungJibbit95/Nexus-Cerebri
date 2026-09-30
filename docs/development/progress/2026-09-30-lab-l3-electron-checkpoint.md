@@ -18,6 +18,16 @@ not overlap this implementation. The additive API static-directory wrapper
 preserves the integration routes and body limit from PR #47. Those separate
 implementations are not reviewed or requalified here.
 
+During evidence collection the maintainer merged Evaluation B.4 PR #48, merged
+main into PR #49 at `4a244d179a7c8a2b2a602c410017278526bbd8fd`, then merged PR #49
+on 2026-09-30 13:08:20 UTC as `7fbab3daa97a0c577234b6d5845dc7144ebccd8f` and
+deleted its remote branch. This additional drift is also
+**IMPLEMENTATION-MECHANICAL RECONCILIATION**: no Lab, API, desktop workflow or
+gitignore file differs from tested runtime commit `b07afd5`. The final evidence
+update therefore uses `codex/lab-l3-electron-evidence` from that merged main and
+changes only this checkpoint document. It does not recreate the deleted branch
+or modify the separately owned Evaluation implementation.
+
 ## L3 behavior
 
 Temporal has six manual steps: nominal local point, timezone interpretation, DST
@@ -76,6 +86,7 @@ explicit prior Lab/release builds, clears only its fixed generated directory,
 copies resources and sets Unix executable permission. It never secretly builds.
 The existing desktop-dist ignore entry was preserved and adopted for the required
 generated output; staging receives its own bounded ignore entry.
+The staged canonical `smoke-inputs.json` is consumed only in explicit smoke mode.
 
 Startup uses `spawn`, no shell, a hidden Windows console, `127.0.0.1:0` and the
 packaged `CEREBRI_LAB_DIST`. Split stdout is parsed for the strict printed IPv4
@@ -152,12 +163,69 @@ and clipped intervals; Trace pipeline/selected rejection/Technical and open
 Research evidence; Electron startup, connected Planner Understand, actual API
 failure and recovered Lab. Screenshots are evidence, not approved baselines.
 The smoke writes full proof.json and stdout/stderr, and checks all owned PIDs.
+The successful native artifacts were downloaded and their full proofs inspected.
+Linux and macOS connected Planner screenshots were also manually inspected.
 
 ## Remote gates
 
-Remote normal CI and the explicitly dispatched three-platform desktop workflow
-will be recorded here after their actual completion. Until those results exist,
-Electron E1 is **not yet complete**. A normal CI success alone is insufficient.
+The [desktop workflow](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717945030)
+completed successfully on runtime commit `b07afd5f0ae05071e65661e30c485401efb13810`.
+All three native jobs passed unpacked renderer/API smoke, all three depth checks,
+sandbox invariants, single-instance protection, crash/restart and orphan checks,
+then built and verified their installer artifacts. macOS also passed window
+close/activate with unchanged API PID. **L3 and functional Electron E1 are complete**;
+this does not establish release readiness or independent qualification.
+
+| Platform | Packaged smoke | Native installer | Additional evidence |
+| --- | --- | --- | --- |
+| Windows x64 | Passed | NSIS passed | Hidden child console; both owned API PIDs terminated; local paths with spaces also tested |
+| Linux x64 | Passed under Xvfb | AppImage passed | `cerebri-lab`; desktop file `dev.nexus.cerebri.lab.desktop`; actual X11 WM_CLASS and StartupWMClass both `dev.nexus.cerebri.lab`; `Exec=AppRun %U`, no `--no-sandbox` |
+| macOS arm64 | Passed | DMG passed | Native `.app` resources and executable permission; close/activate reused the same API |
+
+Workflow artifacts are build evidence:
+[Windows](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717945030/artifacts/11097635227),
+[Linux](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717945030/artifacts/11097370661),
+[macOS](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717945030/artifacts/11096319554).
+
+The complete returned PlanningResult and TemporalResult in all three native
+proofs were deep-compared with the local Windows packaged proof and matched.
+Canonical counts remain 11 evaluated positions, four rejections and seven
+candidates, with the same first proposal and ordering. The actual reported
+desktop and Core versions are independently `0.2.0` in these builds.
+
+| Platform | Final dynamically selected origin | Initial/restarted owned API PIDs |
+| --- | --- | --- |
+| Windows | `http://127.0.0.1:56602` | `1324`, `2604` |
+| Linux | `http://127.0.0.1:37383` | `4696`, `4812` |
+| macOS | `http://127.0.0.1:49195` | `3568`, `3728` |
+
+These are recorded observations, not configured ports. Each native runner
+verified both of its owned API PIDs were absent after Electron exited. The proof
+also records sandbox invariants, all three depth assertions, second-instance
+rejection and explicit crash recovery; macOS records same-PID activation.
+
+The first desktop run failed its Linux identity inspection because `xprop` was
+absent from the runner. Windows/macOS passed. The corrected workflow explicitly
+installs `xvfb` and `x11-utils`; the second run passed without removing an assertion
+or disabling sandboxing. Failure logs/evidence remain available in
+[the first run](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717443912).
+
+[Normal Cerebri CI](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36717949077)
+is not green overall: Website Visual verification fails the four existing homepage
+hash checks at 1440/1024/768/390 pixels. The other 28 visual checks pass; all 14
+other jobs pass, including Rust tests/Clippy, Rustdoc, RustSec, Lab tests/check/build,
+repository policy, npm audits, browser/E2E and docs/site checks/builds. No Site code
+or baseline was modified. The earlier run has the same four homepage failures.
+
+The mechanically reconciled PR head was also checked by
+[Cerebri CI](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36718280092):
+14 jobs passed, with only the same Website Visual verification job failing.
+The merged main's
+[CI run](https://github.com/YoungJibbit95/Nexus-Cerebri/actions/runs/36719496978)
+likewise completed with 14 successful jobs and that one failed visual job.
+
+Final handoff changes after the tested runtime commit are documentation only.
+Desktop implementation file content is unchanged from the successful native run.
 
 ## Remaining work
 
@@ -170,6 +238,10 @@ polish outside L3; installer branding/icons; signing/notarization planning;
 release packaging policy; extended accessibility matrix; final motion timing.
 No signed Windows installer, notarized macOS app, production updater, provider
 execution or stable public release is claimed. This checkpoint ends at L3/E1.
+macOS x64 and a separate Wayland compositor matrix were not executed. Current
+depth persistence uses browser localStorage per origin; a fresh dynamic desktop
+port does not guarantee persistence across desktop launches. Stable desktop
+preference persistence remains broader product polish, outside this checkpoint.
 
 [Lab README](../../../apps/cerebri-lab/README.md)
 
