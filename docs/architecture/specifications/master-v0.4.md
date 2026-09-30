@@ -764,8 +764,10 @@ hypothesis identities and shared admission-work measurement. Phase B.1 adds clos
 canonicalization with a bounded, payload-aware labeling interface. Phase B.2 adds complete
 BaseScenario/BSF projection and separate identity/revision bindings. Phase B.3 adds
 DecisionInput/D1 with fresh BSF/bindings and admission work from the same typed request,
-plus supplied artifact semantic identities. DecisionObservation remains unfinished.
-Phase B remains partial; this implementation status does not assert independent B.3 qualification.
+plus supplied artifact semantic identities. Phase B.4 adds pure DecisionObservation/O1/O2
+projection through deterministic display-policy L, with cross-field validation and no exposure
+input. B.1–B.3 are qualified per the maintainer's handoffs. Phase B reaches its final planned
+implementation checkpoint; independent B.4 and full Phase-B qualification remain pending.
 The targeted independent
 Data/Hard-Math qualification of the rule variant bytes is closed as recorded in ADR-0015.
 

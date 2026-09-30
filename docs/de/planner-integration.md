@@ -195,17 +195,21 @@ Funktionserweiterung noch eine Veröffentlichung.
 Die abgeschlossenen [Evaluationsgrundlagen](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
 aus Slice 2, Phase A ergänzen den geschlossenen Episode-Wire-Vertrag, einen separaten
 wire-validierten Domain-Container und strikte Skalar-/Manifest-, Provenance- und Run-Binding-Typen
-in Rust. Der partielle Phase-B-Stand ergänzt kanonische Wert-/Regel-Grammatiken, reine
+in Rust. Phase B ergänzt kanonische Wert-/Regel-Grammatiken, reine
 Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Phase B.1 ergänzt
 begrenzte Graph-Kanonisierung mit einer Schnittstelle für die vollständige Payload. Phase B.2
 ergänzt die vollständige BaseScenario-/BSF-Projektion und separate Identity-/Revision-Bindings.
 Phase B.3 ergänzt DecisionInput/D1 aus einem frischen BSF, dessen Bindings, typisierten
 Request-Eingaben und der gemeinsamen Admission-Work-Messung; semantische Artefaktidentitäten
-werden explizit aus vertrauenswürdiger Quelle übergeben. DecisionObservation, semantische
-Lifecycle-/Collection-Validierung und Replay sind noch nicht fertig.
+werden explizit aus vertrauenswürdiger Quelle übergeben. Phase B.4 ergänzt die reine
+DecisionObservation-/O1-/O2-Projektion bis zum deterministischen Display-Policy-Output L;
+tatsächliche Exposure D/O bleibt ausgeschlossen. Semantische Lifecycle-/Collection-Validierung
+und Replay sind noch nicht fertig.
 Planner- und Transportverhalten bleiben unverändert;
 Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die gezielte unabhängige
-Data-/Hard-Math-Qualifikation der Regel-Byte-Grammatik ist abgeschlossen; Phase B bleibt partiell.
+Data-/Hard-Math-Qualifikation der Regel-Byte-Grammatik sowie B.1–B.3 ist laut den
+Maintainer-Handoffs abgeschlossen. Phase B erreicht den letzten geplanten Implementierungsstand;
+die unabhängige B.4- und vollständige Phase-B-Qualifikation stehen noch aus. Phase C ist unbegonnen.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporale Referenz](temporal.md) · [CPIR-Referenz](cpir.md) · [English](../en/planner-integration.md)

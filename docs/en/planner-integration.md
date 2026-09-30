@@ -170,16 +170,19 @@ overflow rejects the candidate rather than panicking. No feature expansion or re
 
 The completed Slice-2 Phase-A [evaluation foundations](../architecture/decisions/ADR-0015-evaluation-contract-foundations.md)
 add the closed Episode wire contract, a distinct wire-validated domain container and strict
-scalar/manifest, provenance and run-binding components in Rust. Partial Phase B adds canonical
+scalar/manifest, provenance and run-binding components in Rust. Phase B adds canonical
 value/rule grammars, pure candidate/hypothesis fingerprints and shared admission-work measurement.
 Phase B.1 adds bounded graph canonicalization with a payload-aware labeling interface.
 Phase B.2 adds complete BaseScenario/BSF projection with separate identity/revision bindings.
 Phase B.3 adds DecisionInput/D1 from a fresh BSF, its bindings, typed request inputs and
 shared admission-work measurement; artifact semantic identities are explicit trusted inputs.
-DecisionObservation, semantic lifecycle/collection validation and replay remain unfinished.
+Phase B.4 adds pure DecisionObservation/O1/O2 projection through deterministic display-policy L;
+actual exposure D/O is excluded. Semantic lifecycle/collection validation and replay remain unfinished.
 Planner and transport behavior is unchanged; live
 capture, telemetry and learning remain absent. The targeted independent Data/Hard-Math
-qualification of the rule byte grammar is complete; overall Phase B remains partial.
+qualification of the rule byte grammar and B.1–B.3 is complete per the maintainer's handoffs.
+Phase B reaches its final planned implementation checkpoint; independent B.4 and full
+Phase-B qualification remain pending. Phase C is unstarted.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporal reference](temporal.md) · [CPIR reference](cpir.md) · [Deutsch](../de/planner-integration.md)
