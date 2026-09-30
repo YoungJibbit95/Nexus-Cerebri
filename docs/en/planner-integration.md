@@ -172,10 +172,11 @@ The completed Slice-2 Phase-A [evaluation foundations](../architecture/decisions
 add the closed Episode wire contract, a distinct wire-validated domain container and strict
 scalar/manifest, provenance and run-binding components in Rust. Partial Phase B adds canonical
 value/rule grammars, pure candidate/hypothesis fingerprints and shared admission-work measurement.
-Whole-scenario graph/BSF, DecisionInput/DecisionObservation projection, semantic lifecycle/collection
+Phase B.1 adds bounded graph canonicalization with a payload-aware labeling interface.
+Whole-scenario BSF, DecisionInput/DecisionObservation projection, semantic lifecycle/collection
 validation and replay remain unfinished. Planner and transport behavior is unchanged; live
-capture, telemetry and learning remain absent. Newly closed rule bytes await targeted independent
-qualification.
+capture, telemetry and learning remain absent. The targeted independent Data/Hard-Math
+qualification of the rule byte grammar is complete; overall Phase B remains partial.
 
 [ADR-0012](../architecture/decisions/ADR-0012-planner-snapshot-compilation.md) ·
 [Temporal reference](temporal.md) · [CPIR reference](cpir.md) · [Deutsch](../de/planner-integration.md)

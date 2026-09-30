@@ -30,7 +30,9 @@ The current Intelligence increment completes Slice-2 Phase-A contract foundation
 see [the completion record](../progress/2026-09-27-evaluation-phase-a-completion.md).
 Episode wire/domain types exist. The [partial Phase-B checkpoint](../progress/2026-09-27-evaluation-phase-b-checkpoint.md)
 adds canonical value/rule grammars, candidate/hypothesis fingerprints and shared admission-work
-measurement. Graph/BSF/DecisionInput/DecisionObservation projection remains unfinished;
+measurement. The [B.1 graph checkpoint](../progress/2026-09-30-evaluation-phase-b1-graph.md)
+adds bounded graph canonicalization and its payload-aware interface. Full
+BSF/DecisionInput/DecisionObservation projection remains unfinished;
 semantic lifecycle/collection validation, production observations and replay are unimplemented.
 ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
