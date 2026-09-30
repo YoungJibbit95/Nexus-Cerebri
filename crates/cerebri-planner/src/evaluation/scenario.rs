@@ -146,10 +146,32 @@ fn filter<'a>(
         },
     })
 }
+closed_wire! {
+/// Shared B.2/B.3 preference representation. The rank is never serialized.
+pub struct CanonicalPreferenceEvidenceV1 {
+    pub source: PreferenceSourceToken,
+    pub preferred_start: CanonicalInstantV1,
+    pub evidence_fact_refs: Vec<CanonicalAlias>,
+}
+}
+impl CanonicalPreferenceEvidenceV1 {
+    pub(crate) fn canonical_cmp(&self, other: &Self) -> std::cmp::Ordering {
+        (
+            preference_source_rank(self.source),
+            &self.preferred_start,
+            &self.evidence_fact_refs,
+        )
+            .cmp(&(
+                preference_source_rank(other.source),
+                &other.preferred_start,
+                &other.evidence_fact_refs,
+            ))
+    }
+}
 pub(crate) fn preferences(
     request: &PlanningRequest,
     b: &[IdentityBindingV1],
-) -> ProjectionResult<Vec<Value>> {
+) -> ProjectionResult<Vec<CanonicalPreferenceEvidenceV1>> {
     let mut entries = Vec::new();
     for p in &request.preferences.preferences {
         let source = preference_source(p.source);
@@ -163,13 +185,15 @@ pub(crate) fn preferences(
         }
         let at = instant(p.preferred_start)?;
         let evidence = fact_refs(b, &p.evidence)?;
-        entries.push((source, at, evidence));
+        entries.push(CanonicalPreferenceEvidenceV1 {
+            source,
+            preferred_start: at,
+            evidence_fact_refs: evidence,
+        });
     }
-    entries.sort_by(|(a, at, ar), (b, bt, br)| {
-        (preference_source_rank(*a), at, ar).cmp(&(preference_source_rank(*b), bt, br))
-    });
+    entries.sort_by(CanonicalPreferenceEvidenceV1::canonical_cmp);
     entries.dedup();
-    Ok(entries.into_iter().map(|(source,at,evidence)|json!({"source":source,"preferred_start":at,"evidence_fact_refs":evidence})).collect())
+    Ok(entries)
 }
 fn rule(
     v: &HardConstraint,

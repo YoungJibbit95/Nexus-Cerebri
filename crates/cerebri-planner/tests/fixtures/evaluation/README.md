@@ -28,3 +28,15 @@ serialization never generates the expected fixture.
 
 Domain: `nexus-cerebri:base-scenario-fingerprint:v1\0` (a terminating NUL byte).
 Expected digest: `9989e8381324dea03f300aec98ba28cfb4851a941eb8cd0f2e85682adb504b0c`.
+
+## DecisionInput D1
+
+`d1.json` is the exact external literal from section 56.5 of the same authority:
+2389 UTF-8 bytes, no BOM or trailing newline. `evaluation_decision_input.rs` constructs
+the typed semantic input independently and compares production canonical bytes and digest.
+Its supplied MEASURED(1024) work observation is a conformance input, not a measurement
+of an arbitrarily chosen real request. Production always remeasures the typed request.
+The repeated-digit artifact manifest hashes are test-vector identities only.
+
+Domain: `nexus-cerebri:decision-input-fingerprint:v1\0` (a terminating NUL byte).
+Expected digest: `5c121f1a9a588ea01567042aea696691b17acabf814ee4eb3e7d115971ba48aa`.

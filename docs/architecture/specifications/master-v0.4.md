@@ -752,8 +752,11 @@ planning, ranking, admission, permission and execution authorities are unchanged
 The partial Phase-B checkpoint adds canonical value/rule byte grammars, pure candidate and
 hypothesis identities and shared admission-work measurement. Phase B.1 adds closed graph
 canonicalization with a bounded, payload-aware labeling interface. Phase B.2 adds complete
-BaseScenario/BSF projection and separate identity/revision bindings. DecisionInput and
-DecisionObservation projection remain unfinished. The targeted independent
+BaseScenario/BSF projection and separate identity/revision bindings. Phase B.3 adds
+DecisionInput/D1 with fresh BSF/bindings and admission work from the same typed request,
+plus supplied artifact semantic identities. DecisionObservation remains unfinished.
+Phase B remains partial; this implementation status does not assert independent B.3 qualification.
+The targeted independent
 Data/Hard-Math qualification of the rule variant bytes is closed as recorded in ADR-0015.
 
 ## 28. Deployment progression

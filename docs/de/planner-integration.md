@@ -199,8 +199,11 @@ in Rust. Der partielle Phase-B-Stand ergänzt kanonische Wert-/Regel-Grammatiken
 Candidate-/Hypothesen-Fingerprints und eine gemeinsame Admission-Work-Messung. Phase B.1 ergänzt
 begrenzte Graph-Kanonisierung mit einer Schnittstelle für die vollständige Payload. Phase B.2
 ergänzt die vollständige BaseScenario-/BSF-Projektion und separate Identity-/Revision-Bindings.
-DecisionInput-/DecisionObservation-Projektion, semantische Lifecycle-/Collection-Validierung
-und Replay sind noch nicht fertig. Planner- und Transportverhalten bleiben unverändert;
+Phase B.3 ergänzt DecisionInput/D1 aus einem frischen BSF, dessen Bindings, typisierten
+Request-Eingaben und der gemeinsamen Admission-Work-Messung; semantische Artefaktidentitäten
+werden explizit aus vertrauenswürdiger Quelle übergeben. DecisionObservation, semantische
+Lifecycle-/Collection-Validierung und Replay sind noch nicht fertig.
+Planner- und Transportverhalten bleiben unverändert;
 Live-Erfassung, Telemetrie und Lernen sind weiterhin nicht vorhanden. Die gezielte unabhängige
 Data-/Hard-Math-Qualifikation der Regel-Byte-Grammatik ist abgeschlossen; Phase B bleibt partiell.
 

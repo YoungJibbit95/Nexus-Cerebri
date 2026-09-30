@@ -130,6 +130,19 @@ B1 matches its externally authored 2003 bytes and digest. Source-order/opaque-ID
 metadata invariance, semantic changes, full-payload target symmetry and failure isolation are
 covered by the [B.2 checkpoint](../../development/progress/2026-09-30-evaluation-phase-b2-base-scenario.md).
 
+## Phase B.3 DecisionInput checkpoint
+
+The [B.3 checkpoint](../../development/progress/2026-09-30-evaluation-phase-b3-decision-input.md)
+adds the complete DecisionInputPayloadV1/D1. Production projects a fresh BSF and its
+selected bindings, context revision, budget, temporal limits, policy identity and the
+shared B.2 preference profile from one typed request. Admission work is freshly measured
+with the existing helper and validated against that request's candidate budget.
+Artifact semantic identities are explicit trusted inputs; resolver authentication remains
+later work. E2 model/experiment are NONE. Imported payloads reject noncanonical collection
+order and inconsistent work/budget values. D1 is an external byte/digest oracle whose
+prevalidated work observation is accepted only through the lower-level conformance boundary.
+This is implementation evidence, not independent B.3 Data/Hard-Math qualification.
+
 ## Compatibility and remaining work
 
 Existing CPIR, RankingFeatureSet, preference resolution, candidate ordering, search,
@@ -140,8 +153,8 @@ their authorities. There is no release, tag, Product Capture, telemetry, ML or p
 The complete Episode wire shape and Phase-A domain conversion now exist. Wire validity
 is not final record-local semantic/R0 validity, proof of authenticated hashes or a behavioral
 evaluation eligibility claim. Complete PlanningRequest/BSF projection and identity/revision
-bindings are implemented in B.2. DecisionInput/D1 is next; DecisionObservation/O1/O2 remains
-later Phase-B work.
+bindings are implemented in B.2; DecisionInput/D1 is implemented in B.3.
+DecisionObservation/O1/O2 is the next Phase-B checkpoint.
 There is no production observation/capture, interaction reducer, collection validation or
 replay runner. Phase B is partial; Phases C–E remain unstarted.
 Later phases must preserve the existing trusted planning boundary rather than treating
