@@ -2,7 +2,7 @@
   import Icon from './Icon.svelte';
   import type { LabView } from '../lib/contracts.ts';
   let { view, onselect, api, version }: { view: LabView; onselect: (view: LabView) => void; api: string; version: string } = $props();
-  const views: LabView[] = ['Planner', 'Temporal', 'Trace', 'Semantics', 'Preferences', 'ML', 'Dataset'];
+  const views: LabView[] = ['Planner', 'Temporal', 'Compilation', 'Trace', 'Semantics', 'Preferences', 'ML', 'Dataset'];
 </script>
 
 <aside class="sidebar">

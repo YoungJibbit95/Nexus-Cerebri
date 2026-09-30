@@ -91,7 +91,7 @@ export interface PlanningResult {
   dependency_graph: DependencyGraph;
 }
 export type ExplanationMode = 'Simple' | 'Technical' | 'Research';
-export type LabView = 'Planner' | 'Temporal' | 'Trace' | 'Semantics' | 'Preferences' | 'ML' | 'Dataset';
+export type LabView = 'Planner' | 'Temporal' | 'Compilation' | 'Trace' | 'Semantics' | 'Preferences' | 'ML' | 'Dataset';
 export interface ConsoleEntry {
   id: number;
   at: string;

@@ -11,6 +11,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let listener = tokio::net::TcpListener::bind(address).await?;
     println!("CEREBRI_LISTEN_ADDR={}", listener.local_addr()?);
-    axum::serve(listener, cerebri_api::router()).await?;
+    let router = match std::env::var_os("CEREBRI_LAB_DIST") {
+        Some(path) => cerebri_api::router_with_lab_dir(std::path::PathBuf::from(path)),
+        None => cerebri_api::router(),
+    };
+    axum::serve(listener, router).await?;
     Ok(())
 }

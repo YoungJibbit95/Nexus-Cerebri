@@ -4,11 +4,11 @@
   import SemanticLegend from './SemanticLegend.svelte';
   import JsonPanel from './JsonPanel.svelte';
   import type { ExplanationMode, PlanningRequest, PlanningResult } from '../lib/contracts.ts';
-  let { request, result, selected, onselect, mode, stage = 5 }: {
+  let { request, result, selected, onselect, mode, stage = 5, rejected = null, onreject = () => {} }: {
     request: PlanningRequest | null; result: PlanningResult | null; selected: number;
     onselect: (index: number) => void; mode: ExplanationMode; stage?: number;
+    rejected?: number | null; onreject?: (index: number | null) => void;
   } = $props();
-  let rejected = $state<number | null>(null);
   const horizon = $derived(result?.search_space.horizon ?? request!.scope.time_range);
   const ticks = $derived(Array.from({ length: 7 }, (_, i) => new Date(Date.parse(horizon.start) + (Date.parse(horizon.end) - Date.parse(horizon.start)) * i / 6).toISOString()));
   const busy = $derived(request?.context.objects.flatMap((object) => {
@@ -19,7 +19,6 @@
   const blockers = $derived(blockerIds(result, rejected));
   const rejection = $derived(rejected === null ? undefined : result?.conflicts.rejections[rejected]);
   const duration = $derived(request ? known(request.duration) : undefined);
-  $effect(() => { void result; rejected = null; });
   function position(value: string) {
     return `left:${Math.max(0, Math.min(100, (Date.parse(value) - Date.parse(horizon.start)) / (Date.parse(horizon.end) - Date.parse(horizon.start)) * 100))}%`;
   }
@@ -45,7 +44,7 @@
     {/if}
     <div class="timeline-divider"><span>RETURNED POSITIONS</span><span>{result ? result.search_space.evaluated + ' evaluated' : 'Awaiting completed run'}</span></div>
     {#if result}
-      <div class="timeline-row"><span class="row-label">Constraint filter<small>{result.conflicts.rejections.length} rejected</small></span><div class="track rejection-track" class:filter-stage={stage === 2}>{#each result.conflicts.rejections.slice(0, 48) as item, index}<button class="rejection-marker" class:active={rejected === index} style={position(item.start)} aria-pressed={rejected === index} aria-label={'Rejected position ' + (index + 1) + ', ' + time(item.start) + ' UTC'} onclick={() => rejected = index} title={item.reasons.map(rejectionLabel).join('; ')}>×</button>{/each}</div></div>
+      <div class="timeline-row"><span class="row-label">Constraint filter<small>{result.conflicts.rejections.length} rejected</small></span><div class="track rejection-track" class:filter-stage={stage === 2}>{#each result.conflicts.rejections.slice(0, 48) as item, index}<button class="rejection-marker" class:active={rejected === index} style={position(item.start)} aria-pressed={rejected === index} aria-label={'Rejected position ' + (index + 1) + ', ' + time(item.start) + ' UTC'} onclick={() => onreject(index)} title={item.reasons.map(rejectionLabel).join('; ')}>×</button>{/each}</div></div>
       {#if rejected !== null && rejected >= 48 && rejection}<div class="timeline-row"><span class="row-label">Selected rejection</span><div class="track"><span class="rejection-marker active" style={position(rejection.start)}>×</span></div></div>{/if}
     {/if}
     {#each candidates as { candidate, index }}
@@ -53,8 +52,8 @@
     {:else}<div class="empty-timeline"><strong>{result ? 'No feasible proposal returned' : 'A request waiting to become visible'}</strong><p>{result ? 'Validation and rejection evidence remain available in the inspector.' : 'Run the Rust planner to reveal the actual search result.'}</p></div>{/each}
   </div></div>
   {#if result?.candidates.length}<label class="candidate-picker">Inspect candidate<select aria-label="Inspect candidate" value={selected} onchange={(event) => onselect(Number(event.currentTarget.value))}>{#each result.candidates as candidate, index}<option value={index}>#{index + 1} · {time(candidate.start)} UTC{index === 0 ? ' · first proposal' : ''}</option>{/each}</select></label>{/if}
-  {#if result?.conflicts.rejections.length}<label class="candidate-picker">Inspect rejection<select aria-label="Inspect rejection" value={rejected ?? ''} onchange={(event) => rejected = event.currentTarget.value === '' ? null : Number(event.currentTarget.value)}><option value="">Select a returned rejection…</option>{#each result.conflicts.rejections as item, index}<option value={index}>× {index + 1} · {time(item.start)} UTC</option>{/each}</select></label>{/if}
-  {#if rejection}<div class="rejection-evidence" role="status"><strong>× Rejected at {time(rejection.start)} UTC</strong>{#each rejection.reasons as reason}<p>{mode === 'Simple' && typeof reason !== 'string' && 'HardConstraint' in reason ? readable(reason.HardConstraint.reason) : rejectionLabel(reason)}</p>{/each}<p class="fine-print">{blockers.length ? 'Blocking facts are outlined in the field where source intervals are available.' : 'The returned reason supplies no blocking interval identities.'}</p>{#if mode !== 'Simple'}<JsonPanel title="Selected rejection / exact evidence" value={rejection} />{/if}</div>{/if}
+  {#if result?.conflicts.rejections.length}<label class="candidate-picker">Inspect rejection<select aria-label="Inspect rejection" value={rejected ?? ''} onchange={(event) => onreject(event.currentTarget.value === '' ? null : Number(event.currentTarget.value))}><option value="">Select a returned rejection…</option>{#each result.conflicts.rejections as item, index}<option value={index}>× {index + 1} · {time(item.start)} UTC</option>{/each}</select></label>{/if}
+  {#if rejection}<div class="rejection-evidence"><span class="visually-hidden" role="status">Rejected position selected at {time(rejection.start)} UTC.</span><strong>× Rejected at {time(rejection.start)} UTC</strong>{#each rejection.reasons as reason}<p>{mode === 'Simple' && typeof reason !== 'string' && 'HardConstraint' in reason ? readable(reason.HardConstraint.reason) : rejectionLabel(reason)}</p>{/each}<p class="fine-print">{blockers.length ? 'Blocking facts are outlined in the field where source intervals are available.' : 'The returned reason supplies no blocking interval identities.'}</p>{#if mode !== 'Simple'}<JsonPanel title="Selected rejection / exact evidence" value={rejection} />{/if}</div>{/if}
   <SemanticLegend />
   <p class="fine-print">{result ? 'Positions evaluated by the completed planner run.' : 'Returned positions will appear after the run.'} Shapes show returned placements; × marks returned rejection starts. Up to 8 facts, 8 occurrences, 8 additional blockers per type, 8 preferences, 8 candidates plus selection, 48 rejection markers and 32 coverage intervals per type are painted. No unreported search trace is inferred.</p>
   {#if mode !== 'Simple'}<p class="fine-print">Exact horizon: [{horizon.start}, {horizon.end}). Granularity: {result?.search_space.granularity ?? request?.granularity} seconds.</p>{/if}

@@ -28,12 +28,54 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: apps/cerebri-lab/package-lock.json
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.97.0 --profile minimal
       - run: npm ci
         working-directory: apps/cerebri-lab
-      - run: npm run desktop:installer
+      - name: Build native Rust runtime
+        run: cargo build -p cerebri-api --release --locked
+      - name: Build Lab assets
+        run: npm run build
+        working-directory: apps/cerebri-lab
+      - name: Stage runtime
+        run: npm run desktop:stage
+        working-directory: apps/cerebri-lab
+      - name: Build unpacked application
+        run: npx electron-builder --dir --publish never
+        working-directory: apps/cerebri-lab
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Smoke packaged application (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: npm run desktop:smoke
+        working-directory: apps/cerebri-lab
+      - name: Smoke packaged application (Linux virtual display)
+        if: runner.os == 'Linux'
+        run: |
+          # Permit Chromium's user-namespace sandbox on this disposable CI runner.
+          # The packaged app and desktop entry retain sandboxing; no --no-sandbox.
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          xvfb-run -a npm run desktop:smoke
+        working-directory: apps/cerebri-lab
+      - name: Build installer
+        run: npx electron-builder --publish never
+        working-directory: apps/cerebri-lab
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Verify native artifact and Linux desktop identity
+        run: node desktop/verify-artifact.cjs
         working-directory: apps/cerebri-lab
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ matrix.artifact }}
           path: apps/cerebri-lab/desktop-dist/
           if-no-files-found: error
+      - name: Preserve desktop failure evidence
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ matrix.artifact }}-failure
+          path: apps/cerebri-lab/desktop-dist/smoke/
+          if-no-files-found: warn

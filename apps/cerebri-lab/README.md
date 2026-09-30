@@ -16,19 +16,20 @@ npm --prefix apps/cerebri-lab test
 
 ## Run
 
-Before starting the vite server run this to setup the api:
+For browser development, start the API in one terminal:
 
 ```sh
 cargo run -p cerebri-api
 ```
 
-From the repository root, with Node.js **22.12 or newer**:
+In another terminal, start Vite:
 
 ```sh
 npm --prefix apps/cerebri-lab run dev 
 ```
 
-Open [the built Lab](http://127.0.0.1:3000/lab/). The API serves
+After `npm --prefix apps/cerebri-lab run build`, open
+[the built Lab](http://127.0.0.1:3000/lab/). The API serves
 `apps/cerebri-lab/dist` at `/lab/`. The Vite base is `/lab/`; the build produces
 `dist/index.html` and content-hashed JavaScript/CSS under `dist/assets/`.
 Build output and dependencies are ignored and must not be committed.
@@ -50,12 +51,17 @@ functional production-build review.
   10:45 UTC preferred start, imports CPIR, calls `/v1/validate` or `/v1/plan`,
   explains the returned search field, constraint rejections and lexicographic order,
   synchronizes candidate selection across instruments, and exports the complete result.
-- **Temporal:** loads the canonical DST fixture or an imported temporal request,
-  calls `/v1/temporal`, and displays the returned busy/free/unknown intervals,
-  recurrence occurrences, skips, timezone resolution and buffer/clipping traces.
+- **Temporal:** calls `/v1/temporal` and explains local recurrence → timezone →
+  DST gap/fold → policy → UTC → availability with six directly selectable manual
+  steps. A local clock marks the actual missing nominal point and its skip branch.
+  Returned busy/free/unknown intervals and full source evidence remain inspectable.
   A coverage selector explicitly changes the request's collection completeness.
-- **Trace:** shows request validation, declared search-space metadata and typed
-  rejection reasons. It does not parse human-readable logs.
+- **Compilation:** visualizes actual series fan-out, separate skipped nominal
+  dates, materialized occurrence identity and full versus visible occupancy.
+- **Trace:** connects attached CPIR, validation, compilation, search, constraint
+  checks, feasible candidates, returned order and result. This explains completed
+  evidence; it does not invent internal runtime events. Rejection selection and
+  available blocker intervals are shared with Planner for the same result.
 - **Semantics / Preferences:** inspect supplied CPIR evidence and actual score
   components. Semantic inference and preference learning remain deferred.
 - **Console:** timestamped Lab events and actual core responses, retained only in
@@ -103,7 +109,7 @@ planning, recurrence expansion and free/busy computation. No executor route is
 exposed. All synthetic inputs are imported from `examples/`, avoiding duplicated
 fixture authorities. Test-only transport fixtures are never shown as planner runs.
 
-Requests are capped at the API's 256 KiB body limit. Result imports are capped at
+Lab request imports are capped at 256 KiB. Result imports are capped at
 8 MiB. Requests, console entries and results are not persisted in local storage;
 exports are explicit. The UI sends data only to the same-origin local API and
 loads no fonts, telemetry, images or assets from external services.
@@ -172,7 +178,83 @@ fills. The first-ranked proposal remains separate from the selected alternative.
 Keyboard controls, pressed states, visible focus and a concise screen-reader
 selection announcement accompany DOM diagrams. No execution route is added.
 
-The global depth/disclosure layer also applies to existing Temporal, Trace,
-Semantics, Preferences, Compilation and Dependency inspectors. Their dedicated
-L3/L4 visual stories and the broader L5 polish campaign remain future work.
+The global depth/disclosure layer also applies to existing Semantics, Preferences
+and Dependency inspectors. L3 adds dedicated Temporal, Compilation and Trace
+instruments. L4 and the broader L5 polish campaign remain separate work.
 See the [dated checkpoint](../../docs/development/progress/2026-09-30-lab-l1-l2-checkpoint.md).
+
+## L3 presentation checkpoint
+
+Understand explains returned relationships with geometry, glyphs and short labels,
+without raw IDs or JSON. Technical adds exact policies, intervals, identities,
+provenance and bounded evidence tables. Research opens complete reports and every
+occurrence/skip row. All depths use the same Rust response, without new requests.
+Temporal and Compilation semantic progression is manual; there are no timers that
+advance their dense explanations. CSS micro transitions respect reduced motion.
+Availability diagrams show the first 48 intervals per type; compilation fan-out
+shows the first eight occurrences plus selection and first eight skips. These
+limits apply to diagrams only. Complete source payloads and exports are retained.
+The DST gap glyph marks the returned nonexistent local point; the API does not
+supply the full transition boundaries, and the UI does not infer them.
+
+## Self-contained desktop runtime
+
+Packaged mode starts one bundled native Rust API itself. No terminal or separately
+running API is required. The resource layout, outside ASAR, is:
+
+```text
+resources/cerebri-runtime/
+  api/cerebri-api[.exe]
+  lab/index.html
+  lab/assets/...
+  smoke-inputs.json
+```
+
+Electron resolves this from `process.resourcesPath`, launches the API with
+`spawn`, `shell: false`, `windowsHide: true`, `CEREBRI_BIND_ADDR=127.0.0.1:0`
+and `CEREBRI_LAB_DIST` pointing to the packaged Lab. It parses the printed
+`CEREBRI_LISTEN_ADDR`, checks `/health` and then loads `/lab/`. Startup is bounded
+to 15 seconds, including health verification. The UI displays actual API health
+metadata. An unexpected API exit presents an error with bounded stderr diagnostics
+and an explicit **Restart local core** action; no automatic restart loop runs.
+
+The single-instance lock focuses/restores the existing window on a second launch.
+The API belongs to the application lifetime: macOS window close/activate reuses
+it. Application quit cancels retries and waits for child termination, with bounded
+forced termination if necessary. Development `desktop:dev` continues to use an
+external API at `127.0.0.1:3000` and retries while its window exists.
+
+From the root with Node 22.12+, the pinned Rust toolchain and native build tools:
+
+```sh
+npm --prefix apps/cerebri-lab run desktop:dev
+npm --prefix apps/cerebri-lab run desktop:prepare
+npm --prefix apps/cerebri-lab run desktop:dir
+npm --prefix apps/cerebri-lab run desktop:smoke
+npm --prefix apps/cerebri-lab run desktop:installer
+```
+
+`prepare` builds Lab, builds the release API with `--locked`, then stages known
+inputs. Staging never secretly builds missing files. `dir` packages and smokes;
+`installer` then builds and verifies NSIS, AppImage or DMG. Generated staging and
+`desktop-dist` output are ignored. The workflow builds each platform natively.
+Linux uses executable `cerebri-lab`, synchronized desktop name
+`dev.nexus.cerebri.lab.desktop`, matching StartupWMClass/Electron identity and an
+AppImage entry without `--no-sandbox`. Linux smoke requires Xvfb and xprop; CI
+permits Chromium's user-namespace sandbox on its disposable runner.
+
+The explicit `--smoke-test` mode proves bundled API → bundled renderer, actual
+Planner/Temporal JSON parity, three depths, single-instance protection, crash
+recovery, macOS activation and shutdown. The wrapper checks all owned API PIDs
+after exit and requires `CEREBRI_DESKTOP_SMOKE_OK`. It writes proof, logs and
+screenshots under `desktop-dist/smoke`; `CEREBRI_SMOKE_EVIDENCE` overrides the
+evidence destination. Normal launch never activates this behavior.
+
+Renderer Node integration is disabled; context isolation and sandboxing are
+enabled. Permissions and popups are denied. Navigation is restricted to controlled
+startup/error pages and the selected loopback Lab origin; external requests are
+denied. There is no provider mutation, execution endpoint or external telemetry.
+**Proposal ≠ execution.** These unsigned research/developer packages are not a
+signed/notarized public release and have no updater.
+
+See the [L3/E1 handoff](../../docs/development/progress/2026-09-30-lab-l3-electron-checkpoint.md).
