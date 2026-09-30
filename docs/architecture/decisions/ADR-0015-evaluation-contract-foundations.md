@@ -106,9 +106,29 @@ returns no partial labeling and never changes planner admission or feasibility.
 The caller-supplied complete-payload renderer determines the minimum labeling. A synthetic
 external target REF tests symmetry breaking; source-ID binding bytes break ties only after
 equal complete payloads. The graph-only helper exists for G1/G2/G3 conformance, not as the
-normative BSF criterion. Full PlanningRequest/BSF projection is not implemented here.
+normative BSF criterion. B.2 supplies the complete PlanningRequest/BSF projection below.
 RFC 8785/JCS property ordering is UTF-16; semantic CanonicalValue object-key ordering
 remains UTF-8. The existing writer already implements that distinction correctly.
+
+## Phase B.2 BaseScenario checkpoint
+
+The typed PlanningRequest projection now renders the complete BaseScenarioPayloadV1 for
+every candidate graph labeling through the B.1 interface. It uses the existing closed
+constraint/top-level recurrence grammars, graph recurrence projection and fingerprint domain.
+Request duration uses the dedicated six-state grammar; ambiguous durations sort numerically,
+deduplicate and require at least two distinct values. All external identity references use
+the selected canonical aliases; optional scope filters preserve UNBOUNDED versus BOUNDED [].
+
+Identity bindings cover every participating graph identity. Separate revision bindings cover
+only declared PlanningObjects and TemporalSeries, with NONE/SOME decimal revisions. Neither
+binding enters BSF. Minimal source-projection checks reject duplicate declarations/targets,
+object/series collisions, unsupported schemas and learned preference sources before returning
+a valid BSF; the existing graph-state bound remains a fingerprint-only failure. This is not
+planner admission, Episode eligibility, permission or execution authorization.
+
+B1 matches its externally authored 2003 bytes and digest. Source-order/opaque-ID and excluded
+metadata invariance, semantic changes, full-payload target symmetry and failure isolation are
+covered by the [B.2 checkpoint](../../development/progress/2026-09-30-evaluation-phase-b2-base-scenario.md).
 
 ## Compatibility and remaining work
 
@@ -119,9 +139,9 @@ their authorities. There is no release, tag, Product Capture, telemetry, ML or p
 
 The complete Episode wire shape and Phase-A domain conversion now exist. Wire validity
 is not final record-local semantic/R0 validity, proof of authenticated hashes or a behavioral
-evaluation eligibility claim. Complete PlanningRequest/BSF projection, identity/revision
-binding integration, DecisionInput, DecisionObservation and their end-to-end vectors remain
-Phase-B work after B.1 graph canonicalization.
+evaluation eligibility claim. Complete PlanningRequest/BSF projection and identity/revision
+bindings are implemented in B.2. DecisionInput/D1 is next; DecisionObservation/O1/O2 remains
+later Phase-B work.
 There is no production observation/capture, interaction reducer, collection validation or
 replay runner. Phase B is partial; Phases C–E remain unstarted.
 Later phases must preserve the existing trusted planning boundary rather than treating

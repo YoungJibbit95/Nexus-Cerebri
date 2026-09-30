@@ -17,4 +17,5 @@ Create dated/monthly development logs for meaningful implementation, experiment,
 - [2026-09-27 — Research explanation and public-copy integration](2026-09-27-research-copy.md)
 - [2026-09-27 — Evaluation canonicalization: partial Phase B checkpoint](2026-09-27-evaluation-phase-b-checkpoint.md)
 - [2026-09-30 — Evaluation Phase B.1: canonical graph checkpoint](2026-09-30-evaluation-phase-b1-graph.md)
+- [2026-09-30 — Evaluation Phase B.2: BaseScenario checkpoint](2026-09-30-evaluation-phase-b2-base-scenario.md)
 - [2026-09-27 — Public guide consistency and design handoff](2026-09-27-route-copy.md)
