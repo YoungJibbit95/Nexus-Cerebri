@@ -1,7 +1,7 @@
 <script lang="ts">
   import JsonPanel from './JsonPanel.svelte';
-  import type { DependencyGraph } from '../lib/contracts.ts';
-  let { graph }: { graph: DependencyGraph } = $props();
+  import type { DependencyGraph, ExplanationMode } from '../lib/contracts.ts';
+  let { graph, mode = 'Technical' }: { graph: DependencyGraph; mode?: ExplanationMode } = $props();
   const nodes = $derived(graph.nodes.slice(0, 24));
   // Display geometry only: the core supplies all edges, cycles and ordering.
   const positions = $derived(new Map(nodes.map((id, index) => [id, { x: 115 + index % 4 * 210, y: 45 + Math.floor(index / 4) * 95 }])));
@@ -29,7 +29,7 @@
   {#if graph.issues.length}
     <h3 class="subheading">Graph diagnostics</h3><ul class="dependency-issues">{#each graph.issues as issue}<li>{#if issue === 'InputLimit'}Input limit exceeded.{:else if 'MissingReference' in issue}Missing reference: <code>{issue.MissingReference.predecessor} → {issue.MissingReference.dependent}</code>{:else}Cycle members: <code>{issue.Cycle.members.join(', ')}</code><br />Internal edges: {issue.Cycle.edges.map((edge) => `${edge.predecessor} → ${edge.dependent}`).join('; ')}{/if}</li>{/each}</ul>
   {/if}
-  {#if graph.edges.length}<div class="table-wrap"><table><thead><tr><th>Predecessor</th><th>Dependent</th><th>Required relation</th></tr></thead><tbody>{#each graph.edges.slice(0, 64) as edge}<tr><td>{edge.predecessor}</td><td>{edge.dependent}</td><td>End ≤ start</td></tr>{/each}</tbody></table></div>{/if}
-  <p class="fine-print">Diagram: first 24 nodes and 64 visible edges. Table: first 64 edges. The structured graph contains every node, edge and diagnostic.</p>
+  {#if graph.edges.length}<div class="table-wrap"><table><thead><tr><th>Predecessor</th><th>Dependent</th><th>Required relation</th></tr></thead><tbody>{#each (mode === 'Research' ? graph.edges : graph.edges.slice(0, 64)) as edge}<tr><td>{edge.predecessor}</td><td>{edge.dependent}</td><td>End ≤ start</td></tr>{/each}</tbody></table></div>{/if}
+  <p class="fine-print">Diagram: first 24 nodes and 64 visible edges. Technical table: first 64 edges; Research table: every edge. The structured graph contains every node, edge and diagnostic.</p>
   <JsonPanel title="Dependency graph / complete evidence" value={graph} />
 </section>
