@@ -40,3 +40,32 @@ The repeated-digit artifact manifest hashes are test-vector identities only.
 
 Domain: `nexus-cerebri:decision-input-fingerprint:v1\0` (a terminating NUL byte).
 Expected digest: `5c121f1a9a588ea01567042aea696691b17acabf814ee4eb3e7d115971ba48aa`.
+
+## DecisionObservation O1/O2
+
+`o1.json` and `o2.json` are the exact external literals from sections 56.9 and 56.10
+of the same authority, without BOM or trailing newline. The typed semantic inputs in
+`evaluation_decision_observation.rs` are constructed independently of these files.
+Production canonical serialization is compared byte-for-byte, then domain-hashed.
+
+Domain: `nexus-cerebri:decision-observation-digest:v1\0` (a terminating NUL byte).
+
+| Vector | UTF-8 bytes | Expected digest |
+| --- | --- | --- |
+| O1 | 2295 | `5fc321286e7e64467abb2692052f9d47f1d5a6cd66ba093d09ef07084b21076b` |
+| O2 | 584 | `410cfb50881dd7bcabb341c44eec875bed1594917861c326447456903b0dd5bf` |
+
+O1 is a `DIGEST_SERIALIZATION_FIXTURE`, not current-grid R3 replay. Its all-`a`
+CandidateFingerprint and embedded DecisionInput fingerprint are prevalidated fixture
+inputs. The lower-level digest wire/conformance boundary validates local consistency;
+it does not authenticate these supplied semantic identities. Normal native projection
+additionally recomputes CandidateFingerprint from placement through the existing authority.
+
+O2 represents fingerprintable missing duration, with no search and downstream
+NOT_APPLICABLE. Its prevalidated BSF is
+`9653ba37a65ffe1b1b0b53c08ce45a8785ad132214107e5b2994964207988cd5`, and its
+DecisionInput fingerprint is
+`28e024305db00a3e919f32074a39f155dc4e5e061c2c9b68d7caa14e6a4bf480`.
+A separate production test derives fresh BSF/DI from a representable missing-duration
+request and projects the same NOT_ADMITTED structure, without pretending those
+request-specific identities equal the external vector's prevalidated identities.

@@ -103,50 +103,11 @@ impl<'de> Deserialize<'de> for DecisionInputPayloadV1 {
         // Preserve duplicate-key rejection before a JSON tree can erase duplicates.
         // This import-only syntax guard does not normalize semantic collections or
         // change the reused Phase-A component deserializers.
-        let input = DecisionInputJson::deserialize(deserializer)?;
+        let input =
+            super::canonical_input::CanonicalDigestJson::<false>::deserialize(deserializer)?;
         let wire: DecisionInputWireV1 =
             serde_json::from_value(input.0).map_err(serde::de::Error::custom)?;
         wire.try_into().map_err(serde::de::Error::custom)
-    }
-}
-
-struct DecisionInputJson(serde_json::Value);
-impl<'de> Deserialize<'de> for DecisionInputJson {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct Visitor;
-        impl<'de> serde::de::Visitor<'de> for Visitor {
-            type Value = DecisionInputJson;
-            fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                f.write_str("a DecisionInput string, array or object without duplicate keys")
-            }
-            fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
-                Ok(DecisionInputJson(serde_json::Value::String(v.to_owned())))
-            }
-            fn visit_seq<A: serde::de::SeqAccess<'de>>(
-                self,
-                mut seq: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut values = Vec::new();
-                while let Some(v) = seq.next_element::<DecisionInputJson>()? {
-                    values.push(v.0);
-                }
-                Ok(DecisionInputJson(serde_json::Value::Array(values)))
-            }
-            fn visit_map<A: serde::de::MapAccess<'de>>(
-                self,
-                mut map: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut values = serde_json::Map::new();
-                while let Some(key) = map.next_key::<String>()? {
-                    if values.contains_key(&key) {
-                        return Err(serde::de::Error::custom("duplicate DecisionInput member"));
-                    }
-                    values.insert(key, map.next_value::<DecisionInputJson>()?.0);
-                }
-                Ok(DecisionInputJson(serde_json::Value::Object(values)))
-            }
-        }
-        deserializer.deserialize_any(Visitor)
     }
 }
 
