@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, setContext } from 'svelte';
   import fixture from '../../../examples/request.json';
   import Sidebar from './components/Sidebar.svelte';
   import Icon from './components/Icon.svelte';
   import RequestPanel from './components/RequestPanel.svelte';
-  import Timeline from './components/Timeline.svelte';
-  import ScoreChart from './components/ScoreChart.svelte';
-  import CandidateDetail from './components/CandidateDetail.svelte';
+  import DepthControl from './components/DepthControl.svelte';
+  import PlannerScene from './components/PlannerScene.svelte';
+  import InspectorDrawer from './components/InspectorDrawer.svelte';
   import OutputConsole from './components/OutputConsole.svelte';
   import InspectorViews from './components/InspectorViews.svelte';
   import TemporalView from './components/TemporalView.svelte';
@@ -17,6 +17,7 @@
   import { downloadJson, parseRequest, parseResult, parseValidation, postJson, readJsonFile } from './lib/transport.ts';
   import { readable } from './lib/presentation.ts';
   import { scenarioRequest } from './lib/scenarios.ts';
+  import { DEPTH_CONTEXT, DEPTH_STORAGE_KEY, storedDepth } from './lib/depth.ts';
 
   function demo(): PlanningRequest {
     const value = structuredClone(fixture);
@@ -24,6 +25,8 @@
   }
   let view = $state<LabView>('Planner');
   let mode = $state<ExplanationMode>('Simple');
+  setContext(DEPTH_CONTEXT, () => mode);
+  let runId = $state(0);
   let theme = $state<'dark' | 'light'>('dark');
   let request = $state<PlanningRequest>(demo());
   let resultRequest = $state<PlanningRequest | null>(null);
@@ -61,27 +64,34 @@
       api = 'Connected'; version = typeof health.software_version === 'string' ? health.software_version : '';
     } catch { api = 'API offline'; }
   }
-  onMount(() => { void checkApi(); log('lab', 'Workspace ready. Synthetic CPIR loaded; no planning result yet.'); });
+  onMount(() => {
+    try { mode = storedDepth(localStorage.getItem(DEPTH_STORAGE_KEY)); } catch { /* Storage may be disabled; depth remains usable. */ }
+    void checkApi(); log('lab', 'Workspace ready. Synthetic CPIR loaded; no planning result yet.');
+  });
+  function changeDepth(next: ExplanationMode) {
+    mode = next;
+    try { localStorage.setItem(DEPTH_STORAGE_KEY, next); } catch { /* Persistence is optional. */ }
+  }
   function loadDemo() {
-    request = demo(); requestLabel = 'Synthetic focus session'; result = null; resultRequest = null; validation = null; selected = 0;
+    request = demo(); requestLabel = 'Synthetic focus session'; result = null; resultRequest = null; validation = null; selected = 0; runId = 0;
     status = 'Synthetic request loaded with an explicit 10:45 UTC preference.'; error = false; log('lab', status);
   }
   function loadScenario(file: string) {
     request = scenarioRequest(file); requestLabel = file.replace('.json', '').replaceAll('-', ' ');
-    result = null; resultRequest = null; validation = null; selected = 0; error = false;
+    result = null; resultRequest = null; validation = null; selected = 0; runId = 0; error = false;
     status = `Synthetic scenario loaded: ${requestLabel}. Run the Rust planner to inspect the result.`;
     log('lab', status, { file, request_id: request.request_id });
   }
   async function importRequest(file: File) {
     try {
       const parsed = parseRequest(await readJsonFile(file, 256 * 1024));
-      request = parsed; requestLabel = file.name; result = null; resultRequest = null; validation = null; selected = 0;
+      request = parsed; requestLabel = file.name; result = null; resultRequest = null; validation = null; selected = 0; runId = 0;
       status = 'CPIR imported. Use Validate CPIR for authoritative Rust validation.'; error = false; log('lab', status, { file: file.name, request_id: parsed.request_id });
     } catch (reason) { fail(reason); }
   }
   async function importResult(file: File) {
     try {
-      result = parseResult(await readJsonFile(file)); resultRequest = null; validation = null; selected = 0;
+      result = parseResult(await readJsonFile(file)); resultRequest = null; validation = null; selected = 0; runId = 0;
       status = 'PlanningResult imported. Its source request is not attached.'; error = false;
       log('planner', `Imported result: ${file.name}`, result, 'success');
     } catch (reason) { fail(reason); }
@@ -93,7 +103,7 @@
       const data = await postJson(`/v1/${action}`, snapshot);
       api = 'Connected';
       if (action === 'plan') {
-        result = parseResult(data); resultRequest = snapshot; validation = result.validation; selected = 0;
+        result = parseResult(data); resultRequest = snapshot; validation = result.validation; selected = 0; runId++;
         status = `${readable(result.outcome)} · ${result.candidates.length} feasible candidates · ${result.search_space.evaluated} evaluated positions.`;
         log('planner', status, data, 'success');
       } else {
@@ -106,7 +116,7 @@
 </script>
 
 <svelte:head><meta name="color-scheme" content={theme} /></svelte:head>
-<div class="app-shell" data-theme={theme}>
+<div class="app-shell" data-theme={theme} data-depth={mode}>
   <a href="#workspace" class="skip-link">Skip to workspace</a>
   <Sidebar {view} onselect={(next) => view = next} {api} {version} />
   <div class="workspace-shell">
@@ -114,17 +124,23 @@
     <main id="workspace" tabindex="-1">
       <div class="hero"><div><span class="eyebrow">NEXUS CEREBRI / {view.toUpperCase()}</span><h1>{titles[view][0]}</h1><p>{titles[view][1]}</p></div><div class="hero-actions"><button class="secondary" onclick={() => resultInput.click()} disabled={busy}><Icon name="upload" size={16} />Import result</button><button class="secondary" disabled={!result} onclick={() => result && downloadJson(result, 'cerebri-planning-result.json')}><Icon name="download" size={16} />Export JSON</button></div></div>
       <input bind:this={resultInput} class="visually-hidden" tabindex="-1" type="file" accept=".json,application/json" aria-label="Import PlanningResult" onchange={(event) => { const file = event.currentTarget.files?.[0]; if (file) void importResult(file); event.currentTarget.value = ''; }} />
-      <div class="workspace-controls"><div class="view-context"><span class="status-dot" class:online={result !== null}></span>{result ? 'RESULT LOADED' : 'READY TO EXPLORE'}<span class="context-separator">/</span>CPIR {request.schema_version.major}.{request.schema_version.minor}</div><div class="explanation-switch" role="group" aria-label="Explanation depth">{#each ['Simple', 'Technical', 'Research'] as value}<button class:active={mode === value} aria-pressed={mode === value} onclick={() => mode = value as ExplanationMode}>{value}</button>{/each}</div></div>
+      <div class="workspace-controls"><div class="view-context"><span class="status-dot" class:online={result !== null}></span>{result ? 'RESULT LOADED' : 'READY TO EXPLORE'}<span class="context-separator">/</span>{mode === 'Simple' ? 'Visualize → explain → inspect' : `Input CPIR ${request.schema_version.major}.${request.schema_version.minor}`}</div></div>
+      <DepthControl {mode} onchange={changeDepth} />
       <p class="status-message" class:error role="status">{status}</p>
       {#if view === 'Planner'}
-        <div class="summary-grid"><article class="summary-card"><span class="eyebrow">OUTCOME</span><strong class="outcome">{result ? readable(result.outcome) : 'Ready'}</strong><small>{result ? readable(result.validation.state) : 'Synthetic input loaded'}</small></article><article class="summary-card"><span class="eyebrow">FEASIBLE CANDIDATES</span><strong>{result?.candidates.length ?? '—'}<span> / {result?.search_space.evaluated ?? '—'}</span></strong><small>Evaluated grid positions</small></article><article class="summary-card"><span class="eyebrow">REJECTIONS</span><strong>{result?.conflicts.rejections.length ?? '—'}</strong><small>Inspectable constraint evidence</small></article><article class="summary-card"><span class="eyebrow">SEARCH ASSESSMENT</span><strong class="assessment">{result ? readable(result.assessment) : 'Awaiting run'}</strong><small>Applies only to the declared grid</small></article></div>
-        <div class="planner-grid"><RequestPanel {request} label={requestLabel} {busy} {validation} ondemo={loadDemo} onscenario={loadScenario} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><Timeline request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} /><ScoreChart {result} {selected} onselect={(index) => selected = index} /><CandidateDetail candidate={result?.candidates[selected]} rank={selected + 1} {mode} /></div>
-        {#if result?.compilation}<CompilationPanel compiled={result.compilation} />{/if}
-        {#if result}<DependencyPanel graph={result.dependency_graph} />{/if}
-        {#if result && mode !== 'Simple'}<section class="research-context"><p>{mode === 'Research' ? 'Research boundary: optimality covers the bounded discrete grid, stated objective and stable tie breaks. It does not prove a continuous-time or global scheduling optimum.' : 'Technical boundary: proposals are not executable ActionPlans. No execution endpoint is available in this workspace.'}</p><JsonPanel title="Complete PlanningResult / graph source data" value={result} /></section>{/if}
+        <div class="planner-workbench"><RequestPanel {request} label={requestLabel} {busy} {validation} {mode} ondemo={loadDemo} onscenario={loadScenario} onimport={importRequest} onvalidate={() => run('validate')} onplan={() => run('plan')} /><PlannerScene request={result ? resultRequest : request} {result} {selected} onselect={(index) => selected = index} {mode} {runId} /></div>
+        {#if result && mode === 'Simple' && (!result.candidates.length || result.validation.issues.length || result.dependency_graph.issues.length)}<p class="status-message">{readable(result.validation.state)} · {result.validation.issues.length} validation issues · {result.dependency_graph.issues.length} dependency issues. Switch to Technical for exact diagnostics.</p>{/if}
+        {#if result && mode !== 'Simple'}
+          <InspectorDrawer title="Validation, compilation and dependency evidence" open={mode === 'Research'}>
+            <JsonPanel title="Request validation" value={result.validation} />
+            {#if result.compilation}<CompilationPanel compiled={result.compilation} {mode} />{/if}
+            <DependencyPanel graph={result.dependency_graph} {mode} />
+          </InspectorDrawer>
+          <section class="research-context"><p>Optimality covers the bounded discrete grid, stated objective and stable tie breaks. It does not prove a continuous-time or global scheduling optimum.</p><JsonPanel title="Complete PlanningResult / all returned source data" value={result} />{#if resultRequest}<JsonPanel title="Exact request sent for this result" value={resultRequest} />{/if}</section>
+        {/if}
       {:else if view === 'Temporal'}<TemporalView {mode} onlog={log} />
-      {:else}<InspectorViews {view} {result} {request} />{/if}
-      <OutputConsole {entries} onclear={() => entries = []} />
+      {:else}<InspectorViews {view} {result} request={resultRequest ?? request} {mode} sourceAttached={!result || resultRequest !== null} />{/if}
+      <OutputConsole {entries} {mode} onclear={() => entries = []} />
       <footer class="workspace-footer"><span>Neural intuition. Symbolic verification.</span><span>Built in the open · Human + AI collaboration</span></footer>
     </main>
   </div>

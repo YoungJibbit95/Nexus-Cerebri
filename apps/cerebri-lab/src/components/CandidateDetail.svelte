@@ -1,26 +1,17 @@
 <script lang="ts">
-  import Icon from './Icon.svelte';
   import JsonPanel from './JsonPanel.svelte';
-  import { reasonLabel, time } from '../lib/presentation.ts';
+  import { reasonLabel, readable, time } from '../lib/presentation.ts';
   import type { RankedCandidate, ExplanationMode } from '../lib/contracts.ts';
-  let { candidate, rank, mode }: { candidate: RankedCandidate | undefined; rank: number; mode: ExplanationMode } = $props();
+  let { candidate, rank, mode, hasResult = false }: { candidate: RankedCandidate | undefined; rank: number; mode: ExplanationMode; hasResult?: boolean } = $props();
 </script>
-<section class="panel detail-panel" aria-labelledby="candidate-title">
-  <div class="panel-heading"><div><span class="eyebrow">INSPECT / {mode.toUpperCase()}</span><h2 id="candidate-title">{candidate ? `Candidate ${String(rank).padStart(2, '0')}` : 'Inside a proposal'}</h2></div><Icon name="semantics" /></div>
-  {#if candidate}<div class="candidate-time">{time(candidate.start)}<span>UTC</span></div><div class="detail-metrics"><div><strong>{candidate.cost}<small> s</small></strong><span>Objective cost</span></div><div><strong>{candidate.mutation_count}</strong><span>Proposed mutations</span></div></div><ul class="reason-list">{#each candidate.explanation as component}<li><Icon name="check" size={15} /><span>{reasonLabel(component.reason)}</span><strong>{component.cost} s</strong></li>{/each}</ul><p class="fine-print">This is a proposal. Request validation and placement checks do not authorize execution.</p>{#if mode !== 'Simple'}<JsonPanel title="ProposedPlan + score" value={candidate} open={mode === 'Research'} />{/if}
-  {:else}<div class="detail-placeholder"><Icon name="code" size={30} /><p>See the evidence behind every placement.</p><small>Costs, provenance and structured reasons come directly from the core.</small></div>{/if}
+<section class="panel proposal-inspector" aria-labelledby="candidate-title" data-selected-candidate={rank}>
+  <div class="panel-heading"><div><span class="eyebrow">SELECTED / {mode === 'Simple' ? 'UNDERSTAND' : mode.toUpperCase()}</span><h2 id="candidate-title">{candidate ? 'Candidate ' + rank + (rank === 1 ? ' · first proposal' : ' · alternative') : 'Inside the proposal'}</h2></div></div>
   {#if candidate}
-    <h3 class="subheading">Ranking observations · v0.1</h3>
-    <p class="fine-print">Preferred-start distance: {candidate.ranking_features.preferred_start_distance_seconds === null ? 'No preference evidence' : `${candidate.ranking_features.preferred_start_distance_seconds} whole seconds`}. Source: {candidate.ranking_features.preferred_start_source ?? 'None'}.</p>
-    <p class="fine-print">Zero seconds may include a subsecond distance. Source records provenance and does not decide rank.</p>
-    <h3 class="subheading">Ordering key · ascending</h3>
-    <ol class="ordering-key">
-      <li><span>Preferred-start distance</span><strong>{candidate.ordering_key.preference_distance_seconds} s</strong></li>
-      <li><span>Mutations</span><strong>{candidate.ordering_key.mutation_count}</strong></li>
-      <li><span>Shift distance</span><strong>{candidate.ordering_key.shifted_seconds} s</strong></li>
-      <li><span>Start</span><code>{candidate.ordering_key.start}</code></li>
-      <li><span>Object identity</span><code>{candidate.ordering_key.object_id}</code></li>
-    </ol>
-    <p class="fine-print">The first differing component decides rank. Hard violations reject candidates before ranking.</p>
-  {/if}
+    <p class="visually-hidden" role="status">Selected candidate {rank} at {time(candidate.start)} UTC. This remains a proposal.</p>
+    <div class="proposal-placement">{#each candidate.proposed.placements as placement}<div><strong>{time(placement.range.start)} → {time(placement.range.end)}</strong><span>UTC · proposed placement</span>{#if mode !== 'Simple'}<code>{placement.object_id} · [{placement.range.start}, {placement.range.end})</code>{/if}</div>{/each}</div>
+    <p class="panel-description">{candidate.ranking_features.preferred_start_distance_seconds === null ? 'No preferred time was supplied for ranking.' : candidate.ranking_features.preferred_start_distance_seconds / 60 + ' minutes from the effective preferred time (whole-second projection).'} {candidate.ranking_features.mutation_count} proposed changes; {candidate.ranking_features.shift_seconds} seconds of shift.</p>
+    {#if mode !== 'Simple'}<h3 class="subheading">Core evidence</h3><ul class="reason-list">{#each candidate.explanation as component}<li><span>{reasonLabel(component.reason)}</span><strong>{component.cost} s</strong></li>{/each}</ul><p class="fine-print">RankingFeatureSet {candidate.ranking_features.schema_version.major}.{candidate.ranking_features.schema_version.minor} · provenance: {candidate.ranking_features.preferred_start_source ? readable(candidate.ranking_features.preferred_start_source) : 'None'}. Source records provenance only.</p>{/if}
+    {#if mode === 'Research'}<p class="fine-print">ProposedPlan {candidate.proposed.id} · source revision {candidate.proposed.source_revision} · start {candidate.start} · object {candidate.object_id}</p>{/if}
+    <JsonPanel title="Selected candidate / complete placement, features and key" value={candidate} />
+  {:else}<div class="detail-placeholder"><p>{hasResult ? 'The completed run returned no candidate. Inspect validation, dependency diagnostics and rejected positions.' : 'Run the planner to see a proposal and its evidence.'}</p></div>{/if}
 </section>
