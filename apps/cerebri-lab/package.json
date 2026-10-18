@@ -46,7 +46,15 @@
       "!desktop/verify-artifact.cjs",
       "!node_modules/**/*"
     ],
-    "extraResources": [{ "from": "desktop/.stage/cerebri-runtime", "to": "cerebri-runtime", "filter": ["**/*"] }],
+    "extraResources": [
+      {
+        "from": "desktop/.stage/cerebri-runtime",
+        "to": "cerebri-runtime",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "win": {
       "target": "nsis"
     },
@@ -62,5 +70,10 @@
   },
   "dependencies": {
     "nexus-cerebri-tooling": "file:../.."
+  },
+  "overrides": {
+    "global-agent": "4.1.3",
+    "http-cache-semantics": "4.3.0",
+    "source-map-js": "1.2.2"
   }
 }
