@@ -2,6 +2,7 @@
 
 Create dated/monthly development logs for meaningful implementation, experiment, or architecture-decision work.
 
+- [2026-10-19 — Neural Intelligence development plan (proposal)](2026-10-19-neural-intelligence-plan.md)
 - [2026-09-30 — Application integration foundation](2026-09-30-application-integration.md)
 
 - [2026-09-20 — Official website implementation](2026-09-20-official-site.md)
