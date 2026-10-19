@@ -46,6 +46,20 @@ ML and learned ranking/search remain absent.
 [The current Changelog header](../../../CHANGELOG.md) remains the release-status authority;
 the dated entries below preserve earlier milestone context.
 
+## 2026-10-19 neural intelligence development plan (proposal)
+
+The maintainer-directed Neural Intelligence assignment adds a versioned
+[development plan](neural-intelligence-development-plan.md) that sequences the future
+ML/NLP work into small, reviewable pull requests (Milestones A–H), maps them to the Cerebri
+Lab learning experience and states a verification strategy. This is a **documentation-only
+proposal**. It does not implement ML, does not change
+[ADR-0017](../../architecture/decisions/ADR-0017-ml-nlp-architecture-proposal.md) (still
+`Proposed`) and does **not** lift the ML restriction recorded in the current status above;
+lifting it requires an explicit maintainer amendment. The plan instead *proposes* a narrow
+amendment that would open only the deterministic interpretation baseline (Milestone B), while
+model training, neural inference and learned ranking stay closed. See the
+[progress record](../progress/2026-10-19-neural-intelligence-plan.md).
+
 ## 2026-09-30 application integration foundation
 
 The maintainer-directed application slice adds the Integration 0.1 manifest and one
