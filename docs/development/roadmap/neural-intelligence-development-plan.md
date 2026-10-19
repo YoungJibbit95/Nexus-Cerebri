@@ -54,11 +54,34 @@ Unknown availability stays unknown; a confidence score is never a permission.
 
 Milestone A (this document) is the only currently unblocked step, because it is documentation.
 
-## 5. Technology decisions
+### Proposed narrow amendment for Milestone B (deterministic baseline only)
 
-Confirmed by the maintainer on 2026-10-19:
+If Milestone B is to proceed, it requires a **narrowly scoped** roadmap/architecture amendment
+that authorizes *only* the deterministic, non-neural interpretation baseline. That amendment
+would:
 
-| Responsibility | Decision |
+- permit a bounded deterministic text-to-draft parser, its typed contracts, clarification
+  behaviour and DE/EN fixtures;
+- leave [ADR-0017](../../architecture/decisions/ADR-0017-ml-nlp-architecture-proposal.md) as
+  `Proposed` and not amend any accepted decision;
+- **not** authorize model training (Milestone E), a local neural inference runtime
+  (Milestone F), neural interpretation in the Lab (Milestone G), learned ranking —
+  including learning-to-rank (Milestone H) — provider integration, or execution.
+
+Training, neural inference and learned ranking remain under the existing restriction. Each
+requires its own later amendment, its own ADR and its own qualification; a Milestone B
+approval must not be read as opening any of them. This amendment is proposed here for
+maintainer decision and is **not enacted by this document**.
+
+## 5. Technology defaults (proposed)
+
+**These are proposed planning defaults, not approved architecture and not a dependency
+decision.** During the 2026-10-19 intake the maintainer expressed a preference for the
+following options; they stay provisional until this plan and
+[ADR-0017](../../architecture/decisions/ADR-0017-ml-nlp-architecture-proposal.md) are approved
+for implementation. They authorize no tool, crate, feature or runtime by themselves.
+
+| Responsibility | Proposed default |
 | --- | --- |
 | Core / planner / contracts | Existing Rust workspace; no heavyweight ML runtime required |
 | Research and training | Python + PyTorch, offline and separate from production |
@@ -113,23 +136,27 @@ not calendar promises.
 | PR (milestone) | Scope | Dependencies | Lab deliverable | Documentation | Verification |
 | --- | --- | --- | --- | --- | --- |
 | A — Plan v1 | This plan, roadmap pointer, progress record (docs-only) | none | none (references reserved panes) | this document | `repository_policy`, `documentation` |
-| B — Deterministic baseline | Bounded single-event intent ontology (`FIND_SLOT`, `CREATE_EVENT_DRAFT`, `UNKNOWN`, `UNSUPPORTED`, `CLARIFICATION_NEEDED`), rule parser, exact date/duration/negation, adversarial DE/EN fixtures, measured baseline | A + explicit lift of the §4 restriction + an implementation ADR | deterministic-interpretation explanation (SIMPLE/TECHNICAL) | interpretation contract spec | Rust tests, DST gap/fold, negatives, `rust-workspace` |
+| B — Deterministic baseline | Bounded single-event intent ontology (`FIND_SLOT`, `CREATE_EVENT_DRAFT`, `UNKNOWN`, `UNSUPPORTED`, `CLARIFICATION_NEEDED`), rule parser, exact date/duration/negation, adversarial DE/EN fixtures, measured baseline | A + the **narrow §4 amendment** (deterministic baseline only) + an implementation ADR | deterministic-interpretation explanation (SIMPLE/TECHNICAL) | interpretation contract spec | Rust tests, DST gap/fold, negatives, `rust-workspace` |
 | C — Dataset & evaluation | Versioned synthetic DE-first + EN challenge data, splits with no template leakage, manifests/hashes/provenance | B (baseline as denominator) | Dataset pane activated (versions, splits, distributions) | dataset schema + reproduction guide | dataset validation, leakage and distribution checks |
 | D — Neural net from scratch | Educational tensor/linear/activation/embedding/softmax/loss/SGD/backprop in `research/ml-from-scratch/`, fixed seeds, numerical gradient checks | C | Neural Network Playground, Forward-pass and Backpropagation explorers on real values | mathematical lessons DE/EN | manual vs. numerical vs. independent autograd gradients |
 | E — PyTorch intent model | Embedding → mean pooling → small MLP → intent logits; seeds, checkpoints, independent evaluation | C, D | Training dashboard on genuine experiments | experiment report | intent macro-F1, calibration, abstention, DE/EN, baseline comparison |
 | F — Local Rust inference | ONNX export and `ort` backend; numerical and tokenizer parity; offline, CPU, Win/Linux | E | (backend spike; no UI) | runtime, size and latency measurements | parity, integrity, cold start, corrupt/incompatible artifacts |
 | G — Lab neural interpretation | Opt-in experimental NLP flow with rule comparison | F + ADR-0016 qualification | Decision Inspector + Model Comparison | user/developer guide | E2E, accessibility, rules-only fallback |
-| H — Learning to rank | Pairwise preference research on feasible candidates | separately gated: completed evaluation/architecture/math/security qualification | ranking comparison | dedicated ADR | controlled experiments; hard validity unchanged |
+| H — Learning to rank | **Separate, independently qualified research branch.** Pairwise preference research on already feasible candidates | Its **own** gated ADR plus completed evaluation, architecture, math and security qualification. A successful Milestone G does **not** authorize H, and H does not follow automatically from G | ranking comparison (only once qualified) | dedicated ADR | controlled experiments; hard validity and ADR-0014 ordering unchanged |
 
 ## 8. Dependency graph
 
 ```text
-A --> B --> C --> D --> E --> F --> G --> (H)
-                    \--> E
+A --> B --> C --> D --> E --> F --> G
+
+H : independent research branch
+    H is NOT reached by G. It requires its own amendment, ADR and completed
+    evaluation/architecture/math/security qualification before any work begins.
 ```
 
-Unblocked now: **A** only. B–H each require the preceding milestone plus the explicit
-governance decisions in §4/§14.
+Unblocked now: **A** only. B–G each require the preceding milestone plus the explicit
+governance decisions in §4/§14, and neither the completed A–G chain nor a successful
+Milestone G opens H.
 
 ## 9. Lab learning experience
 
@@ -143,7 +170,8 @@ No fabricated charts or placeholder values presented as results.
 
 ## 10. Dataset and evaluation strategy
 
-Start synthetic, DE-first with EN challenge fixtures. Keep `training / validation / test /
+Start synthetic. The DE-first scope with EN challenge fixtures is a **proposed default**
+(maintainer intake preference, 2026-10-19), provisional until confirmed. Keep `training / validation / test /
 held-out challenge` separate, avoid template leakage, and include difficult negatives,
 negation, contradiction, ambiguity and hostile input. Record dataset identity/version,
 content hashes, provenance/licence and scope, generation method and seed, class and language
@@ -183,15 +211,18 @@ self-certified.
 | Dependency / licence / packaging risk (native ONNX) | Medium | reviewed pinned versions, offline packaging and size checks |
 | Desktop/OS coverage | Medium | measured Win/Linux (macOS if approved) before adoption |
 | Governance bypass | High | explicit approvals; restriction stays until amended |
+| Milestone B approval misread as opening training/inference/ranking | High | §4 narrow amendment limits B to the deterministic baseline; E/F/G/H stay closed |
 | Educational UI presenting fake data | High | only real outputs or labelled versioned fixtures |
 
 ## 14. Open maintainer decisions
 
-1. When (and whether) to lift the §4 roadmap restriction, and under which amendment.
-2. Confirm Milestone B as the first code slice and its intent ontology boundary.
-3. Own the future `TextInterpretation` schema versioning separately from Integration 0.1.
-4. Confirm target platforms (Win/Linux; macOS) and the maximum optional footprint.
-5. Sequence Milestone B relative to the pending B.4/Phase-B and ADR-0016 qualifications.
+1. Whether to adopt the narrow §4 amendment that opens **only** the deterministic Milestone B
+   baseline, and confirm its intent ontology boundary and DE/EN fixture scope. Training,
+   neural inference and learned ranking stay closed regardless of this decision.
+2. Own the future `TextInterpretation` schema versioning separately from Integration 0.1.
+3. Confirm target platforms (Win/Linux; macOS) and the maximum optional footprint.
+4. Sequence Milestone B relative to the pending B.4/Phase-B and ADR-0016 qualifications.
+5. Confirm when Milestone H may be considered at all, independent of Milestone G.
 
 ## 15. Definition of done and release readiness
 

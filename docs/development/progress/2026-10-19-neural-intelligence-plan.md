@@ -13,11 +13,26 @@ discovery and governance rather than implementation:
 
 ## Decisions recorded (maintainer, 2026-10-19)
 
-1. First slice: Milestone A, documentation-only plan (no ML implementation).
-2. LittleDevTeam (`architect-dev-team`) installed locally and git-ignored; not versioned.
-3. Language scope: DE-first with EN challenge fixtures.
-4. Technology stack: PyTorch research + optional ONNX Rust inference, Burn for Rust teaching,
-   Candle for comparison only.
+- **Approved (scope):** first slice = Milestone A, documentation-only plan (no ML
+  implementation).
+- **Approved (tooling):** LittleDevTeam (`architect-dev-team`) installed locally and
+  git-ignored; not versioned.
+- **Intake preference (proposed defaults, not architecture approval):** DE-first with EN
+  challenge fixtures; technology stack PyTorch research + optional ONNX Rust inference, Burn
+  for Rust teaching, Candle for comparison only. These remain provisional and are labelled as
+  proposed defaults in the plan until it is approved for implementation.
+
+## Review corrections (2026-10-19)
+
+Applied on this PR after maintainer review:
+
+- Technology and language scope were relabelled from "confirmed" to **proposed defaults**, to
+  avoid implying an approval that was not given.
+- The transition to Milestone B is now a **narrow amendment** authorizing only the
+  deterministic baseline; training, neural inference, Lab neural interpretation and learned
+  ranking stay closed.
+- Milestone H is shown as an **independent research branch** that is not reached by
+  Milestone G and requires its own amendment, ADR and qualification.
 
 ## Governance state
 
